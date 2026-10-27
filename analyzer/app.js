@@ -14,7 +14,45 @@ $('saveProfile').onclick=()=>{const a=load();a.push(record());if(save(a)){render
 function download(name,content,type){let b=new Blob([content],{type}),url=URL.createObjectURL(b),a=document.createElement('a');a.href=url;a.download=name;document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(url),1000)}
 $('exportProfile').onclick=()=>download('ffb-profile.json',JSON.stringify(record(),null,2),'application/json');$('exportAll').onclick=()=>download('ffb-profiles.json',JSON.stringify(load(),null,2),'application/json');
 $('exportCsv').onclick=()=>{let a=load(),cols=['date','brand','model','advertisedNm','driverPct','theoreticalNm','simulator','wheel','diameterMm','massKg','validation'];let csv=[cols.join(';'),...a.map(r=>cols.map(c=>'"'+String(r[c]??'').replaceAll('"','""')+'"').join(';'))].join('\r\n');download('ffb-profiles.csv','\ufeff'+csv,'text/csv;charset=utf-8')};$('clearSaved').onclick=()=>{if(confirm('Supprimer tous les profils enregistrés dans ce navigateur ?')&&save([]))render()};render();
-// Synthetic waveform; never exported or labeled as real telemetry.
-let samples=[],running=true,phase=0;const canvas=$('chart');function draw(){if(!$('live').classList.contains('active'))return;const dpr=devicePixelRatio||1,w=canvas.clientWidth,h=canvas.clientHeight;if(!w||!h)return;canvas.width=Math.round(w*dpr);canvas.height=Math.round(h*dpr);let c=canvas.getContext('2d');c.scale(dpr,dpr);c.strokeStyle='#243657';c.lineWidth=1;for(let i=1;i<5;i++){let y=h*i/5;c.beginPath();c.moveTo(0,y);c.lineTo(w,y);c.stroke()}c.strokeStyle='#fd1424';c.lineWidth=2;c.beginPath();samples.forEach((v,i)=>{let x=i*w/Math.max(1,119),y=h-(v/100)*(h-12)-6;if(i===0)c.moveTo(x,y);else c.lineTo(x,y)});c.stroke()}
-function tick(){if(!running)return;phase+=.13;let v=Math.min(100,Math.max(2,Math.abs(46*Math.sin(phase*.7)+20*Math.sin(phase*2.7)+10*Math.sin(phase*6.1))+7));samples.push(v);if(samples.length>120)samples.shift();$('signal').innerHTML=fmt(v,0)+' <small>%</small>';$('peak').innerHTML=fmt(Math.max(...samples.slice(-12)),0)+' <small>%</small>';draw()}setInterval(tick,250);tick();$('toggleDemo').onclick=()=>{running=!running;$('toggleDemo').textContent=running?'Arrêter la démo':'Démarrer la démo';if(running)tick()};$('clearChart').onclick=()=>{samples=[];$('signal').innerHTML='— <small>%</small>';$('peak').innerHTML='— <small>%</small>';draw()};window.addEventListener('resize',draw);
+
+// ===================== LIVE : données réelles du plugin SimHub =====================
+const q=new URLSearchParams(location.search).get('k');const qs=q?('?k='+encodeURIComponent(q)):'';
+const api=(p,extra)=>p+(qs?qs+(extra?'&'+extra:''):(extra?'?'+extra:''));
+const pc=(v,d=0)=>v==null?'—':fmt(v*100,d);
+const STATUS={Ok:'Marge correcte',Risk:'Risque d’écrêtage',Clipping:'Écrêtage',Excessive:'Marge excessive',Unknown:'—'};
+let last=null,fail=0,threshold=.98;const canvas=$('chart');
+function draw(){if(!$('live').classList.contains('active')||!last)return;const h0=last.history||{t:[],v:[]};const dpr=devicePixelRatio||1,w=canvas.clientWidth,h=canvas.clientHeight;if(!w||!h)return;canvas.width=Math.round(w*dpr);canvas.height=Math.round(h*dpr);const c=canvas.getContext('2d');c.scale(dpr,dpr);
+ const top=8,bot=h-8,Y=v=>bot-Math.min(1.15,Math.abs(v))/1.15*(bot-top),X=t=>(t+10)/10*w;
+ c.strokeStyle='#243657';c.lineWidth=1;[.25,.5,.75,1].forEach(g=>{c.beginPath();c.moveTo(0,Y(g));c.lineTo(w,Y(g));c.stroke()});
+ c.setLineDash([6,5]);c.strokeStyle='#ff9d59';c.beginPath();c.moveTo(0,Y(threshold));c.lineTo(w,Y(threshold));c.stroke();c.setLineDash([]);
+ c.lineWidth=2;for(let i=1;i<h0.t.length;i++){const a=Math.abs(h0.v[i]);c.strokeStyle=a>=threshold?'#ff2b3a':'#48d4a1';c.beginPath();c.moveTo(X(h0.t[i-1]),Y(h0.v[i-1]));c.lineTo(X(h0.t[i]),Y(h0.v[i]));c.stroke()}
+ c.fillStyle='#a7b1cc';c.font='11px system-ui';c.fillText('100 %',4,Y(1)-3);c.fillText('50 %',4,Y(.5)-3)}
+function lapTime(s){if(!(s>0))return '—';const m=Math.floor(s/60),r=s-m*60;return m+':'+(r<10?'0':'')+r.toFixed(3)}
+function renderLive(d){last=d;threshold=d.threshold||.98;$('ver').textContent='v'+d.version;$('gameName').textContent=d.game||'aucun jeu';
+ const conn=$('conn');conn.textContent=window.PFA_DEMO?'DÉMONSTRATION · DONNÉES SIMULÉES':(d.game?'CONNECTÉ À SIMHUB':'SIMHUB · EN ATTENTE DU JEU');conn.className='pill '+(window.PFA_DEMO?'off':'on');
+ const al=$('sourceAlert');if(d.game&&!d.source_ok){al.hidden=false;al.innerHTML='<b>Aucune source FFB lisible pour ce jeu.</b> Ouvre l’onglet « Sources » du plugin dans SimHub et lance la recherche automatique.'}else al.hidden=true;
+ $('signal').innerHTML=pc(Math.abs(d.signal))+' <small>%</small>';$('signal').className='metric'+(d.clipping?' clip':'');
+ $('signalCap').textContent=d.unit==='Nm'?('Couple de colonne '+fmt(d.raw,1)+' Nm sur '+fmt(d.full_scale,1)+' Nm de pleine échelle'):'Pourcentage de la pleine échelle du jeu';
+ $('peak').innerHTML=pc(d.peak_window)+' <small>%</small>';
+ $('lapClip').innerHTML=pc(d.lap_clip_pct,1)+' <small>%</small>';$('lapClip').className='metric'+(d.lap_clip_pct>0?' clip':'');
+ $('lapClipCap').textContent='Tour '+d.lap+' · '+d.lap_clip_events+' événement(s) · session '+pc(d.session_clip_pct,1)+' %';
+ $('rec').innerHTML='<span class="dot '+(d.recording?'rec':'')+'"></span>'+(d.recording?'ENREGISTREMENT':'NON ENREGISTRÉ');
+ const L=d.laps&&d.laps.length?d.laps[d.laps.length-1]:null;
+ if(L){$('lastPeak').innerHTML=pc(L.peak)+' <small>% de pic</small>';$('lastCap').innerHTML='Marge '+pc(L.margin)+' % · <span class="st-'+L.status+'">'+STATUS[L.status]+'</span>';
+  $('gain').textContent=d.gain_lo!=null?('Pour un pic entre 75 et 90 % : multiplier la force en jeu par '+fmt(d.gain_lo,2)+' à '+fmt(d.gain_hi,2)+(L.status==='Clipping'?' (au moins : le signal saturé masque le vrai pic).':'.')):''}
+ else{$('lastPeak').textContent='—';$('lastCap').textContent='Disponible après le premier tour complet';$('gain').textContent=''}
+ const rows=$('lapRows');rows.replaceChildren();(d.laps||[]).slice().reverse().forEach(l=>{const tr=rows.insertRow();[l.lap,lapTime(l.time),pc(l.clip_pct,2)+' %',l.events,pc(l.peak)+' %',pc(l.margin)+' %'].forEach(v=>{tr.insertCell().textContent=v});const td=tr.insertCell();td.textContent=STATUS[l.status]||l.status;td.className='st-'+l.status});
+ if(!(d.laps||[]).length){const tr=rows.insertRow(),td=tr.insertCell();td.colSpan=7;td.textContent='Aucun tour complet pour l’instant.'}
+ draw()}
+async function poll(){try{const r=await fetch(api('api/live'),{cache:'no-store'});if(!r.ok)throw new Error(r.status===403?'Jeton refusé':'HTTP '+r.status);renderLive(await r.json());fail=0}
+ catch(e){fail++;if(fail>2){const c=$('conn');c.textContent='HORS LIGNE · '+e.message;c.className='pill off'}}
+ finally{setTimeout(poll,document.hidden?1000:125)}}
+async function loadSessions(){const rows=$('sessionRows');rows.replaceChildren();try{const r=await fetch(api('api/sessions'),{cache:'no-store'});const a=await r.json();
+ if(!a.length){const tr=rows.insertRow(),td=tr.insertCell();td.colSpan=8;td.textContent='Aucune session enregistrée.';return}
+ a.forEach(s=>{const tr=rows.insertRow(),t=s.totals||{};[new Date(s.started).toLocaleString('fr-FR'),s.game,s.car,s.track,t.laps,pc(t.clip_pct,2)+' %',pc(t.peak)+' %'].forEach(v=>{tr.insertCell().textContent=v??''});
+  const td=tr.insertCell(),a2=document.createElement('a');a2.href=api('api/session/csv','id='+encodeURIComponent(s.id));a2.textContent='Télécharger';td.appendChild(a2)})}
+ catch(e){const tr=rows.insertRow(),td=tr.insertCell();td.colSpan=8;td.textContent='Liste indisponible : '+e.message}}
+$('refreshSessions').onclick=loadSessions;
+document.querySelectorAll('nav button').forEach(b=>b.addEventListener('click',()=>{if(b.dataset.tab==='sessions')loadSessions()}));
+window.addEventListener('resize',draw);poll();
 })();

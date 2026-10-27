@@ -1,20 +1,12 @@
-PURE RACING FX — FFB ANALYZER V2
-================================
+PURE RACING FX — FFB ANALYZER · PAGE DE DÉMONSTRATION
+=====================================================
 
-Ouvrir index.html dans Chrome, Edge, Firefox ou Safari.
-Aucun serveur, compilation, installation ni connexion Internet nécessaires.
-Le pack comprend index.html, app.js et data.js.
+Cette page est la page web du plugin SimHub Pure FFB Analyzer, en mode démonstration.
+Le fichier demo.js remplace l'API du plugin par un simulateur qui tourne dans le navigateur,
+avec les mêmes règles de calcul que le plugin (seuil 98 %, marge = 1 − pic, fenêtre de gain 0,75/pic à 0,90/pic).
 
-Fonctions :
-- Live Monitor en mode DEMONSTRATION : courbe synthétique, sans connexion SimHub.
-- Sélecteur de 5 fabricants, 28 variantes de bases, 5 à 30 Nm.
-- Force Driver de référence sans interpolation.
-- Plafond théorique et multiplicateur LMU documentaire.
-- Profils locaux persistants (localStorage), export JSON/CSV.
-- Interface responsive téléphone/tablette (pour ouvrir sur un autre appareil,
-  héberger ces fichiers sur un serveur local HTTP approprié).
+Scénario : Spa en LMU, force trop élevée pendant deux tours (écrêtage), puis réduite (marge correcte).
+La session recommence après cinq tours.
 
-IMPORTANT : Les données fabricant et recommandations sont reprises du texte
-fourni par l'utilisateur et n'ont pas été vérifiées indépendamment.
-Le Live Monitor n'est PAS une mesure réelle de FFB et ne détecte PAS le clipping.
-Le plugin SimHub natif, SQLite, WebSocket et l'accès LAN sécurisé restent à créer.
+Fichiers : index.html, app.js (identique au plugin), demo.js (simulateur), data.js (profils de référence).
+Aucune donnée n'est mesurée ni envoyée. Pour retirer la démo dans le plugin, il suffit de ne pas charger demo.js.
