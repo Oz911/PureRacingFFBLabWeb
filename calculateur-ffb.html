@@ -127,7 +127,7 @@ body{background:radial-gradient(ellipse at 75% 0%,#1c315d 0%,transparent 48%),#0
 .tabs{display:flex;gap:10px;flex-wrap:wrap;margin:0 0 20px}.tabs a{padding:11px 18px;border-radius:10px;background:#14264a;color:#fff;text-decoration:none;border:1px solid #ffffff20;font-weight:700}.tabs a.active{background:#fd1424;border-color:#fd1424}
 @media(max-width:600px){.hero-photo{height:145px}.hero-photo div{left:15px}}
 
-/* Couple de la voiture : mis en évidence (même bleu que l'encadré « couple voiture p99 » de l'Analyzer) */
+/* Couple de la voiture : mis en évidence (même bleu que l'encadré « couple voiture » de l'Analyzer) */
 #carBox{margin-top:16px;padding:12px 14px 14px;border:2px solid #4cc9ff;border-radius:12px;background:rgba(76,201,255,.12);box-shadow:0 0 18px rgba(76,201,255,.18)}
 #carBox[hidden]{display:none}
 #carBox label{margin-top:0;color:#bfeaff}
@@ -229,7 +229,7 @@ body{background:radial-gradient(ellipse at 75% 0%,#1c315d 0%,transparent 48%),#0
             <option value="custom">Valeur mesurée avec FFB Analyzer / saisie libre</option>
           </select>
           <input id="carNm" type="number" min="5" max="60" step="0.5" value="15" inputmode="decimal" aria-label="Couple de direction max de la voiture (Nm)" style="margin-top:8px">
-          <div class="field-status"><span class="tag">Les catégories reprennent des couples relevés dans iRacing (haut de plage, hors vibreurs) : ils ne sont pas validés pour LMU et rFactor 2. Pour un réglage fiable, saisis le couple de colonne en Nm lu par le plugin <a href="https://pureracing-fx.odoo.com/pure-ffb-analyzer" target="_top">FFB Analyzer</a> (« couple voiture p99 » du dernier tour, avec cette voiture sur ce circuit).</span></div>
+          <div class="field-status"><span class="tag">Les catégories reprennent des couples relevés dans iRacing (haut de plage, hors vibreurs) : ils ne sont pas validés pour LMU et rFactor 2. Pour un réglage fiable, saisis le « couple voiture équivalent FFB Lab » affiché par le plugin <a href="https://pureracing-fx.odoo.com/pure-ffb-analyzer" target="_top">FFB Analyzer</a> (dernier tour complet). N’utilise pas le couple de colonne brut du jeu : il n’est pas à la même échelle.</span></div>
         </div>
         <label id="lab-pref">Force souhaitée</label>
         <div class="seg" role="radiogroup" aria-labelledby="lab-pref">
