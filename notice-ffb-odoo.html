@@ -1,0 +1,253 @@
+<!-- Pure Racing FX — Notice FFB Lab · bloc à coller dans Odoo (Code HTML / Embed code) -->
+<link href="https://fonts.googleapis.com/css2?family=Barlow:wght@400;500;600;700&family=Barlow+Condensed:wght@600;700&family=JetBrains+Mono:wght@500;700&display=swap" rel="stylesheet">
+<style>
+.prfx-notice{
+  color-scheme:dark;
+  --bg:#070e2a; --panel:#0c1839; --panel-2:#122349; --line:#293b60;
+  --text:#fcfdfd; --muted:#b4c1d9; --accent:#fd1424; --accent-2:#c60c25; --link:#ff949c;
+  --ok:#22c55e; --warn:#f5a524; --bad:#ef4444; --radius:18px;
+}
+.prfx-notice *{box-sizing:border-box}
+.prfx-notice{background:radial-gradient(ellipse at 75% 0%,#1c315d 0%,transparent 48%),var(--bg);color:var(--text);font-family:Barlow,system-ui,sans-serif;font-size:17px;line-height:1.6}
+.prfx-notice a{color:var(--link)}
+.prfx-notice .wrap{max-width:1000px;margin:0 auto;padding:28px 16px 70px}
+.prfx-notice header.top{padding:24px 28px;border-radius:22px;background:linear-gradient(105deg,rgba(14,30,65,.96),rgba(7,14,42,.85));border:1px solid #344967;box-shadow:0 22px 60px #0006;margin-bottom:22px}
+.prfx-notice h1{font-family:"Barlow Condensed",sans-serif;font-size:40px;margin:0;line-height:1;letter-spacing:1px}
+.prfx-notice h1 span{color:var(--accent)}
+.prfx-notice .sub{color:var(--muted);margin:6px 0 0;font-size:15px}
+.prfx-notice .tabs{display:flex;gap:10px;flex-wrap:wrap;margin:0 0 20px}
+.prfx-notice .tabs a{padding:11px 18px;border-radius:10px;background:#14264a;color:#fff;text-decoration:none;border:1px solid #ffffff20;font-weight:700}
+.prfx-notice .tabs a.active{background:var(--accent);border-color:var(--accent)}
+.prfx-notice nav.toc{background:linear-gradient(155deg,#14264a,#09152f);border:1px solid #ffffff1b;border-radius:var(--radius);padding:16px 22px;margin-bottom:22px}
+.prfx-notice nav.toc ol{margin:0;padding-left:20px;columns:2;column-gap:32px}
+@media (max-width:640px){.prfx-notice nav.toc ol{columns:1}}
+.prfx-notice nav.toc a{text-decoration:none}
+.prfx-notice section{background:linear-gradient(155deg,#14264a,#09152f);border:1px solid #ffffff1b;box-shadow:0 18px 38px #0005;border-radius:var(--radius);padding:22px 24px;margin-bottom:20px}
+@media (max-width:600px){.prfx-notice section{padding:18px 16px}}
+.prfx-notice h2{font-family:"Barlow Condensed",sans-serif;font-size:28px;margin:0 0 12px;letter-spacing:.4px}
+.prfx-notice h3{font-size:18px;margin:20px 0 8px}
+.prfx-notice p{margin:0 0 12px}
+.prfx-notice .steps{counter-reset:s;list-style:none;padding:0;margin:0;display:grid;gap:12px}
+.prfx-notice .steps li{counter-increment:s;background:var(--panel-2);border:1px solid var(--line);border-radius:12px;padding:14px 16px 14px 56px;position:relative}
+.prfx-notice .steps li::before{content:counter(s);position:absolute;left:14px;top:14px;width:28px;height:28px;border-radius:50%;background:var(--accent);display:grid;place-items:center;font-weight:700;font-size:15px}
+.prfx-notice .steps b{display:block}
+.prfx-notice table{width:100%;border-collapse:collapse;font-size:15px;margin:8px 0 4px}
+.prfx-notice th,.prfx-notice td{padding:10px 8px;border-bottom:1px solid var(--line);text-align:left;vertical-align:top}
+.prfx-notice th{color:var(--muted);font-weight:600;font-size:13px;text-transform:uppercase;letter-spacing:.5px}
+.prfx-notice .tbl{overflow-x:auto}
+.prfx-notice code,.prfx-notice .mono{font-family:"JetBrains Mono",monospace;font-size:14px}
+.prfx-notice .formula{background:var(--panel-2);border:1px solid var(--line);border-left:4px solid var(--accent);border-radius:10px;padding:12px 14px;margin:10px 0 14px;font-family:"JetBrains Mono",monospace;font-size:14.5px;overflow-x:auto;white-space:nowrap}
+.prfx-notice .pill{display:inline-flex;align-items:center;gap:6px;padding:3px 10px;border-radius:999px;font-weight:600;font-size:14px;border:1px solid}
+.prfx-notice .pill.ok{color:var(--ok);background:rgba(34,197,94,.12);border-color:rgba(34,197,94,.4)}
+.prfx-notice .pill.warn{color:var(--warn);background:rgba(245,165,36,.13);border-color:rgba(245,165,36,.45)}
+.prfx-notice .pill.bad{color:var(--bad);background:rgba(239,68,68,.13);border-color:rgba(239,68,68,.45)}
+.prfx-notice .callout{border-radius:12px;padding:14px 16px;margin-top:14px;font-size:16px;border:1px solid}
+.prfx-notice .callout.warn{background:rgba(245,165,36,.13);border-color:rgba(245,165,36,.45)}
+.prfx-notice .callout.info{background:rgba(76,201,255,.08);border-color:rgba(76,201,255,.35)}
+.prfx-notice .callout.bad{background:rgba(239,68,68,.13);border-color:rgba(239,68,68,.45)}
+.prfx-notice .callout b{display:block}
+.prfx-notice .corners{display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:12px;margin-top:10px}
+.prfx-notice .corner{background:var(--panel-2);border:1px solid var(--line);border-radius:12px;padding:14px}
+.prfx-notice .corner .t{font-family:"Barlow Condensed",sans-serif;font-size:20px;color:var(--accent)}
+.prfx-notice .corner .w{font-size:13px;text-transform:uppercase;letter-spacing:.5px;color:var(--muted);font-weight:600}
+.prfx-notice .corner p{font-size:15px;margin:6px 0 0}
+.prfx-notice .foot{color:var(--muted);font-size:13px;margin-top:28px;text-align:center}
+.prfx-notice{background:radial-gradient(ellipse at 75% 0%,#1c315d 0%,transparent 48%),#070e2a;border-radius:20px}
+.prfx-notice *,.prfx-notice *::before,.prfx-notice *::after{box-sizing:border-box}
+.prfx-notice section,.prfx-notice nav.toc{color:var(--text)}
+.prfx-notice h1,.prfx-notice h2,.prfx-notice h3{color:var(--text)}
+.prfx-notice table,.prfx-notice th,.prfx-notice td{border:0;background:transparent}
+.prfx-notice th,.prfx-notice td{border-bottom:1px solid var(--line)}
+.prfx-notice ol,.prfx-notice ul{margin-top:0}
+</style>
+<div class="prfx-notice">
+<div class="wrap">
+  <header class="top">
+    <h1>PURE RACING <span>FX</span> · NOTICE FFB LAB</h1>
+    <p class="sub">Utiliser les outils, comprendre les formules, valider ses réglages sur piste</p>
+  </header>
+
+  <nav class="tabs" aria-label="Navigation"><a href="/ffb-calculateur">Calculateur</a><a href="/ffb-comparateur">Comparer</a><a href="/ffb-validation">Test sur piste</a><a href="/ffb-analyzer">Analyzer</a><a class="active" href="/notice-ffb">Notice</a></nav>
+
+  <nav class="toc" aria-label="Sommaire">
+    <ol>
+      <li><a href="#role">Les outils du FFB Lab</a></li>
+      <li><a href="#etapes">Calculateur en 4 étapes</a></li>
+      <li><a href="#mesure">Mesurer son volant</a></li>
+      <li><a href="#couleurs">Lire les couleurs</a></li>
+      <li><a href="#calcul">Formules du calculateur</a></li>
+      <li><a href="#jeux">Réglages en jeu</a></li>
+      <li><a href="#comparateur">Formules du comparateur</a></li>
+      <li><a href="#marques">Équivalences entre marques</a></li>
+      <li><a href="#validation">Valider sur piste</a></li>
+      <li><a href="#ajuster">Ajuster selon le ressenti</a></li>
+      <li><a href="#analyzer">FFB Analyzer</a></li>
+      <li><a href="#calibrage">Calibrer avec ses réglages</a></li>
+      <li><a href="#limites">Limites et sécurité</a></li>
+    </ol>
+  </nav>
+
+  <section id="role">
+    <h2>Les outils du FFB Lab</h2>
+    <div class="tbl"><table>
+      <tr><th>Outil</th><th>À quoi il sert</th></tr>
+      <tr><td><b>Calculateur</b></td><td>Donne un réglage de départ cohérent (driver et jeu) à partir de la base, du volant, du jeu et de la force souhaitée.</td></tr>
+      <tr><td><b>Comparateur</b></td><td>Vérifie un réglage existant : couple ressenti, marge avant écrêtage, comparaison de deux configurations. Couvre iRacing, LMU et Assetto Corsa.</td></tr>
+      <tr><td><b>Test sur piste</b></td><td>Fiche de session, diagnostic d'un symptôme et protocole de validation imprimable.</td></tr>
+      <tr><td><b>FFB Analyzer</b></td><td>Maquette du futur plugin SimHub qui affichera et enregistrera le signal FFB et l'écrêtage en session. Les courbes actuelles sont une démonstration.</td></tr>
+    </table></div>
+    <div class="callout info"><b>Des points de départ, pas des réglages finaux</b>Chaque chiffre vient d'une formule détaillée ci-dessous. Le ressenti reste personnel : le protocole sur piste sert à affiner.</div>
+  </section>
+
+  <section id="etapes">
+    <h2>Calculateur en 4 étapes</h2>
+    <ol class="steps">
+      <li><b>Choisis ta base</b>Marque puis modèle : le couple maximal se remplit tout seul. Sinon, « Autre modèle » et saisis le couple de la fiche technique.</li>
+      <li><b>Renseigne ton volant</b>Poids en kg, diamètre en mm et répartition de la masse (voir plus bas).</li>
+      <li><b>Choisis le jeu, la voiture et la force</b>Pour LMU / rFactor 2, choisis la catégorie de voiture que tu pilotes le plus : elle sert à calculer la force en jeu. « Normale » convient à la plupart des pilotes, « Légère » aux longues sessions, « Forte » à ceux qui veulent un volant très physique.</li>
+      <li><b>Recopie les réglages</b>Tableau de gauche dans le logiciel de la base, tableau de droite dans le jeu. Les lignes surlignées sont les plus importantes. Passe ensuite au test sur piste.</li>
+    </ol>
+    <p style="margin-top:14px">Tes dernières saisies sont retenues par ton navigateur.</p>
+  </section>
+
+  <section id="mesure">
+    <h2>Mesurer son volant</h2>
+    <h3>Poids</h3>
+    <p>Pèse le volant seul, démonté, avec la partie du quick release qui reste fixée dessus. Une balance de cuisine suffit, sinon prends le poids constructeur.</p>
+    <h3>Diamètre</h3>
+    <p>D'un bord extérieur de la jante à l'autre en passant par le centre. Pour un volant formule ou papillon, prends la largeur entre les deux poignées.</p>
+    <h3>Répartition de la masse</h3>
+    <div class="tbl"><table>
+      <tr><th>Choix</th><th>Exemples</th><th>Coefficient k</th></tr>
+      <tr><td>Masse au centre</td><td>Volant formule, gros boîtier électronique, écran</td><td>0,55</td></tr>
+      <tr><td>Standard</td><td>Volant GT, rond classique</td><td>0,70</td></tr>
+      <tr><td>Masse sur la jante</td><td>Jante épaisse, métal, bois, gros grip</td><td>0,85</td></tr>
+    </table></div>
+  </section>
+
+  <section id="couleurs">
+    <h2>Lire les couleurs</h2>
+    <div class="tbl"><table>
+      <tr><th>Indicateur</th><th><span class="pill ok">Vert</span></th><th><span class="pill warn">Orange</span></th><th><span class="pill bad">Rouge</span></th></tr>
+      <tr><td>Plafond de couple</td><td>≤ 12 Nm, confortable</td><td>12 à 15 Nm, ferme</td><td>&gt; 15 Nm, risque de blessure</td></tr>
+      <tr><td>Limite driver</td><td>Réglage normal</td><td>Base à 100 %, elle ne peut pas fournir plus</td><td>—</td></tr>
+      <tr><td>Réactivité relative</td><td>Indice ≤ 1,4</td><td>1,4 à 2,2</td><td>&gt; 2,2</td></tr>
+      <tr><td>Volant saisi</td><td>0,6–2 kg et 260–360 mm</td><td>Valeur rare, vérifie la mesure</td><td>Valeur improbable</td></tr>
+      <tr><td>Damping, friction, inertie</td><td>Dans la plage habituelle de la marque</td><td>Hors plage, à surveiller</td><td>—</td></tr>
+    </table></div>
+    <p style="margin-top:12px"><b>Courbe de couple</b> : plafond visé selon la puissance de la base, pour les trois niveaux de force. Ton montage est le point coloré, la droite « 100 % » est la limite physique de la base. <b>Jauges</b> : valeur conseillée par rapport à la plage habituelle de ta marque (bande verte).</p>
+  </section>
+
+  <section id="calcul">
+    <h2>Formules du calculateur</h2>
+    <h3>1. Plafond de couple</h3>
+    <p>Le couple maximal visé augmente avec la puissance de la base puis plafonne : au-delà, plus de force n'apporte plus d'information, seulement de la fatigue.</p>
+    <div class="formula">T = Tmax × (1 − e<sup>−B / 11,8</sup>)   puis   T ≤ B</div>
+    <p><span class="mono">B</span> est le couple de la base, <span class="mono">Tmax</span> vaut 10 Nm (Légère), 14 Nm (Normale) ou 18 Nm (Forte). En « Normale » : 8 Nm sur une base de 10 Nm, 11,4 Nm sur 20 Nm, 12,9 Nm sur 30 Nm. Le pourcentage du driver vaut <span class="mono">T ÷ B</span> ; chez Asetek, RaceHub se règle directement en Nm.</p>
+
+    <h3>2. Inertie du volant</h3>
+    <div class="formula">I = k × m × r²</div>
+    <p><span class="mono">m</span> est le poids (kg), <span class="mono">r</span> le rayon en mètres (diamètre ÷ 2000), <span class="mono">k</span> le coefficient de répartition.</p>
+
+    <h3>3. Damping et inertie simulée</h3>
+    <p>Recalés sur un montage de référence : base 10 Nm, plafond 8 Nm, volant 1,1 kg / 300 mm, Damping 16 %, Friction 2 %, Inertie 10 % (échelle Simagic).</p>
+    <div class="formula">Damping = Dréf × √( (T / Tréf) × (I / Iréf) )</div>
+    <div class="formula">Inertie = Inertie réf. × √( (T / Tréf) × (Iréf / I) )</div>
+    <p>Le damping suit le principe d'un taux d'amortissement constant (amortissement critique = 2√(raideur × inertie)) : plus de couple et plus de masse demandent plus de freinage. Un volant léger reçoit davantage d'inertie simulée. La friction reste fixe.</p>
+
+    <h3>4. Réactivité relative</h3>
+    <div class="formula">Indice = (T / I) ÷ (Tréf / Iréf)</div>
+    <p>Compare l'accélération que la base peut donner à ton volant avec celle du montage de référence. Il porte sur le <b>volant seul, avant</b> le damping et l'inertie conseillés : ces réglages servent justement à compenser un indice élevé. Ce n'est pas une prédiction d'oscillation.</p>
+  </section>
+
+  <section id="jeux">
+    <h2>Réglages en jeu</h2>
+    <h3>Le Mans Ultimate / rFactor 2</h3>
+    <p>Le driver limite la base au plafond <span class="mono">T</span>. Le jeu reçoit ce même couple dans <b>Steering Torque Capability</b> (STC) : il sait alors que 100 % de son signal correspond à T newton-mètres, et transmet le couple de la voiture à 1 pour 1 quand la force est à 100 %.</p>
+    <div class="formula">STC = B × % driver   (arrondi à 0,5 Nm)</div>
+    <p>La <b>Force Feedback Strength</b> n'a pas de formule propre au calculateur : elle reprend les hypothèses du <a href="#comparateur">comparateur</a>, qui est l'outil de calibration (fichier commun <code>ffb-model.js</code>). Le calculateur cherche la force qui laisse 15 % de marge avec la voiture choisie, puis la ramène dans la fenêtre du comparateur (30 à 60 % de sortie spécifique, 10 à 60 % de marge, force ≤ 100 %).</p>
+    <div class="formula">visée = 0,85 × STC ÷ (multiplicateur × couple voiture)   →   bornée à la fenêtre du comparateur</div>
+    <p>Exemple en GT3 (~15 Nm), force « Normale » : 45 % sur une base de 10 Nm, 57 % sur 15 Nm, 61 % sur 25 Nm (limitée par les 60 % de sortie spécifique, marge 27 %).</p>
+    <div class="callout warn"><b>Quand la cible n'est pas atteignable</b>Si aucune force ≤ 100 % ne respecte la fenêtre (petite base et voiture lourde, par exemple), le calculateur l'indique. Cela signifie seulement que la cible ne peut pas être atteinte avec ces hypothèses : ce n'est pas automatiquement une raison de modifier le driver. Il faut d'abord vérifier le couple réel de la voiture, la définition du STC dans ta version du jeu et l'écrêtage en télémétrie (Analyzer).</div>
+    <p style="margin-top:14px">Les couples des voitures sont indicatifs (relevés dans iRacing, hors vibreurs). Le minimum steering torque reste à 0 sur une base Direct Drive.</p>
+    <h3>Assetto Corsa</h3>
+    <p>AC ne travaille pas en Nm : le gain proposé (70 %) est un départ. Mesure le pic de force sur un tour (FFBClip, ou l'outil de Content Manager / CSP), puis règle le gain avec le comparateur pour viser un pic de 75 à 90 %. Filtre et force minimale à 0, effets artificiels bas, post-traitement FFB de Content Manager désactivé.</p>
+    <h3>Assetto Corsa EVO</h3>
+    <p>Le jeu applique déjà un amortissement important : le calculateur réduit le damping (× 0,4) et l'inertie (× 0,7) côté driver, et confie le poids au <b>Dynamic Damping</b> du jeu (30 à 40 %). Gain de départ 80 %, à affiner de la même façon qu'AC. Règle le même angle de braquage dans le jeu et le driver.</p>
+  </section>
+
+  <section id="comparateur">
+    <h2>Formules du comparateur</h2>
+    <p>Le comparateur reprend le modèle du tableur iRacing d'origine et l'étend à LMU et AC. C'est l'outil de calibration : ses hypothèses (fenêtres de sortie spécifique et de marge, définition du STC) sont regroupées dans <code>ffb-model.js</code> et réutilisées telles quelles par le calculateur. Les modifier à cet endroit met à jour les deux outils.</p>
+    <div class="tbl"><table>
+      <tr><th>Grandeur</th><th>Formule</th><th>Sens</th></tr>
+      <tr><td>C · couple disponible</td><td class="mono">min(A, T) × B</td><td>Couple nominal, limite logicielle et % driver de la base</td></tr>
+      <tr><td>E · Max Force équivalent</td><td class="mono">iRacing : saisi · LMU : STC ÷ (Strength × multiplicateur)</td><td>Couple voiture qui donne 100 % du signal</td></tr>
+      <tr><td>G · sortie spécifique</td><td class="mono">C ÷ E</td><td>Nm de base par Nm de voiture. Repère communautaire : 30 à 60 %</td></tr>
+      <tr><td>J · couple ressenti max</td><td class="mono">G × H (AC : pic mesuré × C)</td><td>H = couple de direction max de la voiture</td></tr>
+      <tr><td>L · marge</td><td class="mono">(C − J) ÷ C</td><td>Négative = écrêtage. Visée : 10 à 60 %</td></tr>
+    </table></div>
+    <p style="margin-top:12px">Pour LMU, STC doit être égal à C : sinon le jeu ne transmet plus les Nm à 1 pour 1, et le comparateur le signale.</p>
+  </section>
+
+  <section id="marques">
+    <h2>Équivalences entre marques</h2>
+    <p>Le calculateur travaille sur l'échelle Simagic puis convertit avec les correspondances ci-dessous, établies à partir des plages habituellement recommandées par chaque marque et par la communauté.</p>
+    <div class="tbl"><table>
+      <tr><th>Marque</th><th>Logiciel</th><th>Damping</th><th>Friction</th><th>Inertie</th></tr>
+      <tr><td>Simagic</td><td>SimPro Manager</td><td>× 1</td><td>× 1</td><td>× 1</td></tr>
+      <tr><td>Moza</td><td>Pit House</td><td>Wheel Damper × 1</td><td>10 + 4 × F</td><td>Natural Inertia = 100 + 5 × I (100 % = neutre)</td></tr>
+      <tr><td>Fanatec</td><td>Fanatec App / tuning</td><td>NDP × 1</td><td>NFR × 2,5</td><td>NIN × 0,8</td></tr>
+      <tr><td>Simucube</td><td>Tuner</td><td>× 0,6</td><td>× 1,5</td><td>× 0,4</td></tr>
+      <tr><td>Asetek</td><td>RaceHub</td><td>× 0,6</td><td>× 4</td><td>× 0,3 (échelle 0 à 10)</td></tr>
+    </table></div>
+    <div class="callout warn"><b>Correspondances indicatives</b>Les marques n'appliquent pas leurs filtres de la même façon, et certaines expriment le damping par rapport au couple maximal de la base. Une même valeur ne donne donc pas exactement le même ressenti : vérifie avec le test sur piste.</div>
+  </section>
+
+  <section id="validation">
+    <h2>Valider sur piste</h2>
+    <p>Fais 5 tours à Spa-Francorchamps avec une voiture que tu connais, mains toujours sur le volant. Change un seul réglage à la fois. L'onglet <a href="/ffb-validation">Test sur piste</a> permet de noter la session et de l'imprimer.</p>
+    <div class="corners">
+      <div class="corner"><div class="w">Ligne droite</div><div class="t">Kemmel</div><p>Mains posées sans serrer : pas d'oscillation persistante.</p></div>
+      <div class="corner"><div class="w">Freinage</div><div class="t">Les Combes</div><p>Transfert de charge lisible, pas de réaction brusque.</p></div>
+      <div class="corner"><div class="w">Appui</div><div class="t">Pouhon</div><p>La force monte avec la charge, sans mur plat (écrêtage).</p></div>
+      <div class="corner"><div class="w">Épingle</div><div class="t">La Source</div><p>Sous-virage perceptible quand l'avant décroche.</p></div>
+      <div class="corner"><div class="w">Retour au centre</div><div class="t">Bus Stop</div><p>Le volant revient naturellement, sans coller ni claquer.</p></div>
+    </div>
+  </section>
+
+  <section id="ajuster">
+    <h2>Ajuster selon le ressenti</h2>
+    <div class="tbl"><table>
+      <tr><th>Ce que tu ressens</th><th>Ce qu'il faut toucher</th></tr>
+      <tr><td>Oscillations en ligne droite</td><td>Monte le damping par pas de 2 (NDP chez Fanatec, Wheel Damper chez Moza, Anti-Oscillation chez Asetek). Sur AC EVO, monte d'abord le Dynamic Damping.</td></tr>
+      <tr><td>Mur plat en courbe rapide</td><td>Écrêtage : baisse la force en jeu ou le multiplicateur de la voiture par pas de 0,05. Vérifie avec le comparateur.</td></tr>
+      <tr><td>Volant lourd et lent dans les enchaînements</td><td>Baisse d'abord le damping, puis l'inertie.</td></tr>
+      <tr><td>Volant nerveux, sensation « vide »</td><td>Monte un peu l'inertie, puis la friction si besoin.</td></tr>
+      <tr><td>Vibreurs trop violents</td><td>Baisse l'effet vibreurs (AC), la Collision Strength (LMU) ou monte le lissage d'un cran.</td></tr>
+      <tr><td>Bras fatigués après 20 minutes</td><td>Passe en force « Légère » : le plafond baisse de 25 à 30 %.</td></tr>
+    </table></div>
+  </section>
+
+  <section id="analyzer">
+    <h2>FFB Analyzer</h2>
+    <p>L'Analyzer est la vitrine du futur plugin SimHub Pure Racing FX qui affichera le signal FFB en direct, repérera l'écrêtage et l'enregistrera par session. Il remplace l'ancien overlay.</p>
+    <p>La version en ligne est une <b>maquette</b> : la courbe du Live Monitor est synthétique, aucune valeur n'est mesurée et rien n'est relié à SimHub. Les profils enregistrés restent dans le navigateur et s'exportent en JSON ou CSV.</p>
+    <div class="callout warn"><b>Tableau de référence propre à l'Analyzer</b>Les pourcentages driver de l'Analyzer viennent d'un tableau documentaire, sans interpolation. Ils peuvent différer de ceux du calculateur, qui suivent la formule du plafond de couple.</div>
+  </section>
+
+  <section id="calibrage">
+    <h2>Calibrer avec ses propres réglages</h2>
+    <p>Le panneau <b>Réglages avancés</b> du calculateur contient le montage de référence. Remplace ces valeurs par un réglage validé sur piste avec ton matériel : tous les résultats se recalent sur ton ressenti. « Revenir aux valeurs par défaut » restaure la référence d'origine.</p>
+  </section>
+
+  <section id="limites">
+    <h2>Limites et sécurité</h2>
+    <div class="callout bad"><b>Une base Direct Drive peut blesser</b>Au-delà de 15 Nm, un choc ou une perte d'adhérence peut tordre un pouce ou un poignet. Pouces hors des branches, mains toujours sur le volant en roulant, et force modérée pour commencer.</div>
+    <h3 style="margin-top:18px">Ce que les outils ne font pas</h3>
+    <p>Ils ne lisent pas la télémétrie : l'écrêtage réel d'une voiture ne se mesure qu'en jeu. Les couples des voitures, la courbe de plafond et les conversions entre marques sont des choix raisonnés, pas des données constructeur. L'inertie du rotor de la base et celle du quick release ne sont pas prises en compte. Les menus des jeux évoluent : si un réglage change de nom, cherche son équivalent le plus proche.</p>
+  </section>
+
+  <p class="foot">Pure Racing FX · FFB Lab · <a href="/ffb-calculateur">Ouvrir le calculateur</a></p>
+</div>
+</div>

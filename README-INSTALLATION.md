@@ -5,7 +5,8 @@
 - `calculateur-ffb.html` : calculateur
 - `comparateur-ffb.html` : comparateur
 - `test-piste-ffb.html` : validation sur piste
-- `notice-ffb.html` : notice technique (publiée sur https://pureracing-fx.odoo.com/notice-ffb)
+- `notice-ffb.html` : notice technique autonome
+- `notice-ffb-odoo.html` : même notice en bloc à coller dans la page Odoo /notice-ffb (styles isolés sous `.prfx-notice`)
 - `analyzer/` : FFB Analyzer V2, maquette du plugin SimHub de visualisation et d'enregistrement du clipping (remplace l'ancien overlay ; données live synthétiques)
 - `ffb-model.js` : hypothèses de calibration communes (comparateur = source, calculateur = réutilisation). À publier avec les HTML.
 - `codes-integration-odoo.md` : extraits iframe à coller dans Odoo
