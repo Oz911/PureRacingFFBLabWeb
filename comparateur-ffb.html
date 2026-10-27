@@ -387,7 +387,8 @@ function showHandoff(){
   box.appendChild(undo);
   document.getElementById('gamenote').after(box);
 }
-function save(){store[game]={st,st2};store.game=game;try{localStorage.setItem('ffb-calc-v2',JSON.stringify(store))}catch(e){}}
+let lastSig='';
+function save(){const sig=game+JSON.stringify(st);if(lastSig&&sig!==lastSig)store.savedAt=Date.now();lastSig=sig;store[game]={st,st2};store.game=game;try{localStorage.setItem('ffb-calc-v2',JSON.stringify(store))}catch(e){}}
 
 /* ---- Calcul ---- */
 function compute(g,i){

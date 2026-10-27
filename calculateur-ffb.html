@@ -531,9 +531,9 @@ function handoffToComparator(s, r, b){
   const st = lmu
     ? {A:s.B, T:s.B, B:r.pct/100, H:s.H, STC:r.STC, s:Math.round(r.strength*100)/100, m:1}
     : {A:s.B, T:s.B, B:r.pct/100, g:s.game==='ace'?0.8:0.7};
-  const payload = {source:'calculateur', game: lmu?'lmu':'ac', label: b.name+' '+model+' · '+GAMES[s.game].name, st};
+  const payload = {source:'calculateur', game: lmu?'lmu':'ac', calcGame: s.game, base: b.name+' '+model+' · '+fmt(s.B)+' Nm', label: b.name+' '+model+' · '+GAMES[s.game].name, st};
   const prev = store.get('ffbLabHandoff');
-  const same = prev && JSON.stringify({source:prev.source,game:prev.game,label:prev.label,st:prev.st})===JSON.stringify(payload);
+  const same = prev && JSON.stringify({source:prev.source,game:prev.game,calcGame:prev.calcGame,base:prev.base,label:prev.label,st:prev.st})===JSON.stringify(payload);
   if(!same) store.set('ffbLabHandoff', Object.assign({ts:Date.now()}, payload));
 }
 
