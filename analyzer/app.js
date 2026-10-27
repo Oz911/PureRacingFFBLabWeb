@@ -38,10 +38,11 @@ function renderLive(d){last=d;threshold=d.threshold||.98;$('ver').textContent='v
  $('lapClipCap').textContent='Tour '+d.lap+' · '+d.lap_clip_events+' événement(s) · session '+pc(d.session_clip_pct,1)+' %';
  $('rec').innerHTML='<span class="dot '+(d.recording?'rec':'')+'"></span>'+(d.recording?'ENREGISTREMENT':'NON ENREGISTRÉ');
  const L=d.laps&&d.laps.length?d.laps[d.laps.length-1]:null;
- if(L){$('lastPeak').innerHTML=pc(L.peak)+' <small>% de pic</small>';$('lastCap').innerHTML='Marge '+pc(L.margin)+' % · <span class="st-'+L.status+'">'+STATUS[L.status]+'</span>'+(L.p99_nm!=null?'<br>Couple voiture p99 : <b>'+fmt(L.p99_nm,1)+' Nm</b> (à saisir dans le calculateur)':'');
+ if(L){$('lastPeak').innerHTML=pc(L.peak)+' <small>% de pic</small>';$('lastCap').innerHTML='Marge '+pc(L.margin)+' % · <span class="st-'+L.status+'">'+STATUS[L.status]+'</span>';
+  $('torqueBox').hidden=L.p99_nm==null;if(L.p99_nm!=null)$('torqueVal').innerHTML=fmt(L.p99_nm,1)+' <small>Nm</small>';
   $('gain').textContent=d.gain_lo!=null?('Pour un pic entre 75 et 90 % : multiplier la force en jeu par '+fmt(d.gain_lo,2)+' à '+fmt(d.gain_hi,2)+(L.status==='Clipping'?' (au moins : le signal saturé masque le vrai pic).':'.')):''}
- else{$('lastPeak').textContent='—';$('lastCap').textContent='Disponible après le premier tour complet';$('gain').textContent=''}
- const rows=$('lapRows');rows.replaceChildren();(d.laps||[]).slice().reverse().forEach(l=>{const tr=rows.insertRow();[l.lap,lapTime(l.time),pc(l.clip_pct,2)+' %',l.events,pc(l.peak)+' %',l.p99_nm!=null?fmt(l.p99_nm,1)+' Nm':'—',pc(l.margin)+' %'].forEach(v=>{tr.insertCell().textContent=v});const td=tr.insertCell();td.textContent=STATUS[l.status]||l.status;td.className='st-'+l.status});
+ else{$('torqueBox').hidden=true;$('lastPeak').textContent='—';$('lastCap').textContent='Disponible après le premier tour complet';$('gain').textContent=''}
+ const rows=$('lapRows');rows.replaceChildren();(d.laps||[]).slice().reverse().forEach(l=>{const tr=rows.insertRow();[l.lap,lapTime(l.time),pc(l.clip_pct,2)+' %',l.events,pc(l.peak)+' %',l.p99_nm!=null?fmt(l.p99_nm,1)+' Nm':'—',pc(l.margin)+' %'].forEach((v,i)=>{const c=tr.insertCell();c.textContent=v;if(i===5)c.className='tq'});const td=tr.insertCell();td.textContent=STATUS[l.status]||l.status;td.className='st-'+l.status});
  if(!(d.laps||[]).length){const tr=rows.insertRow(),td=tr.insertCell();td.colSpan=8;td.textContent='Aucun tour complet pour l’instant.'}
  draw()}
 async function poll(){try{const r=await fetch(api('api/live'),{cache:'no-store'});if(!r.ok)throw new Error(r.status===403?'Jeton refusé':'HTTP '+r.status);renderLive(await r.json());fail=0}
