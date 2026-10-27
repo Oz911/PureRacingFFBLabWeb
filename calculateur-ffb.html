@@ -517,7 +517,24 @@ function render(){
   if(s.game!=='lmu') co.push(['info','Gain en jeu à mesurer', `Assetto Corsa ne travaille pas en Nm : le gain proposé est un simple départ. Mesure le pic de force (FFBClip ou Content Manager) puis règle le gain avec le <a href="https://pureracing-fx.odoo.com/comparateur-ffb" target="_top">comparateur</a>.`]);
   if(s.game==='ace') co.push(['info','Spécificité AC EVO', `Le jeu applique déjà son propre amortissement. Le damping et l'inertie du driver sont donc réduits ici ; règle surtout le « Dynamic Damping » en jeu.`]);
   co.push(['info','Valeurs de départ', `Ces réglages sont calculés, pas validés pour ta voiture. Fais le protocole de validation de la notice avant de les affiner.`]);
+  co.push(['info','Vérifier dans le comparateur', `Ces valeurs (base, % driver${s.game==='lmu'?', STC, force en jeu et voiture':' et gain en jeu'}) sont transmises au <a href="https://pureracing-fx.odoo.com/comparateur-ffb" target="_top">comparateur</a> : ouvre-le pour vérifier le couple ressenti et la marge avant écrêtage.`]);
   $('callouts').innerHTML = co.map(([c,t,x])=>`<div class="callout ${c}"><b>${t}</b>${x}</div>`).join('');
+  handoffToComparator(s, r, b);
+}
+
+/* Transmission au comparateur : même navigateur, même site → localStorage partagé.
+   L'horodatage ne change que si les valeurs changent, pour ne pas écraser les modifications faites dans le comparateur. */
+function handoffToComparator(s, r, b){
+  const modelOpt = $('model').selectedOptions[0];
+  const model = $('model').value==='custom' ? 'base '+fmt(s.B)+' Nm' : (modelOpt ? modelOpt.textContent.split(' · ')[0] : '');
+  const lmu = s.game==='lmu';
+  const st = lmu
+    ? {A:s.B, T:s.B, B:r.pct/100, H:s.H, STC:r.STC, s:Math.round(r.strength*100)/100, m:1}
+    : {A:s.B, T:s.B, B:r.pct/100, g:s.game==='ace'?0.8:0.7};
+  const payload = {source:'calculateur', game: lmu?'lmu':'ac', label: b.name+' '+model+' · '+GAMES[s.game].name, st};
+  const prev = store.get('ffbLabHandoff');
+  const same = prev && JSON.stringify({source:prev.source,game:prev.game,label:prev.label,st:prev.st})===JSON.stringify(payload);
+  if(!same) store.set('ffbLabHandoff', Object.assign({ts:Date.now()}, payload));
 }
 
 function gameRows(s, r){

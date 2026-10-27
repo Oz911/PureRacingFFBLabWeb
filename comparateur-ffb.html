@@ -361,6 +361,32 @@ function load(g){
   st2={...DEF_BASE,B:0.85,...DEF2_GAME[g],...(sv.st2||{})};
 }
 let st2={}; load(game);
+/* Reprise des valeurs du calculateur (clé ffbLabHandoff, écrite par calculateur-ffb.html).
+   Appliquée une seule fois par nouvelle transmission : les modifications faites ici sont conservées ensuite. */
+let handoff=null, beforeHandoff=null;
+try{
+  const h=JSON.parse(localStorage.getItem('ffbLabHandoff')||'null');
+  if(h && GAMES[h.game] && h.st && h.ts>(store.handoffTs||0)){
+    handoff=h; beforeHandoff={game, st:{...st}, st2:{...st2}};
+    game=h.game; load(game); Object.assign(st, h.st); store.handoffTs=h.ts;
+  }
+}catch(e){}
+function showHandoff(){
+  if(!handoff) return;
+  const box=document.createElement('div');
+  box.className='handoff';
+  box.setAttribute('role','status');
+  box.style.cssText='margin:14px auto 0;max-width:80ch;padding:12px 16px;border-radius:12px;border:1px solid rgba(76,201,255,.4);background:rgba(76,201,255,.08);font-size:14px;text-align:left';
+  const extra=handoff.game==='ac'?' Mesure ensuite le pic de force en jeu (FFBClip ou Content Manager) et saisis-le.':'';
+  box.innerHTML='<b>Valeurs reprises du calculateur</b> : '+handoff.label.replace(/[<>&]/g,'')+'. Tu peux les modifier librement.'+extra+' ';
+  const undo=document.createElement('button');
+  undo.type='button'; undo.textContent='Revenir à mes valeurs précédentes';
+  undo.style.cssText='margin-left:6px;padding:4px 10px;border-radius:8px;border:1px solid currentColor;background:transparent;color:inherit;cursor:pointer;font:inherit';
+  undo.onclick=()=>{ if(!beforeHandoff) return; game=beforeHandoff.game; st=beforeHandoff.st; st2=beforeHandoff.st2; save();
+    buildGameInputs(); buildCmp(); fill(); render(); box.remove(); };
+  box.appendChild(undo);
+  document.getElementById('gamenote').after(box);
+}
 function save(){store[game]={st,st2};store.game=game;try{localStorage.setItem('ffb-calc-v2',JSON.stringify(store))}catch(e){}}
 
 /* ---- Calcul ---- */
@@ -593,7 +619,7 @@ function renderCmp(){
     `<tr><td><b>Min / moyenne / max</b></td><td></td><td></td><td></td><td class="r num">${pct(a)} / ${pct(b)} / ${pct(c)}</td><td class="r num">${nf(d,1)} / ${nf(e,1)} / ${nf(f,1)}</td></tr></tbody>`;
 })();
 
-buildGameInputs(); buildCmp(); fill(); render();
+buildGameInputs(); buildCmp(); fill(); render(); showHandoff();
 })();
 </script>
 </body>
