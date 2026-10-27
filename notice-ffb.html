@@ -167,9 +167,11 @@ code,.mono{font-family:"JetBrains Mono",monospace;font-size:14px}
     <h3>Le Mans Ultimate / rFactor 2</h3>
     <p>Le driver limite la base au plafond <span class="mono">T</span>. Le jeu reçoit ce même couple dans <b>Steering Torque Capability</b> (STC) : il sait alors que 100 % de son signal correspond à T newton-mètres, et transmet le couple de la voiture à 1 pour 1 quand la force est à 100 %.</p>
     <div class="formula">STC = B × % driver   (arrondi à 0,5 Nm)</div>
-    <p>La <b>Force Feedback Strength</b> est ensuite calculée pour que la voiture choisie culmine à 85 % du plafond, ce qui laisse 15 % de marge avant écrêtage :</p>
-    <div class="formula">Strength = 0,85 × STC ÷ couple voiture   (plafonnée à 100 %)</div>
-    <p>Exemple en GT3 (~15 Nm) et force « Normale » : 45 % sur une base de 10 Nm, 57 % sur 15 Nm, 71 % sur 25 Nm. Le couple ressenti en pointe reste toujours à 85 % du plafond. Si la valeur dépasse 100 %, le calculateur la bloque et propose de monter le multiplicateur de la voiture. Les couples des voitures sont indicatifs (relevés dans iRacing, hors vibreurs) : vérifie avec le comparateur ou l'Analyzer. Le minimum steering torque reste à 0 sur une base Direct Drive.</p>
+    <p>La <b>Force Feedback Strength</b> n'a pas de formule propre au calculateur : elle reprend les hypothèses du <a href="#comparateur">comparateur</a>, qui est l'outil de calibration (fichier commun <code>ffb-model.js</code>). Le calculateur cherche la force qui laisse 15 % de marge avec la voiture choisie, puis la ramène dans la fenêtre du comparateur (30 à 60 % de sortie spécifique, 10 à 60 % de marge, force ≤ 100 %).</p>
+    <div class="formula">visée = 0,85 × STC ÷ (multiplicateur × couple voiture)   →   bornée à la fenêtre du comparateur</div>
+    <p>Exemple en GT3 (~15 Nm), force « Normale » : 45 % sur une base de 10 Nm, 57 % sur 15 Nm, 61 % sur 25 Nm (limitée par les 60 % de sortie spécifique, marge 27 %).</p>
+    <div class="callout warn"><b>Quand la cible n'est pas atteignable</b>Si aucune force ≤ 100 % ne respecte la fenêtre (petite base et voiture lourde, par exemple), le calculateur l'indique. Cela signifie seulement que la cible ne peut pas être atteinte avec ces hypothèses : ce n'est pas automatiquement une raison de modifier le driver. Il faut d'abord vérifier le couple réel de la voiture, la définition du STC dans ta version du jeu et l'écrêtage en télémétrie (Analyzer).</div>
+    <p style="margin-top:14px">Les couples des voitures sont indicatifs (relevés dans iRacing, hors vibreurs). Le minimum steering torque reste à 0 sur une base Direct Drive.</p>
     <h3>Assetto Corsa</h3>
     <p>AC ne travaille pas en Nm : le gain proposé (70 %) est un départ. Mesure le pic de force sur un tour (FFBClip, ou l'outil de Content Manager / CSP), puis règle le gain avec le comparateur pour viser un pic de 75 à 90 %. Filtre et force minimale à 0, effets artificiels bas, post-traitement FFB de Content Manager désactivé.</p>
     <h3>Assetto Corsa EVO</h3>
@@ -178,7 +180,7 @@ code,.mono{font-family:"JetBrains Mono",monospace;font-size:14px}
 
   <section id="comparateur">
     <h2>Formules du comparateur</h2>
-    <p>Le comparateur reprend le modèle du tableur iRacing d'origine et l'étend à LMU et AC.</p>
+    <p>Le comparateur reprend le modèle du tableur iRacing d'origine et l'étend à LMU et AC. C'est l'outil de calibration : ses hypothèses (fenêtres de sortie spécifique et de marge, définition du STC) sont regroupées dans <code>ffb-model.js</code> et réutilisées telles quelles par le calculateur. Les modifier à cet endroit met à jour les deux outils.</p>
     <div class="tbl"><table>
       <tr><th>Grandeur</th><th>Formule</th><th>Sens</th></tr>
       <tr><td>C · couple disponible</td><td class="mono">min(A, T) × B</td><td>Couple nominal, limite logicielle et % driver de la base</td></tr>

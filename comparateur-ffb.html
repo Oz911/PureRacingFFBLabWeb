@@ -302,10 +302,12 @@ details>div{margin-inline:auto;text-align:center}
   </section>
 </div>
 
+<script src="ffb-model.js"></script>
 <script>
 (function(){
+const FM=window.FFBModel;
 const STRENGTH=[[1,327],[1.5,221],[2,167],[2.5,134],[3,112],[3.5,96],[4,84],[4.5,75],[5,68],[5.5,61],[6,56],[6.5,52],[7,48],[7.5,45],[8,42],[8.5,40],[9,38],[9.5,36],[10,34],[10.5,32.3],[11,30.8],[11.5,29.5],[12,28.2],[12.5,27.1],[13,26.1],[13.5,25.1],[14,24.2],[14.5,23.4],[15,22.6],[15.5,21.9],[16,21.2],[16.5,20.6],[17,20],[17.5,19.4],[18,18.8],[18.5,18.3],[19,17.9],[19.5,17.4],[20,17],[21,16.2],[22,15.4],[23,14.8],[24,14.1],[25,13.6],[26,13.1],[27,12.6],[28,12.4],[29,11.7],[30,11.3],[31,11],[32,10.6],[33,10.1],[34,9.8],[35,9.7],[36,9.4],[37,9.2],[38,8.9],[39,8.7],[40,8.5]];
-const CARS=[["Formula 3",14,20],["Formula Vee",16,22],["GT3",8,15],["GT4",12,18],["GTP / LMDh",10,16],["INDY IR-18",30,60],["Mazda MX-5 Cup",18,22],["NASCAR Next Gen Cup",28,35],["Porsche 911 Cup (992)",18,20],["Street Stock",18,25],["V8 Supercars",22,28]];
+const CARS=FM.CARS;
 const COMM=[["Aaron V. & Josh R.",20,5,68],["Max B.",16,8.1,42],["Chris L.",25,6,56],["Jamie F.",15,10,34],["Thibault C.",20,8,42],["Moritz L.",20,8.1,42],["Yohan H.",16,12,28.2],["Victor W.",14,12,28.2],["Charlie C.",17,11,30.8],["Yuri K.",28,8,42],["Sebi J.",31.5,9,38],["Sven H. & Hugh B.",25,12,28.2]];
 const $=id=>document.getElementById(id);
 const nf=(v,d=1)=>Number.isFinite(v)?v.toLocaleString('fr-FR',{minimumFractionDigits:d,maximumFractionDigits:d}):'–';
@@ -336,7 +338,7 @@ const GAMES={
     fields:[['STC','Steering Torque Capability','Nm',1,50,0.5,1,'Couple réellement délivré par la base (C = couple × % driver). Absent du menu chez certaines marques : mettez alors cette valeur dans controller.JSON ou laissez le défaut.'],
             ['s','Force Feedback Strength','%',1,200,1,100,'Force globale en jeu.'],
             ['m','Multiplicateur FFB de la voiture','%',1,200,1,100,'Réglage propre à chaque voiture. 100 % par défaut.']],
-    eq:s=>s.STC/(s.s*s.m),
+    eq:s=>FM.lmuEq(s.STC,s.s,s.m),
   },
   ac:{
     name:'Assetto Corsa / EVO', usesCar:false,
@@ -363,25 +365,17 @@ function save(){store[game]={st,st2};store.game=game;try{localStorage.setItem('f
 
 /* ---- Calcul ---- */
 function compute(g,i){
-  const Cbase=Math.min(i.A,i.T)*i.B;
-  const r={C:Cbase,A:i.A,T:i.T,B:i.B,H:i.H,game:g};
+  const Cbase=FM.baseTorque(i.A,i.T,i.B);
+  const r={A:i.A,T:i.T,B:i.B,H:i.H,game:g};
   if(GAMES[g].eq){
-    r.Eq=GAMES[g].eq(i); r.G=Cbase/r.Eq; r.J=r.G*i.H; r.K=Cbase-r.J; r.L=r.K/Cbase;
-    r.M=Cbase/0.6; r.N=Cbase/0.3;
+    Object.assign(r,FM.evaluate(Cbase,GAMES[g].eq(i),i.H));
+    const w=FM.windowE(Cbase,i.H); r.M=w.M; r.N=w.N;
   } else {
-    r.P=i.P; r.J=i.P*Cbase; r.K=Cbase-r.J; r.L=1-i.P; r.G=NaN;
+    r.P=i.P; Object.assign(r,FM.evaluatePeak(Cbase,i.P));
   }
   return r;
 }
-function stG(G){ if(!Number.isFinite(G))return['neutral','–'];
-  if(G>0.6)return['bad','Force élevée : risque de lutter avec le volant'];
-  if(G<0.3)return['warn','Plage dynamique faible : détails peu perceptibles'];
-  return['ok','Dans la bonne plage (30-60 %)'];}
-function stL(L){ if(!Number.isFinite(L))return['neutral','–'];
-  if(L<0)return['bad','Écrêtage : détails perdus'];
-  if(L<=0.1)return['risk','Risque d\'écrêtage aux limites'];
-  if(L>0.6)return['warn','Marge excessive : résolution réduite'];
-  return['ok','Marge correcte'];}
+const stG=FM.statusG, stL=FM.statusL;
 function validity(i){
   const v={A:i.A>=1&&i.A<=40,T:i.T>=1&&i.T<=40,B:i.B>=0.01&&i.B<=1,H:i.H>=5&&i.H<=60};
   GAMES[game].fields.forEach(([k,,,mn,mx,,f])=>{v[k]=i[k]*f>=mn&&i[k]*f<=mx;});
@@ -460,13 +454,13 @@ function renderReco(r,ok){
   const el=$('reco'), out=[], tips=[];
   if(Object.values(ok).some(v=>!v)){el.innerHTML='<b>Vérifiez les saisies en rouge.</b>';return;}
   if(game==='ac'){
-    const lo=st.g*0.75/st.P, hi=st.g*0.9/st.P;
+    const {lo,hi}=FM.acGainWindow(st.g,st.P);
     out.push(`Gain conseillé : <b class="num">${pct(lo)} à ${pct(hi)}</b> pour un pic de 75 à 90 % (marge de 10 à 25 %). Couple ressenti au pic : ${nf(r.C*0.75,1)} à ${nf(r.C*0.9,1)} Nm.`);
     if(st.B<1 && st.T>=st.A) out.push('Si la force reste trop faible même au gain conseillé, montez d\'abord le % FFB de la base.');
     if(r.L<0) tips.push('Écrêtage : baissez le gain en jeu (ou le réglage FFB de la voiture dans AC).');
     else if(r.L>0.6) tips.push('Pic très bas : augmentez le gain en jeu pour profiter de la résolution.');
   } else {
-    const lo=Math.max(r.M,r.H/0.9), hi=Math.min(r.N,r.H/0.4);
+    const w=FM.windowE(r.C,r.H), lo=w.lo, hi=w.hi;
     const toSetting=E=> game==='iracing'?`${nf(E,1)} Nm (Strength ≈ ${nf(strengthFromMF(E),1)})`:`${pct(st.STC/(E*st.m))}`;
     if(lo<=hi){
       if(game==='iracing') out.push(`Max Force conseillé : <b class="num">${nf(lo,1)} à ${nf(hi,1)} Nm</b> (Strength ≈ ${nf(strengthFromMF(hi),1)} à ${nf(strengthFromMF(lo),1)}).`);
@@ -474,8 +468,8 @@ function renderReco(r,ok){
       out.push('Cette fenêtre donne 30-60 % de sortie spécifique et 10-60 % de marge avec cette voiture.');
     } else {
       out.push(`Aucun réglage ne donne à la fois 30-60 % de sortie spécifique et 10-60 % de marge avec ${nf(r.C,1)} Nm de base et une voiture à ${nf(r.H,1)} Nm.`);
-      if(r.H/0.9>r.N){
-        const Esafe=r.H/0.9;
+      if(r.H/(1-FM.LIMITS.margin.min)>r.N){
+        const Esafe=r.H/(1-FM.LIMITS.margin.min);
         out.push(`La base est trop juste pour cette voiture. Pour ne pas écrêter, visez ${game==='iracing'?'un Max Force d\'au moins':'une force d\'au plus'} <b class="num">${toSetting(Esafe)}</b> : la sortie spécifique sera alors de ${pct(r.C/Esafe)}, sous les 30 % conseillés.`);
       } else out.push('Voiture très légère pour ce couple de base : baissez le % FFB de la base, ce qui adoucit aussi les chocs.');
     }
@@ -542,10 +536,10 @@ function renderDetail(r,ok){
 }
 function gridItems(r){
   if(game==='iracing') return {lead:'Sortie spécifique obtenue pour chaque cran de Strength iRacing avec votre Wheel Force (C). En jaune : 30-60 %. En rouge : au-delà de 100 %. Cliquez sur un cran pour l\'appliquer.',
-    items:STRENGTH.map(([s,mf])=>{const so=r.C/mf;return{a:nf(s,1),b:nf(mf,1)+' Nm',c:Math.round(so*100)+' %',cls:so>1?'over':(so>=0.3&&so<=0.6025?'in':''),cur:Math.abs(mf-st.E)<0.05,set:()=>{st.E=mf;}};})};
+    items:STRENGTH.map(([s,mf])=>{const so=r.C/mf;return{a:nf(s,1),b:nf(mf,1)+' Nm',c:Math.round(so*100)+' %',cls:so>1?'over':(so>=FM.LIMITS.G.min&&so<=FM.LIMITS.G.max+0.0025?'in':''),cur:Math.abs(mf-st.E)<0.05,set:()=>{st.E=mf;}};})};
   if(game==='lmu'){const list=[];for(let s=10;s<=150;s+=5)list.push(s/100);
     return {lead:'Sortie spécifique et couple ressenti selon la Force Feedback Strength, avec votre STC, votre multiplicateur et la voiture choisie. En jaune : 30-60 % sans écrêtage. En rouge : écrêtage. Cliquez pour appliquer.',
-    items:list.map(s=>{const E=st.STC/(s*st.m),so=r.C/E,J=so*st.H;return{a:Math.round(s*100)+' %',b:nf(J,1)+' Nm',c:Math.round(so*100)+' %',cls:J>r.C?'over':(so>=0.3&&so<=0.6025?'in':''),cur:Math.abs(s-st.s)<0.001,set:()=>{st.s=s;}};})};}
+    items:list.map(s=>{const E=st.STC/(s*st.m),so=r.C/E,J=so*st.H;return{a:Math.round(s*100)+' %',b:nf(J,1)+' Nm',c:Math.round(so*100)+' %',cls:J>r.C?'over':(so>=FM.LIMITS.G.min&&so<=FM.LIMITS.G.max+0.0025?'in':''),cur:Math.abs(s-st.s)<0.001,set:()=>{st.s=s;}};})};}
   const list=[];for(let g=30;g<=150;g+=5)list.push(g/100);
   return {lead:'Pic de force prévu pour chaque gain en jeu, à partir de votre mesure (le pic varie proportionnellement au gain). En jaune : pic de 40 à 90 %. En rouge : écrêtage. Cliquez pour appliquer.',
     items:list.map(g=>{const P=st.P*g/st.g;return{a:Math.round(g*100)+' %',b:nf(P*r.C,1)+' Nm',c:'pic '+Math.round(P*100)+' %',cls:P>1?'over':(P>=0.4&&P<=0.9?'in':''),cur:Math.abs(g-st.g)<0.001,set:()=>{st.P=P;st.g=g;}};})};

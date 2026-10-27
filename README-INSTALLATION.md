@@ -7,6 +7,7 @@
 - `test-piste-ffb.html` : validation sur piste
 - `notice-ffb.html` : notice technique (publiée sur https://pureracing-fx.odoo.com/notice-ffb)
 - `analyzer/` : FFB Analyzer V2, maquette du plugin SimHub de visualisation et d'enregistrement du clipping (remplace l'ancien overlay ; données live synthétiques)
+- `ffb-model.js` : hypothèses de calibration communes (comparateur = source, calculateur = réutilisation). À publier avec les HTML.
 - `codes-integration-odoo.md` : extraits iframe à coller dans Odoo
 
 ## Publication conseillée
@@ -20,6 +21,6 @@
 ## Remarques
 - Odoo Online ne permet pas de déployer librement un module serveur personnalisé. Les outils restent des pages HTML statiques hébergées ailleurs.
 - L'iframe affiche le contenu distant, elle ne le copie pas dans Odoo.
-- Octobre 2026 : formules relues. Le calculateur règle désormais LMU avec STC = couple délivré par la base et une force en jeu calculée selon la voiture (pic à 85 % du plafond), cohérent avec le comparateur. Ne pas présenter les valeurs estimées comme des mesures réelles.
+- Octobre 2026 : formules relues. Le calculateur règle LMU avec STC = couple délivré par la base et reprend la fenêtre de force du comparateur via `ffb-model.js` (source unique des hypothèses). Ne pas présenter les valeurs estimées comme des mesures réelles.
 - Aucun serveur SimHub n'est inclus : l'Analyzer en ligne n'est qu'une maquette tant que le plugin n'est pas raccordé.
 - L'hébergement GitHub Pages ne doit pas contenir de données privées ou de clés secrètes.
