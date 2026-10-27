@@ -226,5 +226,52 @@ code,.mono{font-family:"JetBrains Mono",monospace;font-size:14px}
 
   <p class="foot"><a href="calculateur-ffb.html">← Retour au calculateur</a></p>
 </div>
-<p class="foot"><a href="comparateur-ffb.html">Comparer les configurations</a> · <a href="test-piste-ffb.html">Protocole de piste</a></p></body>
+<p class="foot"><a href="comparateur-ffb.html">Comparer les configurations</a> · <a href="test-piste-ffb.html">Protocole de piste</a></p>
+<script>
+/* Pure Racing FX — hauteur du contenu, sans boucle liée à la hauteur iframe. */
+(function () {
+  'use strict';
+  var lastHeight = -1;
+  var queued = false;
+  var root = document.querySelector('.wrap');
+  if (!root) return;
+
+  function reportHeight() {
+    queued = false;
+    // Mesure le bas du contenu réel, pas scrollHeight du body / viewport.
+    var bottom = 0;
+    Array.prototype.forEach.call(document.body.children, function (element) {
+      if (element.tagName === 'SCRIPT' || element.tagName === 'STYLE') return;
+      var rect = element.getBoundingClientRect();
+      if (rect.height && getComputedStyle(element).display !== 'none') {
+        bottom = Math.max(bottom, rect.bottom + window.scrollY);
+      }
+    });
+    var height = Math.max(300, Math.ceil(bottom + 12));
+    if (Math.abs(height - lastHeight) < 4) return;
+    lastHeight = height;
+    if (window.parent !== window) {
+      window.parent.postMessage({ type: 'PRFX_FFB_HEIGHT', height: height },
+        'https://pureracing-fx.odoo.com');
+    }
+  }
+  function schedule() {
+    if (queued) return;
+    queued = true;
+    requestAnimationFrame(reportHeight);
+  }
+  window.addEventListener('load', schedule);
+  window.addEventListener('resize', schedule);
+  if (window.ResizeObserver) {
+    var observer = new ResizeObserver(schedule);
+    observer.observe(root);
+    Array.prototype.forEach.call(document.body.children, function (element) {
+      if (element.classList && element.classList.contains('foot')) observer.observe(element);
+    });
+  }
+  if (document.fonts && document.fonts.ready) document.fonts.ready.then(schedule);
+  schedule();
+})();
+</script>
+</body>
 </html>
