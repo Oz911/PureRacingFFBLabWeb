@@ -103,7 +103,7 @@ svg text{font-family:Barlow,sans-serif}
 
 /* PURE RACING FX — studio visual refresh */
 :root{--bg:#070e2a;--panel:#0b1739;--panel-2:#101f46;--line:#263c62;--text:#fcfdfd;--muted:#a9b9d4;--accent:#fd1424;--accent-2:#bb142a;--radius:20px}
-body{background:radial-gradient(ellipse at 85% -5%,#193f68 0,transparent 45%),linear-gradient(145deg,#070e2a,#09112b 65%,#040a1b);min-height:100vh}
+body{background:radial-gradient(ellipse at 85% -5%,#193f68 0,transparent 45%),linear-gradient(145deg,#070e2a,#09112b 65%,#040a1b)}
 .wrap{max-width:1480px;padding:34px 24px 90px}
 header.top{padding:25px 30px;border-radius:24px;background:linear-gradient(105deg,rgba(14,30,65,.96),rgba(7,14,42,.85)),repeating-linear-gradient(130deg,transparent 0 32px,rgba(255,255,255,.06) 33px 34px);border:1px solid #344967;box-shadow:0 22px 60px #0006;margin-bottom:28px}
 h1{font-size:40px;letter-spacing:1.5px}.sub{font-size:14px}.grid{grid-template-columns:370px minmax(0,1fr);gap:26px}
@@ -602,40 +602,44 @@ render();
 </script>
 
 <script>
-/* Pure Racing FX — hauteur automatique pour Odoo */
+/* Pure Racing FX — iframe Odoo : mesure du contenu, sans boucle de croissance. */
 (function () {
-  let previousHeight = -1;
+  'use strict';
+  const content = document.querySelector('.wrap');
+  if (!content || window.parent === window) return;
+
+  const allowedParent = 'https://pureracing-fx.odoo.com';
+  let lastHeight = 0;
+  let pending = false;
 
   function sendHeight() {
-    const height = Math.ceil(Math.max(
-      document.documentElement.scrollHeight,
-      document.body.scrollHeight
-    ));
-
-    if (height !== previousHeight) {
-      previousHeight = height;
-      window.parent.postMessage({
-        type: "PRFX_FFB_HEIGHT",
-        height: height
-      }, "https://pureracing-fx.odoo.com");
-    }
+    pending = false;
+    // La hauteur du contenu réel ne dépend pas de la hauteur de l'iframe.
+    const box = content.getBoundingClientRect();
+    const styles = getComputedStyle(content);
+    const bottomMargin = parseFloat(styles.marginBottom) || 0;
+    const height = Math.ceil(box.bottom + window.scrollY + bottomMargin);
+    if (!Number.isFinite(height) || height < 200 || height > 12000) return;
+    if (Math.abs(height - lastHeight) < 4) return;
+    lastHeight = height;
+    window.parent.postMessage({type:'PRFX_FFB_HEIGHT',height}, allowedParent);
   }
 
-  window.addEventListener("load", sendHeight);
-  window.addEventListener("resize", sendHeight);
-
-  if (window.ResizeObserver) {
-    new ResizeObserver(sendHeight).observe(document.body);
+  function scheduleHeight() {
+    if (pending) return;
+    pending = true;
+    requestAnimationFrame(sendHeight);
   }
 
-  if (window.MutationObserver) {
-    new MutationObserver(sendHeight).observe(
-      document.body,
-      { subtree: true, childList: true, attributes: true }
-    );
+  window.addEventListener('load', scheduleHeight);
+  window.addEventListener('resize', scheduleHeight);
+  if ('ResizeObserver' in window) {
+    new ResizeObserver(scheduleHeight).observe(content);
   }
-
-  sendHeight();
+  if (document.fonts && document.fonts.ready) {
+    document.fonts.ready.then(scheduleHeight);
+  }
+  scheduleHeight();
 })();
 </script>
 
