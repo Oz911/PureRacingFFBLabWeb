@@ -600,5 +600,44 @@ $('f').addEventListener('change', render);
 $('resetRef').addEventListener('click', ()=>{ store.set('ffbRef', REF_DEFAULT); loadRef(); render(); });
 render();
 </script>
+
+<script>
+/* Pure Racing FX — hauteur automatique pour Odoo */
+(function () {
+  let previousHeight = -1;
+
+  function sendHeight() {
+    const height = Math.ceil(Math.max(
+      document.documentElement.scrollHeight,
+      document.body.scrollHeight
+    ));
+
+    if (height !== previousHeight) {
+      previousHeight = height;
+      window.parent.postMessage({
+        type: "PRFX_FFB_HEIGHT",
+        height: height
+      }, "https://pureracing-fx.odoo.com");
+    }
+  }
+
+  window.addEventListener("load", sendHeight);
+  window.addEventListener("resize", sendHeight);
+
+  if (window.ResizeObserver) {
+    new ResizeObserver(sendHeight).observe(document.body);
+  }
+
+  if (window.MutationObserver) {
+    new MutationObserver(sendHeight).observe(
+      document.body,
+      { subtree: true, childList: true, attributes: true }
+    );
+  }
+
+  sendHeight();
+})();
+</script>
+
 </body>
 </html>
