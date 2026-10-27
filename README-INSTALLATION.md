@@ -16,7 +16,7 @@
 2. Créer un dépôt **public** GitHub Pages distinct du plugin C# (par exemple `PureRacingFFBLabWeb`).
 3. Importer les cinq fichiers HTML à la racine du dépôt et activer GitHub Pages dans Settings > Pages > Deploy from a branch (main, /root).
 4. Vérifier l'URL réelle de GitHub Pages avant de la copier dans les iframes. Si l'iframe est bloquée par une politique d'intégration, utiliser un lien ouvrant l'outil dans un nouvel onglet.
-5. Dans Odoo Online, créer les pages `/ffb-lab`, `/ffb-calculateur`, `/ffb-comparateur`, `/ffb-validation`, `/ffb-analyzer`, `/notice-ffb`. Ajouter un bloc d'intégration HTML si l'éditeur le permet et y coller le code iframe correspondant.
+5. Pages Odoo en place : `/ffb-calculateur`, `/comparateur-ffb`, `/test-piste-ffb`, `/analyzer` (iframes) et `/notice-ffb` (bloc HTML `notice-ffb-odoo.html`). Les onglets des outils pointent vers ces pages avec `target="_top"`.
 6. Publier d'abord une page de test non référencée, puis tester sur mobile et ordinateur.
 
 ## Remarques
