@@ -42,15 +42,25 @@ function renderLive(d){last=d;threshold=d.threshold||.98;$('ver').textContent='v
  $('rec').innerHTML='<span class="dot '+(d.recording?'rec':'')+'"></span>'+(d.recording?'ENREGISTREMENT':'NON ENREGISTRÉ');
  const L=d.laps&&d.laps.length?d.laps[d.laps.length-1]:null;
  if(L){$('lastPeak').innerHTML=pc(L.peak)+' <small>% de pic</small>';$('lastCap').innerHTML='Marge '+pc(L.margin)+' % · <span class="st-'+L.status+'">'+STATUS[L.status]+'</span>';
-  $('torqueBox').hidden=L.p99_nm==null;if(L.p99_nm!=null)$('torqueVal').innerHTML=fmt(L.p99_nm,1)+' <small>Nm</small>';
   $('gain').textContent=d.gain_lo!=null?('Pour un pic entre 75 et 90 % : multiplier la force en jeu par '+fmt(d.gain_lo,2)+' à '+fmt(d.gain_hi,2)+(L.status==='Clipping'?' (au moins : le signal saturé masque le vrai pic).':'.')):''}
- else{$('torqueBox').hidden=true;$('lastPeak').textContent='—';$('lastCap').textContent='Disponible après le premier tour complet';$('gain').textContent=''}
+ else{$('lastPeak').textContent='—';$('lastCap').textContent='Disponible après le premier tour complet';$('gain').textContent=''}
+ {const lastNm=L&&L.p99_nm!=null?L.p99_nm:null,liveNm=d.lap_p99_nm;const tb=$('torqueBox');tb.hidden=lastNm==null&&liveNm==null;
+  if(lastNm!=null){$('torqueLbl').textContent='COUPLE VOITURE P99 · DERNIER TOUR COMPLET';$('torqueVal').innerHTML=fmt(lastNm,1)+' <small>Nm</small>';$('torqueNote').textContent='Valeur à saisir comme couple de la voiture dans le calculateur et le comparateur FFB Lab.'+(liveNm!=null?' Tour en cours : '+fmt(liveNm,1)+' Nm.':'')}
+  else if(liveNm!=null){$('torqueLbl').textContent='COUPLE VOITURE P99 · TOUR EN COURS';$('torqueVal').innerHTML=fmt(liveNm,1)+' <small>Nm</small>';$('torqueNote').textContent='Provisoire, mis à jour chaque seconde. La valeur du tour complet s’affichera au passage de la ligne.'}}
  const rows=$('lapRows');rows.replaceChildren();(d.laps||[]).slice().reverse().forEach(l=>{const tr=rows.insertRow();[l.lap,lapTime(l.time),pc(l.clip_pct,2)+' %',l.events,pc(l.peak)+' %',l.p99_nm!=null?fmt(l.p99_nm,1)+' Nm':'—',pc(l.margin)+' %'].forEach((v,i)=>{const c=tr.insertCell();c.textContent=v;if(i===5)c.className='tq'});const td=tr.insertCell();td.textContent=STATUS[l.status]||l.status;td.className='st-'+l.status});
  if(!(d.laps||[]).length){const tr=rows.insertRow(),td=tr.insertCell();td.colSpan=8;td.textContent='Aucun tour complet pour l’instant.'}
  draw()}
-async function poll(){try{const r=await fetch(api('api/live'),{cache:'no-store'});if(!r.ok)throw new Error(r.status===403?'Jeton refusé':'HTTP '+r.status);renderLive(await r.json());fail=0}
- catch(e){fail++;if(fail>2){const c=$('conn');c.textContent='HORS LIGNE · '+e.message;c.className='pill off'}}
- finally{setTimeout(poll,document.hidden?1000:125)}}
+let lastOk=Date.now(),polling=false;
+async function poll(){if(polling)return;polling=true;
+ const ctl=window.AbortController?new AbortController():null,timer=setTimeout(()=>{if(ctl)ctl.abort()},2500);
+ try{const r=await fetch(api('api/live'),{cache:'no-store',signal:ctl?ctl.signal:undefined});if(!r.ok)throw new Error(r.status===403?'Jeton refusé':'HTTP '+r.status);
+  const d=await r.json();try{renderLive(d)}catch(e){showErr('affichage : '+e.message)}fail=0;lastOk=Date.now()}
+ catch(e){fail++;if(fail>2)showErr(e.name==='AbortError'?'pas de réponse, reconnexion…':e.message)}
+ finally{clearTimeout(timer);polling=false;setTimeout(poll,document.hidden?1000:fail>2?1000:125)}}
+function showErr(m){const c=$('conn');c.textContent='HORS LIGNE · '+m;c.className='pill off'}
+// Filet de sécurité : si plus aucune mise à jour depuis 5 s (veille de l'iPad, Wi-Fi), on relance la boucle
+setInterval(()=>{if(Date.now()-lastOk>5000&&!polling)poll()},2000);
+document.addEventListener('visibilitychange',()=>{if(!document.hidden)poll()});
 async function loadSessions(){const rows=$('sessionRows');rows.replaceChildren();try{const r=await fetch(api('api/sessions'),{cache:'no-store'});const a=await r.json();
  if(!a.length){const tr=rows.insertRow(),td=tr.insertCell();td.colSpan=8;td.textContent='Aucune session enregistrée.';return}
  a.forEach(s=>{const tr=rows.insertRow(),t=s.totals||{};[new Date(s.started).toLocaleString('fr-FR'),s.game,s.car,s.track,t.laps,pc(t.clip_pct,2)+' %',pc(t.peak)+' %'].forEach(v=>{tr.insertCell().textContent=v??''});
