@@ -141,7 +141,7 @@ details>div{margin-inline:auto;text-align:center}
 </style>
 <style>:root{--bg:#070e2a;--surface:#101e3d;--sunken:#0b1630;--accent:#fd1424;--accent-soft:#273452;--line:#34415f;--base:#fd1424}body{background:radial-gradient(ellipse at 90% 0,#1c315d,transparent 45%),#070e2a}.panel,.verdict{box-shadow:0 14px 34px #0005;border-radius:14px}.games button[aria-pressed=true]{color:#fff}.nav{display:flex;justify-content:center;gap:12px;flex-wrap:wrap}.nav a{background:#15274b;padding:10px 16px;border-radius:9px;color:#fff;text-decoration:none}.nav a.active{background:#fd1424}</style></head>
 <body>
-<div class="wrap"><nav class="nav"><a href="calculateur-ffb.html">Calculateur</a><a class="active" href="comparateur-ffb.html">Comparateur</a><a href="test-piste-ffb.html">Test sur piste</a><a href="https://pureracing-fx.odoo.com/notice-ffb" target="_top">Notice</a></nav>
+<div class="wrap"><nav class="nav"><a href="calculateur-ffb.html">Calculateur</a><a class="active" href="comparateur-ffb.html">Comparateur</a><a href="test-piste-ffb.html">Test sur piste</a><a href="analyzer/index.html">Analyzer</a><a href="https://pureracing-fx.odoo.com/notice-ffb" target="_top">Notice</a></nav>
   <header>
     <span class="eyebrow">Sim racing · base Direct Drive · force feedback</span>
     <h1>Comparateur FFB · Pure Racing FX</h1>
@@ -197,7 +197,7 @@ details>div{margin-inline:auto;text-align:center}
         <div class="verdicts" aria-live="polite">
           <div class="verdict" id="vG"><span class="k" id="vGk">Sortie spécifique · G</span><span class="v num" id="vGv">–</span><span class="s" id="vGs">–</span></div>
           <div class="verdict" id="vL"><span class="k">Marge · L</span><span class="v num" id="vLv">–</span><span class="s" id="vLs">–</span></div>
-          <div class="verdict" id="vS"><span class="k">Indice historique · S</span><span class="v num" id="vSv">–</span><span class="s" id="vSs">–</span></div>
+          <div class="verdict" id="vS"><span class="k" id="vSk">Couple ressenti max · J</span><span class="v num" id="vSv">–</span><span class="s" id="vSs">–</span></div>
         </div>
 
         <div class="reco" id="reco"></div>
@@ -307,7 +307,6 @@ details>div{margin-inline:auto;text-align:center}
 const STRENGTH=[[1,327],[1.5,221],[2,167],[2.5,134],[3,112],[3.5,96],[4,84],[4.5,75],[5,68],[5.5,61],[6,56],[6.5,52],[7,48],[7.5,45],[8,42],[8.5,40],[9,38],[9.5,36],[10,34],[10.5,32.3],[11,30.8],[11.5,29.5],[12,28.2],[12.5,27.1],[13,26.1],[13.5,25.1],[14,24.2],[14.5,23.4],[15,22.6],[15.5,21.9],[16,21.2],[16.5,20.6],[17,20],[17.5,19.4],[18,18.8],[18.5,18.3],[19,17.9],[19.5,17.4],[20,17],[21,16.2],[22,15.4],[23,14.8],[24,14.1],[25,13.6],[26,13.1],[27,12.6],[28,12.4],[29,11.7],[30,11.3],[31,11],[32,10.6],[33,10.1],[34,9.8],[35,9.7],[36,9.4],[37,9.2],[38,8.9],[39,8.7],[40,8.5]];
 const CARS=[["Formula 3",14,20],["Formula Vee",16,22],["GT3",8,15],["GT4",12,18],["GTP / LMDh",10,16],["INDY IR-18",30,60],["Mazda MX-5 Cup",18,22],["NASCAR Next Gen Cup",28,35],["Porsche 911 Cup (992)",18,20],["Street Stock",18,25],["V8 Supercars",22,28]];
 const COMM=[["Aaron V. & Josh R.",20,5,68],["Max B.",16,8.1,42],["Chris L.",25,6,56],["Jamie F.",15,10,34],["Thibault C.",20,8,42],["Moritz L.",20,8.1,42],["Yohan H.",16,12,28.2],["Victor W.",14,12,28.2],["Charlie C.",17,11,30.8],["Yuri K.",28,8,42],["Sebi J.",31.5,9,38],["Sven H. & Hugh B.",25,12,28.2]];
-const STEPS=16384;
 const $=id=>document.getElementById(id);
 const nf=(v,d=1)=>Number.isFinite(v)?v.toLocaleString('fr-FR',{minimumFractionDigits:d,maximumFractionDigits:d}):'–';
 const pct=(v,d=0)=>Number.isFinite(v)?(v*100).toLocaleString('fr-FR',{minimumFractionDigits:d,maximumFractionDigits:d})+' %':'–';
@@ -334,7 +333,7 @@ const GAMES={
     name:'Le Mans Ultimate', usesCar:true,
     note:'LMU calcule le couple de direction en Nm et le transmet à 1 pour 1 si <b>Steering Torque Capability</b> correspond à votre base et que la force est à 100 %. Le calculateur en déduit un Max Force équivalent, puis applique les formules d\'iRacing. Modèle issu de rFactor 2 : à confirmer au ressenti.',
     group:'LMU › Settings › Controls › Force Feedback',
-    fields:[['STC','Steering Torque Capability','Nm',1,50,0.5,1,'Couple de votre base dans le jeu. Absent du menu chez certaines marques : mettez alors le couple de la base.'],
+    fields:[['STC','Steering Torque Capability','Nm',1,50,0.5,1,'Couple réellement délivré par la base (C = couple × % driver). Absent du menu chez certaines marques : mettez alors cette valeur dans controller.JSON ou laissez le défaut.'],
             ['s','Force Feedback Strength','%',1,200,1,100,'Force globale en jeu.'],
             ['m','Multiplicateur FFB de la voiture','%',1,200,1,100,'Réglage propre à chaque voiture. 100 % par défaut.']],
     eq:s=>s.STC/(s.s*s.m),
@@ -372,7 +371,6 @@ function compute(g,i){
   } else {
     r.P=i.P; r.J=i.P*Cbase; r.K=Cbase-r.J; r.L=1-i.P; r.G=NaN;
   }
-  r.S=STEPS*(1-r.L);
   return r;
 }
 function stG(G){ if(!Number.isFinite(G))return['neutral','–'];
@@ -452,8 +450,10 @@ function render(){
   }
   const [lC,lS]=stL(r.L);
   setVerdict('vL',lC,pct(r.L,1),lS+(Number.isFinite(r.K)?` (${nf(r.K,1)} Nm)`:''));
-  setVerdict('vS',r.L<0?'bad':(r.L>0.6?'warn':'ok'),Number.isFinite(r.S)?Math.round(Math.min(r.S,STEPS)).toLocaleString('fr-FR'):'–',
-    r.L<0?'pas utilisés : signal saturé':`unités théoriques sur ${STEPS.toLocaleString('fr-FR')} (${pct(r.S/STEPS)})`);
+  if(G.eq){ $('vSk').textContent='Couple ressenti max · J';
+    setVerdict('vS',r.J>r.C?'bad':'ok',nf(r.J,1)+' Nm',`sur ${nf(r.C,1)} Nm disponibles (G × H)`); }
+  else { $('vSk').textContent='Couple disponible · C';
+    setVerdict('vS','neutral',nf(r.C,1)+' Nm','min(A, T) × B'); }
   renderReco(r,ok); renderChart(r); renderDetail(r,ok); renderGrid(r); renderCmp(); save();
 }
 function renderReco(r,ok){
@@ -484,7 +484,7 @@ function renderReco(r,ok){
     else if(r.L>0.6) tips.push('Marge excessive : option 3 ou 4.');
     if(r.G<0.3) tips.push('Sortie spécifique faible : option 1 ou 4.');
     if(r.G>0.6) tips.push('Sortie spécifique élevée : option 3 ou 2.');
-    if(game==='lmu' && st.STC>st.A) tips.push('STC supérieur au couple de la base : d\'après les développeurs, cela n\'a pas de sens. Mettez le couple de votre base.');
+    if(game==='lmu' && Math.abs(st.STC-r.C)>0.5) tips.push(`STC (${nf(st.STC,1)} Nm) différent du couple réellement disponible C (${nf(r.C,1)} Nm) : le jeu ne transmet plus les Nm à 1 pour 1. Mettez STC = C, ou réglez le driver de la base pour que C corresponde.`);
   }
   if(st.T<st.A) tips.push(`Le logiciel limite la base à ${nf(st.T,1)} Nm sur ${nf(st.A,1)} Nm : c'est cette limite qui compte dans le calcul.`);
   el.innerHTML=out.map(t=>`<span>${t}</span>`).join('')+(tips.length?`<ul>${tips.map(t=>`<li>${t}</li>`).join('')}</ul>`:'');
@@ -537,7 +537,6 @@ function renderDetail(r,ok){
   rows.push(
     ['K','Marge en Nm','C − J',nf(r.K,2)+' Nm',r.K<0?'<span class="pill bad">Écrêtage</span>':''],
     ['L','Marge en %',GAMES[game].eq?'K / C':'1 − P',pct(r.L,1),`<span class="pill ${lC}">${{ok:'OK',bad:'Écrêtage',risk:'Risque',warn:'Excès',neutral:'–'}[lC]}</span>`],
-    ['S','Indicateur théorique non validé','Non calculable sans mesure',Number.isFinite(r.S)?Math.round(Math.min(r.S,STEPS)).toLocaleString('fr-FR'):'–',''],
   );
   $('detail').innerHTML=rows.map(([t,n,f,v,s])=>`<tr><td>${t}</td><td>${n}</td><td class="formula">${f}</td><td class="r num">${v}</td><td>${s}</td></tr>`).join('');
 }
@@ -567,7 +566,7 @@ function cmpInputs(){
 function cmpOutputs(){
   const o=[['C','Couple réel base',v=>nf(v,1)+' Nm']];
   if(GAMES[game].eq) o.push(['Eq','Max Force équivalent',v=>nf(v,1)+' Nm'],['G','Sortie spécifique',v=>pct(v,1)]);
-  o.push(['J','Couple ressenti max',v=>nf(v,1)+' Nm'],['K','Marge (Nm)',v=>nf(v,1)+' Nm'],['L','Marge (%)',v=>pct(v,1)],['S','Pas utilisés',v=>Number.isFinite(v)?Math.round(Math.min(v,STEPS)).toLocaleString('fr-FR'):'–']);
+  o.push(['J','Couple ressenti max',v=>nf(v,1)+' Nm'],['K','Marge (Nm)',v=>nf(v,1)+' Nm'],['L','Marge (%)',v=>pct(v,1)]);
   return o;
 }
 function buildCmp(){

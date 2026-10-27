@@ -137,8 +137,7 @@ body{background:radial-gradient(ellipse at 75% 0%,#1c315d 0%,transparent 48%),#0
         <p class="sub">Réglages de départ pour bases Direct Drive · LMU / rFactor 2 · Assetto Corsa · AC EVO</p>
       </div>
     </div>
-    <a href="https://pureracing-fx.odoo.com/notice-ffb"
-   target="_top">📘 Notice d'utilisation</a>
+    <a class="btn-link" href="https://pureracing-fx.odoo.com/notice-ffb" target="_top">📘 Notice d'utilisation</a>
   </header>
 
   <div class="hero-strip"><div class="hero-mark">FFB <span>LAB</span></div><div class="hero-copy">Un laboratoire de réglage pour bases Direct Drive.<br><small>Estimations transparentes · ajustements progressifs · validation sur piste</small></div><div class="hero-wheel" aria-hidden="true"><svg viewBox="0 0 200 200"><circle cx="100" cy="100" r="80" fill="none" stroke="#e8f1ff" stroke-width="14"/><circle cx="100" cy="100" r="61" fill="none" stroke="#fd1424" stroke-width="3"/><path d="M30 84L85 110 100 150 115 110 170 84" fill="none" stroke="#d9e8ff" stroke-width="17" stroke-linejoin="round"/><circle cx="100" cy="105" r="23" fill="#fd1424"/><circle cx="100" cy="105" r="9" fill="#07102b"/></svg></div></div><style>.hero-strip{display:flex;align-items:center;gap:26px;min-height:154px;padding:22px 32px;margin-bottom:26px;border:1px solid #304b6d;border-radius:23px;background:linear-gradient(100deg,#142c52,#0a1633 70%);box-shadow:0 16px 35px #0005;overflow:hidden}.hero-mark{font:700 35px 'Barlow Condensed',sans-serif;letter-spacing:2px;white-space:nowrap}.hero-mark span{display:block;color:#fd1424;font-size:21px;letter-spacing:4px}.hero-copy{color:#d7e4f7;font-size:17px}.hero-copy small{color:#9cb1d0}.hero-wheel{width:140px;margin-left:auto;flex:none;filter:drop-shadow(0 0 18px #fd142455)}@media(max-width:650px){.hero-strip{padding:20px;gap:12px}.hero-wheel{width:80px}.hero-mark{font-size:25px}.hero-copy{font-size:13px}}</style><div class="hero-photo" role="img" aria-label="Voiture de sport sur circuit"><div>PURE RACING FX <span style="color:#fd1424">/ FFB LAB</span></div></div>
@@ -164,7 +163,7 @@ body{background:radial-gradient(ellipse at 75% 0%,#1c315d 0%,transparent 48%),#0
   .hero-photo { height: auto; }
 }
 </style>
-<nav class="tabs" aria-label="Navigation"><a class="active" href="calculateur-ffb.html">Calculateur</a><a href="comparateur-ffb.html">Comparer</a><a href="test-piste-ffb.html">Test sur piste</a><a href="https://pureracing-fx.odoo.com/notice-ffb" target="_top">Notice</a></nav>
+<nav class="tabs" aria-label="Navigation"><a class="active" href="calculateur-ffb.html">Calculateur</a><a href="comparateur-ffb.html">Comparer</a><a href="test-piste-ffb.html">Test sur piste</a><a href="analyzer/index.html">Analyzer</a><a href="https://pureracing-fx.odoo.com/notice-ffb" target="_top">Notice</a></nav>
 <div class="grid">
     <!-- ============ SAISIE ============ -->
     <form id="f" onsubmit="return false" aria-label="Paramètres">
@@ -208,6 +207,18 @@ body{background:radial-gradient(ellipse at 75% 0%,#1c315d 0%,transparent 48%),#0
           <option value="ac">Assetto Corsa</option>
           <option value="ace">Assetto Corsa EVO</option>
         </select>
+        <div id="carBox">
+          <label for="car">Voiture de référence <span class="hint">(couple de direction max)</span></label>
+          <select id="car">
+            <option value="15" selected>GT3 / LMGT3 · ~15 Nm</option>
+            <option value="16">Hypercar / LMDh / GTP · ~16 Nm</option>
+            <option value="18">GT4 · ~18 Nm</option>
+            <option value="20">Porsche Cup / F3 · ~20 Nm</option>
+            <option value="custom">Autre (saisie libre)</option>
+          </select>
+          <input id="carNm" type="number" min="5" max="60" step="0.5" value="15" inputmode="decimal" aria-label="Couple de direction max de la voiture (Nm)" style="margin-top:8px">
+          <div class="field-status"><span class="tag">Valeurs indicatives hors vibreurs, relevées dans iRacing. Sert à calculer la force en jeu.</span></div>
+        </div>
         <label id="lab-pref">Force souhaitée</label>
         <div class="seg" role="radiogroup" aria-labelledby="lab-pref">
           <input type="radio" name="pref" id="p1" value="light"><label for="p1">Légère</label>
@@ -251,8 +262,7 @@ body{background:radial-gradient(ellipse at 75% 0%,#1c315d 0%,transparent 48%),#0
           <div class="legend">
             <span><i class="sw" style="background:#4cc9ff"></i>Ta courbe</span>
             <span><i class="sw" style="background:#5b63a8"></i>Autres niveaux</span>
-            <span><i class="sw" style="background:#98a0d6;height:2px;border-top:2px dashed #98a0d6;background:none"></i>Exemple comparatif (non recommandé)</span>
-          </div>
+                      </div>
         </div>
         <div class="card">
           <h2>Damping · Friction · Inertie</h2>
@@ -321,7 +331,7 @@ const BRANDS = {
       {k:'D', name:'Damping', f:x=>0.6*x, max:40, typ:[0,15]},
       {k:'F', name:'Friction', f:x=>4*x, max:40, typ:[0,15]},
       {k:'I', name:'Inertia', f:x=>0.3*x, max:10, typ:[0,5], unit:'', note:'échelle 0 à 10'}],
-    extras:[['Anti-Réactivité','0 % (monter si oscillation)'],['Torque Behavior Prediction','0 à 1'],['High Frequency Limit','No Limit']]}
+    extras:[['Anti-Oscillation','0 % (monter si oscillation)'],['Torque Behavior Prediction','0 à 1'],['High Frequency Limit','No Limit']]}
 };
 
 const GAMES = {
@@ -332,6 +342,7 @@ const GAMES = {
 
 const PREFS = {light:10, normal:14, strong:18}; // couple de saturation (Nm)
 const TAU = 11.8;                                // constante de la courbe (Nm)
+const MARGIN_TARGET = 0.85;                      // pic visé = 85 % du plafond (15 % de marge)
 
 const REF_DEFAULT = {base:10, T:8, m:1.1, dia:300, D:16, F:2, I:10, k:0.70};
 
@@ -373,9 +384,16 @@ function compute(s){
   const I = clamp(ref.I*Math.sqrt(tq/iq)*g.kI, 0, 35);
   const F = clamp(ref.F*g.kF, 0, 15);
 
-  // Indice d'oscillation : couple / inertie relatif à la référence
+  // Indice de réactivité : couple / inertie du volant seul, relatif à la référence (avant compensation driver)
   const osc = (T/Iw)/(ref.T/Iref); // indicateur de réactivité, PAS un risque mesuré
-  return {T, Tmax, pct, limited, Iw, Iref, D, F, I, osc};
+
+  // LMU / rF2 : STC = couple réellement disponible (plafond driver) → correspondance 1 Nm voiture = 1 Nm base à 100 %.
+  // Force en jeu choisie pour que la voiture de référence culmine à 85 % du plafond (15 % de marge anti-écrêtage).
+  const STC = Math.round(s.B*pct/100*2)/2;   // couple effectivement délivré au % driver arrondi
+  const sRaw = MARGIN_TARGET*STC/s.H;
+  const strength = Math.min(1, sRaw);
+  const peak = strength*s.H*T/STC;          // couple ressenti en pointe (Nm), modèle du comparateur
+  return {T, Tmax, pct, limited, Iw, Iref, D, F, I, osc, STC, sRaw, strength, peak};
 }
 
 /* =====================================================================
@@ -422,10 +440,11 @@ function render(){
     B: clamp(num('torque',10), 1, 40),
     m: num('mass',1.1), dia: num('diam',300), k: parseFloat($('dist').value),
     game: $('game').value, pref: document.querySelector('input[name=pref]:checked').value,
-    ref: readRef()
+    ref: readRef(),
+    H: clamp(num('carNm',15), 5, 60)
   };
   store.set('ffbRef', s.ref);
-  store.set('ffbInput', {brand:brandKey, model:$('model').value, torque:$('torque').value, mass:$('mass').value, diam:$('diam').value, dist:$('dist').value, game:s.game, pref:s.pref});
+  store.set('ffbInput', {car:$('car').value, carNm:$('carNm').value, brand:brandKey, model:$('model').value, torque:$('torque').value, mass:$('mass').value, diam:$('diam').value, dist:$('dist').value, game:s.game, pref:s.pref});
 
   // Statuts de saisie
   const lb = s.B>=3&&s.B<=35 ? 'ok' : 'warn';
@@ -434,6 +453,7 @@ function render(){
   const wMsg = lw==='ok' ? 'Volant dans la plage habituelle' : lw==='warn' ? 'Valeur peu courante, vérifie ta mesure' : 'Valeur improbable : poids 0,3–3 kg, diamètre 200–400 mm';
   $('st-wheel').innerHTML = `<span class="dot ${lw}"></span><span class="${lw}">${wMsg}</span>`;
 
+  $('carBox').hidden = s.game!=='lmu';
   const r = compute(s);
 
   // KPI 1 : couple
@@ -451,7 +471,7 @@ function render(){
   const lo = lvlOsc(r.osc);
   $('k3').style.setProperty('--c', COLOR[lo]);
   $('vO').innerHTML = `${lo==='ok'?'Modérée':lo==='warn'?'Accrue':'Forte'} <small>×${fmt(r.osc)}</small>`;
-  $('nO').innerHTML = `<span class="${lo}">${lo==='ok'?'Réactivité proche de la référence':lo==='warn'?'Réactivité supérieure à la référence':'Réactivité nettement supérieure à la référence'}</span>`;
+  $('nO').innerHTML = `<span class="${lo}">${lo==='ok'?'Réactivité proche de la référence':lo==='warn'?'Réactivité supérieure à la référence':'Réactivité nettement supérieure à la référence'}</span><span class="tag">Volant seul, avant damping et inertie conseillés</span>`;
 
   // Puces récap
   const chips = [
@@ -492,18 +512,20 @@ function render(){
   if(lt==='bad') co.push(['bad','Couple très élevé', `${fmt(r.T)} Nm peuvent blesser poignets et pouces en cas de choc ou de survirage. Commence en « Légère » et ne lâche jamais le volant en roulant.`]);
   if(r.limited) co.push(['warn','Limite de couple atteinte', `La cible atteint la capacité nominale de la base. Ne compense pas en augmentant aveuglément le gain du jeu : vérifie d’abord le clipping et la sécurité.`]);
   if(lo!=='ok') co.push(['warn','Réactivité relative élevée', `Cet indice n’est pas une prédiction d’oscillation. En cas d’oscillations, garde les mains sur le volant et teste un amortissement légèrement supérieur.`]);
+  if(s.game==='lmu' && r.sRaw>1) co.push(['warn','Force en jeu plafonnée à 100 %', `Avec cette voiture (${fmt(s.H)} Nm), le pic ressenti n'atteint que ${fmt(r.peak)} Nm sur ${fmt(r.T)} Nm disponibles. Pour plus de force, monte le multiplicateur FFB de la voiture par pas de 0,05 en surveillant l'écrêtage.`]);
+  if(s.game!=='lmu') co.push(['info','Gain en jeu à mesurer', `Assetto Corsa ne travaille pas en Nm : le gain proposé est un simple départ. Mesure le pic de force (FFBClip ou Content Manager) puis règle le gain avec le <a href="comparateur-ffb.html">comparateur</a>.`]);
   if(s.game==='ace') co.push(['info','Spécificité AC EVO', `Le jeu applique déjà son propre amortissement. Le damping et l'inertie du driver sont donc réduits ici ; règle surtout le « Dynamic Damping » en jeu.`]);
   co.push(['info','Valeurs de départ', `Ces réglages sont calculés, pas validés pour ta voiture. Fais le protocole de validation de la notice avant de les affiner.`]);
   $('callouts').innerHTML = co.map(([c,t,x])=>`<div class="callout ${c}"><b>${t}</b>${x}</div>`).join('');
 }
 
 function gameRows(s, r){
-  const T1 = fmt(Math.round(r.T*2)/2);
+  const T1 = fmt(r.STC);
   let L = [];
   if(s.game==='lmu'){
     L = [
-      ['Force Feedback Strength','55 % (départ à ajuster)', true],
-      ['Steering Torque Capability <span class="tag">si disponible, vérifier la signification dans votre version</span>', fmt(s.B)+' Nm', true],
+      ['Force Feedback Strength <span class="tag">pic ≈ '+fmt(r.peak)+' Nm avec la voiture choisie</span>', Math.round(r.strength*100)+' %', true],
+      ['Steering Torque Capability <span class="tag">= couple réglé dans le driver · LMU : menu · rF2 : controller.JSON</span>', T1+' Nm', true],
       ['Force Feedback Smoothing', r.osc>1.4?'3':'2'],
       ['Minimum Steering Torque','0 %'],
       ['Steering Torque Sensitivity','100 %'],
@@ -514,7 +536,7 @@ function gameRows(s, r){
     ];
   } else if(s.game==='ac'){
     L = [
-      ['Gain','70 % (départ à ajuster)', true],
+      ['Gain <span class="tag">départ, à affiner après mesure du pic</span>','70 %', true],
       ['Filter','0 %'],
       ['Minimum force','0 %'],
       ['Kerb effect','10 à 20 %'],
@@ -526,7 +548,7 @@ function gameRows(s, r){
     ];
   } else {
     L = [
-      ['FFB Gain','80 %', true],
+      ['FFB Gain <span class="tag">départ, à affiner après mesure du pic</span>','80 %', true],
       ['Dynamic Damping', r.osc>1.4?'40 %':'30 %', true],
       ['Minimum Damper','0 %'],
       ['Damper Gain', r.osc>1.4?'20 %':'10 %'],
@@ -559,10 +581,6 @@ function drawCurve(s, r){
   // limite 100 %
   const ang = Math.atan2(Y(1)-Y(0), X(1)-X(0))*180/Math.PI;
   g += `<line x1="${X(0)}" y1="${Y(0)}" x2="${X(yMax)}" y2="${Y(yMax)}" stroke="#3a4290" stroke-width="1.5"/><text x="${X(9)}" y="${Y(9)-6}" font-size="12" fill="#7a82c8" transform="rotate(${ang} ${X(9)} ${Y(9)-6})">100 % de la base</text>`;
-  // règle plancher 60 %
-  const step = B => Math.min(B, B*Math.max(60, Math.round((80-1.875*(B-10))/5)*5)/100);
-  let pd=''; for(let B=3;B<=xMax;B+=0.5){ pd += (pd?'L':'M')+X(B)+' '+Y(step(B)); }
-  g += `<path d="${pd}" fill="none" stroke="#98a0d6" stroke-width="1.5" stroke-dasharray="5 5"/>`;
   // courbes
   const scale = s.ref.T/curveT(s.ref.base, PREFS.normal);
   Object.entries(PREFS).forEach(([k,v])=>{
@@ -609,6 +627,7 @@ if(saved && BRANDS[saved.brand]){
   if([...$('model').options].some(o=>o.value===saved.model)) $('model').value = saved.model;
   $('torque').value = saved.torque; $('mass').value = saved.mass; $('diam').value = saved.diam;
   $('dist').value = saved.dist; $('game').value = saved.game;
+  if(saved.car){ $('car').value = saved.car; $('carNm').value = saved.carNm; }
   const p = document.querySelector(`input[name=pref][value=${saved.pref}]`); if(p) p.checked = true;
 } else {
   $('brand').value='simagic'; fillModels(); $('model').value='1'; applyModel();
@@ -620,6 +639,8 @@ $('model').addEventListener('change', ()=>{ applyModel(); render(); });
 $('torque').addEventListener('input', ()=>{ $('model').value='custom'; render(); });
 $('f').addEventListener('input', e=>{ if(e.target.id!=='torque') render(); });
 $('f').addEventListener('change', render);
+$('car').addEventListener('change', ()=>{ if($('car').value!=='custom') $('carNm').value=$('car').value; render(); });
+$('carNm').addEventListener('input', ()=>{ $('car').value='custom'; });
 $('resetRef').addEventListener('click', ()=>{ store.set('ffbRef', REF_DEFAULT); loadRef(); render(); });
 render();
 </script>
