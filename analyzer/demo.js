@@ -6,7 +6,7 @@
   'use strict';
   window.PFA_DEMO = true;
 
-  const NM_PER_LOAD = 12.5, HZ = 60, THR = 0.98, REL = 0.95, MIN_EVT = 0.040, LAP_S = 40;
+  const SET_SCALE = 17.5, MEAS_SCALE = 21.9, NM_PER_LOAD = 12.5, HZ = 60, THR = 0.98, REL = 0.95, MIN_EVT = 0.040, LAP_S = 40;
   // Virages de Spa (position sur le tour, largeur, charge) : la charge FFB monte dans les appuis
   const CORNERS = [[.03, .012, .55], [.10, .020, .95], [.17, .015, .70], [.25, .010, .45], [.33, .030, 1.02],
                    [.42, .018, .80], [.50, .025, .90], [.58, .012, .60], [.66, .035, 1.08], [.76, .020, .85],
@@ -66,7 +66,7 @@
       const clipPct = lap.clip / lap.meas, margin = 1 - lap.peak;
       const status = clipPct > .01 || margin < 0 ? 'Clipping' : margin <= .10 ? 'Risk' : margin > .60 ? 'Excessive' : 'Ok';
       const sn = lap.nm.slice().sort((x, y) => x - y), p99nm = sn[Math.min(sn.length - 1, Math.ceil(.99 * sn.length) - 1)];
-      laps.push({ p99_nm: p99nm, lap: lap.lap, time: 137 + rnd() * 2.5 - (lap.lap === 1 ? -3 : 0), clip_pct: clipPct, events: lap.ev, peak: lap.peak, p99: p99, margin: margin, status: status });
+      laps.push({ p99_nm: p99nm, equiv_nm: p99nm * SET_SCALE / MEAS_SCALE, lap: lap.lap, time: 137 + rnd() * 2.5 - (lap.lap === 1 ? -3 : 0), clip_pct: clipPct, events: lap.ev, peak: lap.peak, p99: p99, margin: margin, status: status });
       gainIdx++;
       if (gainIdx >= GAINS.length) reset(); else lap = newLap(lap.lap + 1);
     }
@@ -97,6 +97,8 @@
       lap: lap.lap, lap_clip_pct: lap.meas ? lap.clip / lap.meas : 0, lap_clip_events: lap.ev, lap_peak: lap.peak,
       session_clip_pct: sess.meas ? sess.clip / sess.meas : 0, session_clip_events: sess.ev, session_peak: sess.peak,
       gain_lo: lastLap ? .75 / lastLap.peak : null, gain_hi: lastLap ? .90 / lastLap.peak : null,
+      scale_nm: MEAS_SCALE, settings_scale_nm: SET_SCALE,
+      last_equiv_nm: lastLap ? lastLap.equiv_nm : null, lap_equiv_nm: null,
       recording: true, session_id: 'demo', rate_hz: rate, history: { t: ht, v: hv }, laps: laps.slice(-30), events: events.slice(-15)
     };
   }

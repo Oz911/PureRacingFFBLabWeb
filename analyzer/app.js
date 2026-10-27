@@ -44,11 +44,13 @@ function renderLive(d){last=d;threshold=d.threshold||.98;$('ver').textContent='v
  if(L){$('lastPeak').innerHTML=pc(L.peak)+' <small>% de pic</small>';$('lastCap').innerHTML='Marge '+pc(L.margin)+' % · <span class="st-'+L.status+'">'+STATUS[L.status]+'</span>';
   $('gain').textContent=d.gain_lo!=null?('Pour un pic entre 75 et 90 % : multiplier la force en jeu par '+fmt(d.gain_lo,2)+' à '+fmt(d.gain_hi,2)+(L.status==='Clipping'?' (au moins : le signal saturé masque le vrai pic).':'.')):''}
  else{$('lastPeak').textContent='—';$('lastCap').textContent='Disponible après le premier tour complet';$('gain').textContent=''}
- {const lastNm=L&&L.p99_nm!=null?L.p99_nm:null,liveNm=d.lap_p99_nm;const tb=$('torqueBox');tb.hidden=lastNm==null&&liveNm==null;
-  if(lastNm!=null){$('torqueLbl').textContent='COUPLE VOITURE P99 · DERNIER TOUR COMPLET';$('torqueVal').innerHTML=fmt(lastNm,1)+' <small>Nm</small>';$('torqueNote').textContent='Valeur à saisir comme couple de la voiture dans le calculateur et le comparateur FFB Lab.'+(liveNm!=null?' Tour en cours : '+fmt(liveNm,1)+' Nm.':'')}
-  else if(liveNm!=null){$('torqueLbl').textContent='COUPLE VOITURE P99 · TOUR EN COURS';$('torqueVal').innerHTML=fmt(liveNm,1)+' <small>Nm</small>';$('torqueNote').textContent='Provisoire, mis à jour chaque seconde. La valeur du tour complet s’affichera au passage de la ligne.'}
-  if(!tb.hidden&&d.scale_nm!=null)$('torqueNote').textContent+=' Pleine échelle mesurée : '+fmt(d.scale_nm,1)+' Nm = 100 % au volant.'}
- const rows=$('lapRows');rows.replaceChildren();(d.laps||[]).slice().reverse().forEach(l=>{const tr=rows.insertRow();[l.lap,lapTime(l.time),pc(l.clip_pct,2)+' %',l.events,pc(l.peak)+' %',l.p99_nm!=null?fmt(l.p99_nm,1)+' Nm':'—',pc(l.margin)+' %'].forEach((v,i)=>{const c=tr.insertCell();c.textContent=v;if(i===5)c.className='tq'});const td=tr.insertCell();td.textContent=STATUS[l.status]||l.status;td.className='st-'+l.status});
+ {const full=L&&L.p99_nm!=null,raw=full?L.p99_nm:d.lap_p99_nm,eq=full?d.last_equiv_nm:d.lap_equiv_nm,tb=$('torqueBox');tb.hidden=raw==null;
+  if(raw!=null){const when=full?'DERNIER TOUR COMPLET':'TOUR EN COURS';
+   if(eq!=null){$('torqueLbl').textContent='COUPLE VOITURE ÉQUIVALENT FFB LAB · '+when;$('torqueVal').innerHTML=fmt(eq,1)+' <small>Nm</small>';
+    $('torqueNote').textContent='Valeur à saisir dans le calculateur et le comparateur. Couple de colonne p99 du jeu : '+fmt(raw,1)+' Nm · pleine échelle mesurée '+fmt(d.scale_nm,1)+' Nm, réglages '+fmt(d.settings_scale_nm,1)+' Nm.'}
+   else{$('torqueLbl').textContent='COUPLE DE COLONNE P99 DU JEU · '+when;$('torqueVal').innerHTML=fmt(raw,1)+' <small>Nm</small>';
+    $('torqueNote').textContent=d.settings_scale_nm==null?'Pas encore la valeur du FFB Lab : saisis STC, force et multiplicateur du jeu dans l’onglet Sources du plugin.':'Pas encore la valeur du FFB Lab : la pleine échelle mesurée apparaît après quelques virages.'}}}
+ const rows=$('lapRows');rows.replaceChildren();(d.laps||[]).slice().reverse().forEach(l=>{const tr=rows.insertRow();[l.lap,lapTime(l.time),pc(l.clip_pct,2)+' %',l.events,pc(l.peak)+' %',l.equiv_nm!=null?fmt(l.equiv_nm,1)+' Nm':(l.p99_nm!=null?'(colonne '+fmt(l.p99_nm,1)+')':'—'),pc(l.margin)+' %'].forEach((v,i)=>{const c=tr.insertCell();c.textContent=v;if(i===5)c.className='tq'});const td=tr.insertCell();td.textContent=STATUS[l.status]||l.status;td.className='st-'+l.status});
  if(!(d.laps||[]).length){const tr=rows.insertRow(),td=tr.insertCell();td.colSpan=8;td.textContent='Aucun tour complet pour l’instant.'}
  draw()}
 let lastOk=Date.now(),polling=false;
