@@ -35,7 +35,7 @@ function renderLive(d){last=d;threshold=d.threshold||.98;$('ver').textContent='v
  const al=$('sourceAlert');if(d.game&&!d.source_ok){al.hidden=false;al.innerHTML='<b>Aucune source FFB lisible pour ce jeu.</b> Ouvre l’onglet « Sources » du plugin dans SimHub et lance la recherche automatique.'}
  else if(d.scale_missing){al.hidden=false;al.innerHTML='<b>Pleine échelle non renseignée : les pourcentages et l’écrêtage ne sont pas fiables.</b> Le couple mesuré ('+fmt(Math.abs(d.raw),1)+' Nm) est comparé à '+fmt(d.full_scale,1)+' Nm, calculés avec les valeurs par défaut du plugin. Saisis STC, force et multiplicateur du jeu dans l’onglet « Sources » du plugin.'}else al.hidden=true;
  $('signal').innerHTML=pc(Math.abs(d.signal))+' <small>%</small>';$('signal').className='metric'+(d.clipping?' clip':'');
- $('signalCap').textContent=d.unit==='Nm'?('Couple de colonne '+fmt(d.raw,1)+' Nm sur '+fmt(d.full_scale,1)+' Nm de pleine échelle'):'Pourcentage de la pleine échelle du jeu';
+ $('signalCap').textContent=d.unit==='Nm'?('Couple de colonne '+fmt(d.raw,1)+' Nm sur '+fmt(d.full_scale,1)+' Nm de pleine échelle'):('Force envoyée au volant, en part de la pleine échelle'+(d.torque_nm!=null?' · couple de colonne '+fmt(Math.abs(d.torque_nm),1)+' Nm':''));
  $('peak').innerHTML=pc(d.peak_window)+' <small>%</small>';
  $('lapClip').innerHTML=pc(d.lap_clip_pct,1)+' <small>%</small>';$('lapClip').className='metric'+(d.lap_clip_pct>0?' clip':'');
  $('lapClipCap').textContent='Tour '+d.lap+' · '+d.lap_clip_events+' événement(s) · session '+pc(d.session_clip_pct,1)+' %';
@@ -46,7 +46,8 @@ function renderLive(d){last=d;threshold=d.threshold||.98;$('ver').textContent='v
  else{$('lastPeak').textContent='—';$('lastCap').textContent='Disponible après le premier tour complet';$('gain').textContent=''}
  {const lastNm=L&&L.p99_nm!=null?L.p99_nm:null,liveNm=d.lap_p99_nm;const tb=$('torqueBox');tb.hidden=lastNm==null&&liveNm==null;
   if(lastNm!=null){$('torqueLbl').textContent='COUPLE VOITURE P99 · DERNIER TOUR COMPLET';$('torqueVal').innerHTML=fmt(lastNm,1)+' <small>Nm</small>';$('torqueNote').textContent='Valeur à saisir comme couple de la voiture dans le calculateur et le comparateur FFB Lab.'+(liveNm!=null?' Tour en cours : '+fmt(liveNm,1)+' Nm.':'')}
-  else if(liveNm!=null){$('torqueLbl').textContent='COUPLE VOITURE P99 · TOUR EN COURS';$('torqueVal').innerHTML=fmt(liveNm,1)+' <small>Nm</small>';$('torqueNote').textContent='Provisoire, mis à jour chaque seconde. La valeur du tour complet s’affichera au passage de la ligne.'}}
+  else if(liveNm!=null){$('torqueLbl').textContent='COUPLE VOITURE P99 · TOUR EN COURS';$('torqueVal').innerHTML=fmt(liveNm,1)+' <small>Nm</small>';$('torqueNote').textContent='Provisoire, mis à jour chaque seconde. La valeur du tour complet s’affichera au passage de la ligne.'}
+  if(!tb.hidden&&d.scale_nm!=null)$('torqueNote').textContent+=' Pleine échelle mesurée : '+fmt(d.scale_nm,1)+' Nm = 100 % au volant.'}
  const rows=$('lapRows');rows.replaceChildren();(d.laps||[]).slice().reverse().forEach(l=>{const tr=rows.insertRow();[l.lap,lapTime(l.time),pc(l.clip_pct,2)+' %',l.events,pc(l.peak)+' %',l.p99_nm!=null?fmt(l.p99_nm,1)+' Nm':'—',pc(l.margin)+' %'].forEach((v,i)=>{const c=tr.insertCell();c.textContent=v;if(i===5)c.className='tq'});const td=tr.insertCell();td.textContent=STATUS[l.status]||l.status;td.className='st-'+l.status});
  if(!(d.laps||[]).length){const tr=rows.insertRow(),td=tr.insertCell();td.colSpan=8;td.textContent='Aucun tour complet pour l’instant.'}
  draw()}
