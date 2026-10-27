@@ -22,15 +22,18 @@ const pc=(v,d=0)=>v==null?'—':fmt(v*100,d);
 const STATUS={Ok:'Marge correcte',Risk:'Risque d’écrêtage',Clipping:'Écrêtage',Excessive:'Marge excessive',Unknown:'—'};
 let last=null,fail=0,threshold=.98;const canvas=$('chart');
 function draw(){if(!$('live').classList.contains('active')||!last)return;const h0=last.history||{t:[],v:[]};const dpr=devicePixelRatio||1,w=canvas.clientWidth,h=canvas.clientHeight;if(!w||!h)return;canvas.width=Math.round(w*dpr);canvas.height=Math.round(h*dpr);const c=canvas.getContext('2d');c.scale(dpr,dpr);
- const top=8,bot=h-8,Y=v=>bot-Math.min(1.15,Math.abs(v))/1.15*(bot-top),X=t=>(t+10)/10*w;
- c.strokeStyle='#243657';c.lineWidth=1;[.25,.5,.75,1].forEach(g=>{c.beginPath();c.moveTo(0,Y(g));c.lineTo(w,Y(g));c.stroke()});
+ const mx=h0.v.reduce((m,v)=>Math.max(m,Math.abs(v)),0),V=Math.min(8,Math.max(1.15,mx*1.08));
+ const top=8,bot=h-8,Y=v=>bot-Math.min(V,Math.abs(v))/V*(bot-top),X=t=>(t+10)/10*w;
+ const grid=V<=1.2?[.25,.5,.75,1]:(()=>{const a=[],st=V>4?1:.5;for(let g=st;g<V;g+=st)a.push(g);return a})();
+ c.strokeStyle='#243657';c.lineWidth=1;grid.forEach(g=>{c.beginPath();c.moveTo(0,Y(g));c.lineTo(w,Y(g));c.stroke()});
  c.setLineDash([6,5]);c.strokeStyle='#ff9d59';c.beginPath();c.moveTo(0,Y(threshold));c.lineTo(w,Y(threshold));c.stroke();c.setLineDash([]);
  c.lineWidth=2;for(let i=1;i<h0.t.length;i++){const a=Math.abs(h0.v[i]);c.strokeStyle=a>=threshold?'#ff2b3a':'#48d4a1';c.beginPath();c.moveTo(X(h0.t[i-1]),Y(h0.v[i-1]));c.lineTo(X(h0.t[i]),Y(h0.v[i]));c.stroke()}
- c.fillStyle='#a7b1cc';c.font='11px system-ui';c.fillText('100 %',4,Y(1)-3);c.fillText('50 %',4,Y(.5)-3)}
+ c.fillStyle='#a7b1cc';c.font='11px system-ui';grid.forEach(g=>{if(g===.25||g===.75)return;c.fillText(Math.round(g*100)+' %',4,Y(g)-3)})}
 function lapTime(s){if(!(s>0))return '—';const m=Math.floor(s/60),r=s-m*60;return m+':'+(r<10?'0':'')+r.toFixed(3)}
 function renderLive(d){last=d;threshold=d.threshold||.98;$('ver').textContent='v'+d.version;$('gameName').textContent=d.game||'aucun jeu';
  const conn=$('conn');conn.textContent=window.PFA_DEMO?'DÉMONSTRATION · DONNÉES SIMULÉES':(d.game?'CONNECTÉ À SIMHUB':'SIMHUB · EN ATTENTE DU JEU');conn.className='pill '+(window.PFA_DEMO?'off':'on');
- const al=$('sourceAlert');if(d.game&&!d.source_ok){al.hidden=false;al.innerHTML='<b>Aucune source FFB lisible pour ce jeu.</b> Ouvre l’onglet « Sources » du plugin dans SimHub et lance la recherche automatique.'}else al.hidden=true;
+ const al=$('sourceAlert');if(d.game&&!d.source_ok){al.hidden=false;al.innerHTML='<b>Aucune source FFB lisible pour ce jeu.</b> Ouvre l’onglet « Sources » du plugin dans SimHub et lance la recherche automatique.'}
+ else if(d.scale_missing){al.hidden=false;al.innerHTML='<b>Pleine échelle non renseignée : les pourcentages et l’écrêtage ne sont pas fiables.</b> Le couple mesuré ('+fmt(Math.abs(d.raw),1)+' Nm) est comparé à '+fmt(d.full_scale,1)+' Nm, calculés avec les valeurs par défaut du plugin. Saisis STC, force et multiplicateur du jeu dans l’onglet « Sources » du plugin.'}else al.hidden=true;
  $('signal').innerHTML=pc(Math.abs(d.signal))+' <small>%</small>';$('signal').className='metric'+(d.clipping?' clip':'');
  $('signalCap').textContent=d.unit==='Nm'?('Couple de colonne '+fmt(d.raw,1)+' Nm sur '+fmt(d.full_scale,1)+' Nm de pleine échelle'):'Pourcentage de la pleine échelle du jeu';
  $('peak').innerHTML=pc(d.peak_window)+' <small>%</small>';
