@@ -210,14 +210,15 @@ body{background:radial-gradient(ellipse at 75% 0%,#1c315d 0%,transparent 48%),#0
         <div id="carBox">
           <label for="car">Voiture de référence <span class="hint">(couple de direction max)</span></label>
           <select id="car">
-            <option value="15" selected>GT3 / LMGT3 · ~15 Nm</option>
-            <option value="16">Hypercar / LMDh / GTP · ~16 Nm</option>
-            <option value="18">GT4 · ~18 Nm</option>
-            <option value="20">Porsche Cup / F3 · ~20 Nm</option>
-            <option value="custom">Autre (saisie libre)</option>
+            <option value="gt3" selected>GT3 / LMGT3 · ~15 Nm (iRacing)</option>
+            <option value="hyper">Hypercar / LMDh / GTP · ~16 Nm (iRacing)</option>
+            <option value="gt4">GT4 · ~18 Nm (iRacing)</option>
+            <option value="cup">Porsche 911 Cup (992) · ~20 Nm (iRacing)</option>
+            <option value="f3">Formula 3 · ~20 Nm (iRacing)</option>
+            <option value="custom">Valeur mesurée avec FFB Analyzer / saisie libre</option>
           </select>
           <input id="carNm" type="number" min="5" max="60" step="0.5" value="15" inputmode="decimal" aria-label="Couple de direction max de la voiture (Nm)" style="margin-top:8px">
-          <div class="field-status"><span class="tag">Valeurs indicatives hors vibreurs, relevées dans iRacing. Sert à calculer la force en jeu.</span></div>
+          <div class="field-status"><span class="tag">Les catégories reprennent des couples relevés dans iRacing (haut de plage, hors vibreurs) : ils ne sont pas validés pour LMU et rFactor 2. Pour un réglage fiable, saisis le couple de colonne en Nm lu par le plugin <a href="https://pureracing-fx.odoo.com/pure-ffb-analyzer" target="_top">FFB Analyzer</a> (« couple voiture p99 » du dernier tour, avec cette voiture sur ce circuit).</span></div>
         </div>
         <label id="lab-pref">Force souhaitée</label>
         <div class="seg" role="radiogroup" aria-labelledby="lab-pref">
@@ -645,7 +646,7 @@ if(saved && BRANDS[saved.brand]){
   if([...$('model').options].some(o=>o.value===saved.model)) $('model').value = saved.model;
   $('torque').value = saved.torque; $('mass').value = saved.mass; $('diam').value = saved.diam;
   $('dist').value = saved.dist; $('game').value = saved.game;
-  if(saved.car){ $('car').value = saved.car; $('carNm').value = saved.carNm; }
+  if(saved.car){ $('car').value = [...$('car').options].some(o=>o.value===saved.car) ? saved.car : 'custom'; $('carNm').value = saved.carNm; }
   const p = document.querySelector(`input[name=pref][value=${saved.pref}]`); if(p) p.checked = true;
 } else {
   $('brand').value='simagic'; fillModels(); $('model').value='1'; applyModel();
@@ -657,7 +658,8 @@ $('model').addEventListener('change', ()=>{ applyModel(); render(); });
 $('torque').addEventListener('input', ()=>{ $('model').value='custom'; render(); });
 $('f').addEventListener('input', e=>{ if(e.target.id!=='torque') render(); });
 $('f').addEventListener('change', render);
-$('car').addEventListener('change', ()=>{ if($('car').value!=='custom') $('carNm').value=$('car').value; render(); });
+const CAR_NM = {gt3:15, hyper:16, gt4:18, cup:20, f3:20};
+$('car').addEventListener('change', ()=>{ if($('car').value!=='custom') $('carNm').value=CAR_NM[$('car').value]; render(); });
 $('carNm').addEventListener('input', ()=>{ $('car').value='custom'; });
 $('resetRef').addEventListener('click', ()=>{ store.set('ffbRef', REF_DEFAULT); loadRef(); render(); });
 render();

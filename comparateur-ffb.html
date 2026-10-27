@@ -426,7 +426,7 @@ function buildGameInputs(){
   $('gamenote').innerHTML=G.note;
   document.querySelectorAll('.games button').forEach(b=>b.setAttribute('aria-pressed',b.dataset.game===game?'true':'false'));
   $('carHint').textContent=game==='lmu'
-    ?'Couple de direction max estimé (hors vibreurs). Valeurs indicatives relevées dans iRacing ; le choix d\'une voiture prend le haut de sa plage.'
+    ?'Couple de direction max (hors vibreurs). Les voitures de la liste reprennent des valeurs relevées dans iRacing, non validées pour LMU : saisis de préférence le couple de colonne en Nm lu par le plugin FFB Analyzer (« couple voiture p99 » du dernier tour).'
     :'Couple de direction max estimé en usage normal (hors vibreurs et bosses). Le choix d\'une voiture prend le haut de sa plage, par prudence.';
   $('vGk').textContent=G.eq?'Sortie spécifique · G':'Couple ressenti max · J';
   $('fixTable').innerHTML=fixRows().map((r,i)=>`<tr><td>${i+1}</td><td>${r[0]}</td><td><span class="pill neutral">${r[1]}</span></td></tr>`).join('');

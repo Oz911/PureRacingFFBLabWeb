@@ -6,7 +6,7 @@
   'use strict';
   window.PFA_DEMO = true;
 
-  const HZ = 60, THR = 0.98, REL = 0.95, MIN_EVT = 0.040, LAP_S = 40;
+  const NM_PER_LOAD = 12.5, HZ = 60, THR = 0.98, REL = 0.95, MIN_EVT = 0.040, LAP_S = 40;
   // Virages de Spa (position sur le tour, largeur, charge) : la charge FFB monte dans les appuis
   const CORNERS = [[.03, .012, .55], [.10, .020, .95], [.17, .015, .70], [.25, .010, .45], [.33, .030, 1.02],
                    [.42, .018, .80], [.50, .025, .90], [.58, .012, .60], [.66, .035, 1.08], [.76, .020, .85],
@@ -21,7 +21,7 @@
   let seed = 7;
   const rnd = () => ((seed = (seed * 16807) % 2147483647) / 2147483647);
 
-  function newLap(n) { return { lap: n, meas: 0, clip: 0, ev: 0, peak: 0, vals: [] }; }
+  function newLap(n) { return { lap: n, meas: 0, clip: 0, ev: 0, peak: 0, vals: [], nm: [] }; }
 
   function load(pos) {
     let v = 0.18;
@@ -37,7 +37,8 @@
     const pos = (t % LAP_S) / LAP_S;
     const g = GAINS[gainIdx];
     const kerb = (pos > .325 && pos < .34) || (pos > .655 && pos < .67) ? 0.12 * Math.sin(t * 90) : 0;
-    let v = (load(pos) + 0.04 * Math.sin(t * 23) + 0.025 * (rnd() - .5) + kerb) * g;
+    const carNm = (load(pos) + 0.04 * Math.sin(t * 23) + 0.025 * (rnd() - .5) + kerb) * NM_PER_LOAD; // couple de colonne simulé
+    let v = carNm / NM_PER_LOAD * g;
     v = Math.max(0, Math.min(1, v));                       // le jeu sature à 100 %
     const sign = Math.sin(pos * Math.PI * 14) >= 0 ? 1 : -1;
     const f = v * sign, a = v;
@@ -45,7 +46,7 @@
     hist.push([t, f]); while (hist.length && t - hist[0][0] > 10) hist.shift();
     peakQ.push([t, a]); while (peakQ.length && t - peakQ[0][0] > 3) peakQ.shift();
 
-    lap.meas += dt; sess.meas += dt; lap.vals.push(a);
+    lap.meas += dt; sess.meas += dt; lap.vals.push(a); lap.nm.push(Math.abs(carNm));
     if (a > lap.peak) lap.peak = a; if (a > sess.peak) sess.peak = a;
     if (a >= THR) { lap.clip += dt; sess.clip += dt; }
     if (!inClip && a >= THR) { inClip = true; clipStart = t; clipPeak = a; clipPos = pos; }
@@ -64,7 +65,8 @@
       const p99 = s[Math.min(s.length - 1, Math.ceil(.99 * s.length) - 1)];
       const clipPct = lap.clip / lap.meas, margin = 1 - lap.peak;
       const status = clipPct > .01 || margin < 0 ? 'Clipping' : margin <= .10 ? 'Risk' : margin > .60 ? 'Excessive' : 'Ok';
-      laps.push({ lap: lap.lap, time: 137 + rnd() * 2.5 - (lap.lap === 1 ? -3 : 0), clip_pct: clipPct, events: lap.ev, peak: lap.peak, p99: p99, margin: margin, status: status });
+      const sn = lap.nm.slice().sort((x, y) => x - y), p99nm = sn[Math.min(sn.length - 1, Math.ceil(.99 * sn.length) - 1)];
+      laps.push({ p99_nm: p99nm, lap: lap.lap, time: 137 + rnd() * 2.5 - (lap.lap === 1 ? -3 : 0), clip_pct: clipPct, events: lap.ev, peak: lap.peak, p99: p99, margin: margin, status: status });
       gainIdx++;
       if (gainIdx >= GAINS.length) reset(); else lap = newLap(lap.lap + 1);
     }
