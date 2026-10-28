@@ -81,7 +81,7 @@ code,.mono{font-family:"JetBrains Mono",monospace;font-size:14px}
       <li><a href="#jeux">Réglages en jeu</a></li>
       <li><a href="#comparateur">Formules du comparateur</a></li>
       <li><a href="#marques">Équivalences entre marques</a></li>
-      <li><a href="#wrs">Oscillations et WRS</a></li>
+      <li><a href="#wrs">Oscillations et vitesse du volant</a></li>
       <li><a href="#validation">Valider sur piste</a></li>
       <li><a href="#ajuster">Ajuster selon le ressenti</a></li>
       <li><a href="#analyzer">FFB Analyzer</a></li>
@@ -213,6 +213,16 @@ code,.mono{font-family:"JetBrains Mono",monospace;font-size:14px}
     <h2>Oscillations : supprimer la cause, pas la masquer</h2>
     <p>Chez Simagic, la <b>vitesse de rotation de la roue (WRS)</b> amplifie la vitesse et la facilité avec lesquelles le volant tourne par rapport à ce que calcule le jeu. Physiquement, c'est un amortissement négatif : au-dessus de 0, elle provoque oscillations en ligne droite, volant « élastique » quand on le lâche, rebonds en butée et voiture nerveuse à basse vitesse.</p>
     <p>La correction souvent conseillée, monter l'inertie ou la friction, ne règle rien : l'inertie ralentit l'oscillation sans la supprimer, la friction l'étouffe mais gomme aussi les détails autour du centre, et l'amortissement se bat contre la WRS. <b>Règle la WRS à 0</b>, puis n'ajoute de l'amortissement que si une oscillation persiste. Le calculateur part de cette hypothèse.</p>
+    <h3>Réglages de vitesse selon les marques</h3>
+    <div class="tbl"><table>
+      <tr><th>Marque</th><th>Réglage</th><th>Effet</th><th>Conseil</th></tr>
+      <tr><td>Simagic</td><td>Vitesse de rotation de la roue (WRS)</td><td>Amplifie la vitesse de rotation : amortissement négatif</td><td><b>0</b></td></tr>
+      <tr><td>Fanatec</td><td>NDP, NFR, NIN</td><td>Amortissement, friction, inertie</td><td>Valeurs du calculateur</td></tr>
+      <tr><td>Moza</td><td>Maximum Wheel Speed</td><td>Limite la vitesse maximale du volant</td><td>Par défaut. Plus bas : plus stable mains lâchées, mais contre-braquages ralentis</td></tr>
+      <tr><td>Simucube</td><td>Slew Rate Limit</td><td>Limite la vitesse de variation du couple</td><td>Off</td></tr>
+      <tr><td>Asetek</td><td>Limite d'accélération du couple (slew rate), si présente</td><td>Même principe que Simucube</td><td>Pas de limite</td></tr>
+    </table></div>
+    <p style="margin-top:12px">Seule la WRS de Simagic amplifie le mouvement et peut créer une oscillation. Les limiteurs de vitesse ou de variation du couple des autres marques freinent ou filtrent : ils ne provoquent pas d'oscillation, mais trop bas, ils rendent le volant lent à réagir.</p>
   </section>
 
   <section id="validation">
