@@ -367,7 +367,9 @@ const SMALL_BASE = 12;                            // base « petite » : driver 
 let drvUser = null;                               // choix explicite de l'utilisateur (true/false), sinon automatique
 const TAU = 11.8;                                // constante de la courbe (Nm)
 
-const REF_DEFAULT = {base:10, T:8, m:1.1, dia:300, D:16, F:2, I:10, k:0.70};
+// Référence validée sur piste (AC, Spa, WRS 0, oct. 2026) : Alpha Mini 10 Nm, GT Neo 1,1 kg / 300 mm -> Damper 7, Friction 2, Inertie 4.
+// Les filtres suivent le couple ressenti visé (Tfeel), égal au plafond de référence de 8 Nm pour ce montage.
+const REF_DEFAULT = {base:10, T:8, m:1.1, dia:300, D:7, F:2, I:4, k:0.70, v:2};
 
 /* =====================================================================
    OUTILS
@@ -457,12 +459,12 @@ function applyModel(){
   if(v !== 'custom') $('torque').value = b.models[+v][1];
 }
 function loadRef(){
-  const r = Object.assign({}, REF_DEFAULT, store.get('ffbRef') || {});
+  const sv = store.get('ffbRef'); const r = Object.assign({}, REF_DEFAULT, sv && sv.v === REF_DEFAULT.v ? sv : {});
   $('rBase').value=r.base; $('rT').value=r.T; $('rM').value=r.m; $('rDia').value=r.dia;
   $('rD').value=r.D; $('rF').value=r.F; $('rI').value=r.I;
 }
 function readRef(){
-  const r = {base:num('rBase',10), T:num('rT',8), m:num('rM',1.1), dia:num('rDia',300), D:num('rD',16), F:num('rF',2), I:num('rI',10), k:0.70};
+  const r = {base:num('rBase',10), T:num('rT',8), m:num('rM',1.1), dia:num('rDia',300), D:num('rD',REF_DEFAULT.D), F:num('rF',REF_DEFAULT.F), I:num('rI',REF_DEFAULT.I), k:0.70, v:REF_DEFAULT.v};
   if(r.base<=0||r.T<=0||r.m<=0||r.dia<=0) return Object.assign({},REF_DEFAULT);
   return r;
 }

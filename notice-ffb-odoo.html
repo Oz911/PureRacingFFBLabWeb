@@ -152,7 +152,7 @@
     <p><span class="mono">m</span> est le poids (kg), <span class="mono">r</span> le rayon en mètres (diamètre ÷ 2000), <span class="mono">k</span> le coefficient de répartition.</p>
 
     <h3>3. Damping et inertie simulée</h3>
-    <p>Recalés sur un montage de référence : base 10 Nm, plafond 8 Nm, volant 1,1 kg / 300 mm, Damping 16 %, Friction 2 %, Inertie 10 % (échelle Simagic).</p>
+    <p>Recalés sur un montage de référence validé sur piste (Assetto Corsa, Spa, octobre 2026, WRS à 0) : Simagic Alpha Mini de 10 Nm, volant 1,1 kg / 300 mm. Avec le driver à 100 %, ce montage donne Mechanical Damper 7 %, Friction 2 % et Inertie 4 %. Une ancienne référence (16 / 2 / 10) avait été établie avec une WRS au-dessus de 0 : trop d'amortissement et d'inertie, recentrage mou et train avant peu lisible.</p>
     <div class="formula">Damping = Dréf × √( (T / Tréf) × (I / Iréf) )</div>
     <div class="formula">Inertie = Inertie réf. × √( (T / Tréf) × (Iréf / I) )</div>
     <p>Le damping suit le principe d'un taux d'amortissement constant (amortissement critique = 2√(raideur × inertie)) : plus de couple et plus de masse demandent plus de freinage. Un volant léger reçoit davantage d'inertie simulée : il s'agit de retrouver le poids d'une vraie colonne de direction, pas de corriger une oscillation. La friction reste fixe.</p>
