@@ -127,7 +127,7 @@
       ht.push(hist[best][0] - last[0]); hv.push(hist[best][1]);
     }
     return {
-      version: '1.0.0', game: 'Le Mans Ultimate · Ferrari 296 LMGT3 · Spa', source_ok: true, source: 'démonstration',
+      version: '1.1.0', game: 'Le Mans Ultimate · Ferrari 296 LMGT3 · Spa', source_ok: true, source: 'démonstration',
       unit: 'normalized', full_scale: 1, raw: last[1], signal: last[1],
       peak_window: peakQ.reduce((m, x) => Math.max(m, x[1]), 0), clipping: inClip, threshold: THR,
       lap: lap.lap, lap_clip_pct: lap.meas ? lap.clip / lap.meas : 0, lap_clip_events: lap.ev, lap_peak: lap.peak,
