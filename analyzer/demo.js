@@ -11,7 +11,7 @@
   'use strict';
   window.PFA_DEMO = true;
 
-  const STC = 10, MEAS_SCALE = 86.2, NM_PER_LOAD = 12.5, HZ = 60, THR = 0.98, REL = 0.95, MIN_EVT = 0.040, LAP_S = 40;
+  const STC = 10, MEAS_SCALE = 86.2, NM_PER_LOAD = 12.5, HZ = 60, THR = 0.98, REL = 0.95, MIN_EVT = 0.040, LAP_S = 20;   // tour simulé raccourci à 20 s pour une démo courte
   const K = 1.19, COL = 4.4, EQ = 0.9;   // COL : échelle du couple de colonne LMU ; EQ : ramène au couple voiture équivalent (≈ 13 Nm)
                                          // K : charge simulée → signal pour une force en jeu de 100 %
   // Virages de Spa (position sur le tour, largeur, charge) : la charge FFB monte dans les appuis
@@ -102,8 +102,9 @@
     lap = newLap(1); sess = { meas: 0, clip: 0, ev: 0, peak: 0 }; inClip = false;
   }
 
-  // Avance rapide au chargement : le tour exclu et le tour écrêté sont déjà dans le tableau, le tour correct arrive en roulant
-  for (let i = 0; i < HZ * LAP_S * 2.25; i++) step();
+  // Avance rapide au chargement : le tour exclu est déjà dans le tableau, le tour écrêté se termine environ 10 s après l'arrivée,
+  // le tour correct 20 s plus tard ; cycle complet d'environ 80 s
+  for (let i = 0; i < HZ * LAP_S * 1.5; i++) step();
   setInterval(() => { for (let i = 0; i < 4; i++) step(); }, 4000 / HZ);
 
   function live() {
