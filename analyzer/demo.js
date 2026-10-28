@@ -1,27 +1,39 @@
 /* Pure Racing FX — FFB Analyzer : mode démonstration.
    Remplace l'API du plugin SimHub par un simulateur, avec les mêmes règles de calcul que le plugin
-   (seuil 98 %, hystérésis 3 points, événement ≥ 40 ms, vitesse mini 10 km/h, marge = 1 − pic,
-   fenêtre de gain 0,75/pic à 0,90/pic). Aucune donnée n'est mesurée. */
+   (seuil 98 %, hystérésis 3 points, événement ≥ 40 ms, niveau de référence = 99,5e centile,
+   verdict < 0,5 % correct / 0,5–2 % à surveiller / > 2 % excessif, tours avec incident exclus).
+   Scénario en trois tours, puis la session recommence :
+     1. tête-à-queue au Raidillon → tour exclu (non comptabilisé)
+     2. force en jeu trop haute (72 %) → écrêtage excessif, conseil de baisse
+     3. force baissée à 56 %, dans la plage conseillée → réglage correct
+   Aucune donnée n'est mesurée. */
 (function () {
   'use strict';
   window.PFA_DEMO = true;
 
-  const SET_SCALE = 17.5, MEAS_SCALE = 21.9, NM_PER_LOAD = 12.5, HZ = 60, THR = 0.98, REL = 0.95, MIN_EVT = 0.040, LAP_S = 40;
+  const STC = 10, MEAS_SCALE = 86.2, NM_PER_LOAD = 12.5, HZ = 60, THR = 0.98, REL = 0.95, MIN_EVT = 0.040, LAP_S = 40;
+  const K = 1.19, COL = 4.4, EQ = 0.9;   // COL : échelle du couple de colonne LMU ; EQ : ramène au couple voiture équivalent (≈ 13 Nm)
+                                         // K : charge simulée → signal pour une force en jeu de 100 %
   // Virages de Spa (position sur le tour, largeur, charge) : la charge FFB monte dans les appuis
   const CORNERS = [[.03, .012, .55], [.10, .020, .95], [.17, .015, .70], [.25, .010, .45], [.33, .030, 1.02],
                    [.42, .018, .80], [.50, .025, .90], [.58, .012, .60], [.66, .035, 1.08], [.76, .020, .85],
                    [.86, .015, .75], [.95, .010, .50]];
-  // Scénario : la force en jeu est trop haute, le pilote la baisse après deux tours, puis la session recommence
-  const GAINS = [0.85, 0.85, 0.62, 0.62, 0.62];
+  // Scénario : force en jeu par tour, incident éventuel (position du tête-à-queue) et temps affiché
+  const SCENARIO = [
+    { force: 0.52, spinAt: 0.30, time: 158.4 },   // 1 : tête-à-queue → exclu
+    { force: 0.72, spinAt: null, time: 146.8 },   // 2 : force trop haute → écrêtage excessif
+    { force: 0.56, spinAt: null, time: 145.9 }    // 3 : force baissée dans la plage conseillée → correct
+  ];
+  const GAINS = SCENARIO.map(x => x.force);
 
   let t = 0, lapIdx = 0, gainIdx = 0, rate = HZ;
   let hist = [], peakQ = [], laps = [], events = [];
   let inClip = false, clipStart = 0, clipPeak = 0, clipPos = 0;
   let lap = newLap(1), sess = { meas: 0, clip: 0, ev: 0, peak: 0 };
-  let seed = 7, lastCarNm = 0;
+  let seed = 7, lastCarNm = 0, holdLap = false;
   const rnd = () => ((seed = (seed * 16807) % 2147483647) / 2147483647);
 
-  function newLap(n) { return { lap: n, meas: 0, clip: 0, ev: 0, peak: 0, vals: [], nm: [] }; }
+  function newLap(n) { return { lap: n, meas: 0, clip: 0, ev: 0, peak: 0, vals: [], nm: [], incident: '' }; }
 
   function load(pos) {
     let v = 0.18;
@@ -35,9 +47,16 @@
   function step() {
     const dt = 1 / HZ; t += dt;
     const pos = (t % LAP_S) / LAP_S;
-    const g = GAINS[gainIdx];
+    const sc = SCENARIO[gainIdx], g = sc.force * K;
     const kerb = (pos > .325 && pos < .34) || (pos > .655 && pos < .67) ? 0.12 * Math.sin(t * 90) : 0;
-    const carNm = (load(pos) + 0.04 * Math.sin(t * 23) + 0.025 * (rnd() - .5) + kerb) * NM_PER_LOAD; // couple de colonne simulé
+    let carNm = (load(pos) + 0.04 * Math.sin(t * 23) + 0.025 * (rnd() - .5) + kerb) * NM_PER_LOAD; // couple de colonne simulé
+    // Tête-à-queue : pointe de couple au décrochage, puis volant presque inerte, voiture arrêtée quelques secondes
+    if (sc.spinAt !== null && pos >= sc.spinAt) {
+      const d = pos - sc.spinAt;
+      if (d < 0.012) carNm = NM_PER_LOAD * (1.1 - d * 40) * (rnd() > .5 ? 1 : -1);
+      else if (d < 0.10) carNm *= 0.06;
+      if (!lap.incident) lap.incident = 'tête-à-queue ou arrêt en piste';
+    }
     let v = carNm / NM_PER_LOAD * g;
     lastCarNm = carNm;
     v = Math.max(0, Math.min(1, v));                       // le jeu sature à 100 %
@@ -62,16 +81,19 @@
     // fin de tour
     if (Math.floor(t / LAP_S) > lapIdx) {
       lapIdx++;
+      // Après le tour 3, un tour supplémentaire laisse le résultat affiché, puis la session recommence au départ du tour
+      if (holdLap) { holdLap = false; reset(); return; }
       const s = lap.vals.slice().sort((x, y) => x - y);
       const p99 = s[Math.min(s.length - 1, Math.ceil(.99 * s.length) - 1)];
       const p995 = s[Math.min(s.length - 1, Math.ceil(.995 * s.length) - 1)];
       const clipPct = lap.clip / lap.meas, margin = 1 - p995;
       // Même verdict que FfbModel.Verdict : écrêtage < 0,5 % correct, 0,5–2 % à surveiller, > 2 % excessif, niveau < 50 % marge excessive
-      const status = clipPct > .02 ? 'Clipping' : clipPct >= .005 ? 'Risk' : p995 < .5 ? 'Excessive' : 'Ok';
+      const status = lap.incident ? 'Excluded' : clipPct > .02 ? 'Clipping' : clipPct >= .005 ? 'Risk' : p995 < .5 ? 'Excessive' : 'Ok';
       const sn = lap.nm.slice().sort((x, y) => x - y), p99nm = sn[Math.min(sn.length - 1, Math.ceil(.99 * sn.length) - 1)];
-      laps.push({ p99_nm: p99nm, equiv_nm: p99nm * SET_SCALE / MEAS_SCALE, lap: lap.lap, time: 137 + rnd() * 2.5 - (lap.lap === 1 ? -3 : 0), clip_pct: clipPct, events: lap.ev, peak: lap.peak, p99: p99, p995: p995, margin: margin, status: status });
+      laps.push({ p99_nm: p99nm * COL, equiv_nm: p99nm * EQ, lap: lap.lap, time: sc.time, clip_pct: clipPct, events: lap.ev, peak: lap.peak, p99: p99, p995: p995, margin: margin, status: status, incident: lap.incident, force: sc.force });
       gainIdx++;
-      if (gainIdx >= GAINS.length) reset(); else lap = newLap(lap.lap + 1);
+      if (gainIdx >= SCENARIO.length) { holdLap = true; gainIdx = SCENARIO.length - 1; lap = newLap(lap.lap + 1); }
+      else lap = newLap(lap.lap + 1);
     }
   }
 
@@ -80,14 +102,15 @@
     lap = newLap(1); sess = { meas: 0, clip: 0, ev: 0, peak: 0 }; inClip = false;
   }
 
-  // Avance rapide au chargement : un tour complet est déjà dans le tableau
-  for (let i = 0; i < HZ * LAP_S * 1.35; i++) step();
+  // Avance rapide au chargement : le tour exclu et le tour écrêté sont déjà dans le tableau, le tour correct arrive en roulant
+  for (let i = 0; i < HZ * LAP_S * 2.25; i++) step();
   setInterval(() => { for (let i = 0; i < 4; i++) step(); }, 4000 / HZ);
 
   function live() {
     const last = hist.length ? hist[hist.length - 1] : [t, 0];
-    const lastLap = laps.length ? laps[laps.length - 1] : null;
+    const valid = laps.filter(l => l.status !== 'Excluded'), lastLap = valid.length ? valid[valid.length - 1] : null;
     const needs = !!lastLap && lastLap.status !== 'Ok' && lastLap.status !== 'Unknown';
+    const pct = x => Math.round(x * 100), force = lastLap ? lastLap.force : SCENARIO[gainIdx].force;
     const stride = Math.max(1, Math.ceil(hist.length / 240));
     const ht = [], hv = [];
     for (let i = 0; i < hist.length; i += stride) {
@@ -102,8 +125,10 @@
       session_clip_pct: sess.meas ? sess.clip / sess.meas : 0, session_clip_events: sess.ev, session_peak: sess.peak,
       gain_lo: needs ? .75 / lastLap.p995 : null, gain_hi: needs ? .90 / lastLap.p995 : null,
       advice: !lastLap ? '' : !needs ? 'Réglage correct : écrêtage sous 0,5 % du tour, niveau de référence ' + Math.round(lastLap.p995 * 100) + ' % (99,5e centile). Aucun ajustement nécessaire.'
-        : (lastLap.status === 'Clipping' ? 'Écrêtage excessif' : lastLap.status === 'Risk' ? 'Écrêtage à surveiller' : 'Marge excessive') + ' : pour ramener le niveau de référence (' + Math.round(lastLap.p995 * 100) + ' %) entre 75 et 90 %, multiplier la force en jeu par ' + (.75 / lastLap.p995).toFixed(2).replace('.', ',') + ' à ' + (.90 / lastLap.p995).toFixed(2).replace('.', ',') + '.',
-      torque_nm: lastCarNm, scale_nm: MEAS_SCALE, settings_scale_nm: SET_SCALE,
+        : (lastLap.status === 'Clipping' ? 'Écrêtage excessif' : lastLap.status === 'Risk' ? 'Écrêtage à surveiller' : 'Marge excessive') + ' : pour ramener le niveau de référence (' + pct(lastLap.p995) + ' %) entre 75 et 90 %, régler la force FFB en jeu de ' + pct(force) + ' % à ' + pct(force * .75 / lastLap.p995) + '–' + pct(force * .90 / lastLap.p995) + ' %' + (lastLap.p995 >= THR ? '. Valeur haute : le signal saturé masque le vrai niveau, refaire un tour après réglage.' : '.'),
+      lap_incident: lap.incident, excluded_laps: laps.filter(l => l.status === 'Excluded').length, last_valid_lap: lastLap ? lastLap.lap : 0,
+      settings_confirmed: true, settings_stc: STC, settings_strength: SCENARIO[gainIdx].force, settings_mult: 1,
+      torque_nm: lastCarNm * COL, scale_nm: MEAS_SCALE, settings_scale_nm: STC / SCENARIO[gainIdx].force,
       last_equiv_nm: lastLap ? lastLap.equiv_nm : null, lap_equiv_nm: null,
       recording: true, session_id: 'demo', rate_hz: rate, history: { t: ht, v: hv }, laps: laps.slice(-30), events: events.slice(-15)
     };
