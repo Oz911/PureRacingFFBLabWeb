@@ -18,7 +18,7 @@
   let hist = [], peakQ = [], laps = [], events = [];
   let inClip = false, clipStart = 0, clipPeak = 0, clipPos = 0;
   let lap = newLap(1), sess = { meas: 0, clip: 0, ev: 0, peak: 0 };
-  let seed = 7;
+  let seed = 7, lastCarNm = 0;
   const rnd = () => ((seed = (seed * 16807) % 2147483647) / 2147483647);
 
   function newLap(n) { return { lap: n, meas: 0, clip: 0, ev: 0, peak: 0, vals: [], nm: [] }; }
@@ -39,6 +39,7 @@
     const kerb = (pos > .325 && pos < .34) || (pos > .655 && pos < .67) ? 0.12 * Math.sin(t * 90) : 0;
     const carNm = (load(pos) + 0.04 * Math.sin(t * 23) + 0.025 * (rnd() - .5) + kerb) * NM_PER_LOAD; // couple de colonne simulé
     let v = carNm / NM_PER_LOAD * g;
+    lastCarNm = carNm;
     v = Math.max(0, Math.min(1, v));                       // le jeu sature à 100 %
     const sign = Math.sin(pos * Math.PI * 14) >= 0 ? 1 : -1;
     const f = v * sign, a = v;
@@ -63,10 +64,12 @@
       lapIdx++;
       const s = lap.vals.slice().sort((x, y) => x - y);
       const p99 = s[Math.min(s.length - 1, Math.ceil(.99 * s.length) - 1)];
-      const clipPct = lap.clip / lap.meas, margin = 1 - lap.peak;
-      const status = clipPct > .01 || margin < 0 ? 'Clipping' : margin <= .10 ? 'Risk' : margin > .60 ? 'Excessive' : 'Ok';
+      const p995 = s[Math.min(s.length - 1, Math.ceil(.995 * s.length) - 1)];
+      const clipPct = lap.clip / lap.meas, margin = 1 - p995;
+      // Même verdict que FfbModel.Verdict : écrêtage < 0,5 % correct, 0,5–2 % à surveiller, > 2 % excessif, niveau < 50 % marge excessive
+      const status = clipPct > .02 ? 'Clipping' : clipPct >= .005 ? 'Risk' : p995 < .5 ? 'Excessive' : 'Ok';
       const sn = lap.nm.slice().sort((x, y) => x - y), p99nm = sn[Math.min(sn.length - 1, Math.ceil(.99 * sn.length) - 1)];
-      laps.push({ p99_nm: p99nm, equiv_nm: p99nm * SET_SCALE / MEAS_SCALE, lap: lap.lap, time: 137 + rnd() * 2.5 - (lap.lap === 1 ? -3 : 0), clip_pct: clipPct, events: lap.ev, peak: lap.peak, p99: p99, margin: margin, status: status });
+      laps.push({ p99_nm: p99nm, equiv_nm: p99nm * SET_SCALE / MEAS_SCALE, lap: lap.lap, time: 137 + rnd() * 2.5 - (lap.lap === 1 ? -3 : 0), clip_pct: clipPct, events: lap.ev, peak: lap.peak, p99: p99, p995: p995, margin: margin, status: status });
       gainIdx++;
       if (gainIdx >= GAINS.length) reset(); else lap = newLap(lap.lap + 1);
     }
@@ -84,6 +87,7 @@
   function live() {
     const last = hist.length ? hist[hist.length - 1] : [t, 0];
     const lastLap = laps.length ? laps[laps.length - 1] : null;
+    const needs = !!lastLap && lastLap.status !== 'Ok' && lastLap.status !== 'Unknown';
     const stride = Math.max(1, Math.ceil(hist.length / 240));
     const ht = [], hv = [];
     for (let i = 0; i < hist.length; i += stride) {
@@ -96,8 +100,10 @@
       peak_window: peakQ.reduce((m, x) => Math.max(m, x[1]), 0), clipping: inClip, threshold: THR,
       lap: lap.lap, lap_clip_pct: lap.meas ? lap.clip / lap.meas : 0, lap_clip_events: lap.ev, lap_peak: lap.peak,
       session_clip_pct: sess.meas ? sess.clip / sess.meas : 0, session_clip_events: sess.ev, session_peak: sess.peak,
-      gain_lo: lastLap ? .75 / lastLap.peak : null, gain_hi: lastLap ? .90 / lastLap.peak : null,
-      scale_nm: MEAS_SCALE, settings_scale_nm: SET_SCALE,
+      gain_lo: needs ? .75 / lastLap.p995 : null, gain_hi: needs ? .90 / lastLap.p995 : null,
+      advice: !lastLap ? '' : !needs ? 'Réglage correct : écrêtage sous 0,5 % du tour, niveau de référence ' + Math.round(lastLap.p995 * 100) + ' % (99,5e centile). Aucun ajustement nécessaire.'
+        : (lastLap.status === 'Clipping' ? 'Écrêtage excessif' : lastLap.status === 'Risk' ? 'Écrêtage à surveiller' : 'Marge excessive') + ' : pour ramener le niveau de référence (' + Math.round(lastLap.p995 * 100) + ' %) entre 75 et 90 %, multiplier la force en jeu par ' + (.75 / lastLap.p995).toFixed(2).replace('.', ',') + ' à ' + (.90 / lastLap.p995).toFixed(2).replace('.', ',') + '.',
+      torque_nm: lastCarNm, scale_nm: MEAS_SCALE, settings_scale_nm: SET_SCALE,
       last_equiv_nm: lastLap ? lastLap.equiv_nm : null, lap_equiv_nm: null,
       recording: true, session_id: 'demo', rate_hz: rate, history: { t: ht, v: hv }, laps: laps.slice(-30), events: events.slice(-15)
     };
