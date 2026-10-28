@@ -244,7 +244,7 @@ label.chk input{width:18px;height:18px;accent-color:#fd1424;flex:none}
           <input type="radio" name="pref" id="p3" value="strong"><label for="p3">Forte</label>
         </div>
         <label class="chk" for="drv100"><input type="checkbox" id="drv100"> Garder le driver à 100 % <span class="hint">(toute la force est réglée en jeu)</span></label>
-        <div class="field-status" id="st-drv"></div>
+        <div class="field-status" id="st-drv" style="flex-wrap:wrap"></div>
 
         <details class="adv">
           <summary>Réglages avancés (calibrage)</summary>
@@ -393,12 +393,14 @@ function compute(s){
   const Tmax = PREFS[s.pref]*scale;
   let T = curveT(s.B, Tmax);
   const limited = !s.full && T >= s.B;
-  T = s.full ? s.B : Math.min(T, s.B);   // driver à 100 % : toute la base, la force se règle en jeu
+  const Tpref = Math.min(T, s.B);          // plafond correspondant à la « Force souhaitée »
+  T = s.full ? s.B : Tpref;               // driver à 100 % : toute la base, la force souhaitée se règle en jeu
   const pct = Math.round(T/s.B*100);
+  const Tfeel = s.full ? Tpref : T;       // couple ressenti visé : sert aussi aux filtres (même ressenti, mêmes filtres)
 
   const Iw = inertia(s.m, s.dia, s.k);
   const Iref = inertia(ref.m, ref.dia, ref.k);
-  const tq = T/ref.T, iq = Iw/Iref;
+  const tq = Tfeel/ref.T, iq = Iw/Iref;
   const g = GAMES[s.game];
 
   // Équivalents à l'échelle Simagic
@@ -412,9 +414,21 @@ function compute(s){
   // LMU / rF2 : hypothèses et recommandation reprises du comparateur (ffb-model.js), source unique.
   const C = s.B*pct/100;                      // couple délivré au % driver arrondi
   const STC = Math.round(C*2)/2;              // hypothèse : STC = couple disponible
-  const lmu = FFBModel.lmuRecommend(C, STC, 1, s.H);
+  let lmu = FFBModel.lmuRecommend(C, STC, 1, s.H);
+  let prefApplied = false, prefClamped = false;
+  if(s.full){
+    // Driver à 100 % : la « Force souhaitée » s'applique à la force en jeu. On vise le même pic au volant
+    // que le réglage driver réduit (même ressenti), en gardant toute la base comme réserve pour les chocs.
+    const pPref = Math.round(Tpref/s.B*100), Cp = s.B*pPref/100, STCp = Math.round(Cp*2)/2;
+    const want = FFBModel.lmuRecommend(Cp, STCp, 1, s.H).J / s.H;   // force en jeu (m = 1) donnant ce pic
+    let pick = want;
+    if(lmu.feasible){ pick = clamp(want, lmu.sMin, lmu.sMax); prefClamped = Math.abs(pick-want) > 0.005; }
+    pick = Math.min(1, pick);
+    lmu = Object.assign({}, lmu, FFBModel.evaluate(C, FFBModel.lmuEq(STC, pick, 1), s.H), {pick, prefTarget: want});
+    prefApplied = true;
+  }
   const strength = lmu.pick, peak = lmu.J;
-  return {T, Tmax, pct, limited, Iw, Iref, D, F, I, osc, C, STC, lmu, strength, peak};
+  return {T, Tmax, Tpref, Tfeel, pct, limited, Iw, Iref, D, F, I, osc, C, STC, lmu, strength, peak, prefApplied, prefClamped};
 }
 
 /* =====================================================================
@@ -470,10 +484,11 @@ function render(){
 
   // Statuts de saisie
   $('st-drv').innerHTML = s.full
-    ? (s.B > SMALL_BASE ? `<span class="dot warn"></span><span class="warn">Base puissante : à 100 %, un choc peut envoyer ${fmt(s.B, s.B%1?1:0)} Nm dans les poignets</span>`
-                        : `<span class="dot ok"></span><span class="ok">Toute la base disponible (${fmt(s.B, s.B%1?1:0)} Nm) · « Force souhaitée » sans effet</span>`)
-    : `<span class="tag">Conseillé pour les bases jusqu'à ${SMALL_BASE} Nm</span>`;
-  document.querySelector('.seg').classList.toggle('off', s.full);
+    ? (s.B > SMALL_BASE ? `<span style="display:flex;gap:6px;align-items:center;flex-basis:100%"><span class="dot warn"></span><span class="warn">Base puissante : à 100 %, un choc peut envoyer ${fmt(s.B, s.B%1?1:0)} Nm dans les poignets</span></span>`
+                        : `<span style="display:flex;gap:6px;align-items:center;flex-basis:100%"><span class="dot ok"></span><span class="ok">Toute la base disponible (${fmt(s.B, s.B%1?1:0)} Nm) · « Force souhaitée » réglée par la force en jeu</span></span>`)
+      + `<span class="tag" style="flex-basis:100%;margin-top:4px">Driver à 100 % : plus de marge pour les chocs et les vibreurs. Driver réduit : plafond de sécurité plus bas.</span>`
+    : `<span class="tag" style="flex-basis:100%">Driver réduit : plafond de sécurité plus bas, mais moins de marge pour les chocs et les vibreurs. Driver à 100 % conseillé pour les bases jusqu'à ${SMALL_BASE} Nm.</span>`;
+  document.querySelector('.seg').classList.remove('off');   // la force souhaitée reste active dans les deux modes
   const lb = s.B>=3&&s.B<=35 ? 'ok' : 'warn';
   $('st-torque').innerHTML = `<span class="dot ${lb}"></span><span class="${lb}">${lb==='ok'?'Couple dans la plage des bases DD':'Valeur inhabituelle, vérifie la fiche de ta base'}</span>`;
   const lm = lvlMass(s.m), ld = lvlDia(s.dia), lw = WORST(lm,ld);
@@ -537,10 +552,11 @@ function render(){
   // Encadrés
   const co = [];
   if(lt==='bad') co.push(['bad','Couple très élevé', `${fmt(r.T)} Nm peuvent blesser poignets et pouces en cas de choc ou de survirage. Commence en « Légère » et ne lâche jamais le volant en roulant.`]);
-  if(s.full) co.push([s.B > SMALL_BASE ? 'warn' : 'info', 'Driver à 100 %', `La base peut délivrer ses ${fmt(s.B, s.B%1?1:0)} Nm : la force ressentie se règle uniquement dans le jeu, voiture par voiture. Le plafond de sécurité ne dépend plus du driver : en cas de choc ou de contre-braquage, toute la puissance de la base peut passer.${s.B > SMALL_BASE ? ' Sur une base de cette puissance, il est plus prudent de décocher cette option.' : ''}`]);
+  if(s.full) co.push([s.B > SMALL_BASE ? 'warn' : 'info', 'Driver à 100 %', `La base peut délivrer ses ${fmt(s.B, s.B%1?1:0)} Nm : la « Force souhaitée » est appliquée à la force en jeu, voiture par voiture. Le plafond de sécurité ne dépend plus du driver : en cas de choc ou de contre-braquage, toute la puissance de la base peut passer.${s.B > SMALL_BASE ? ' Sur une base de cette puissance, il est plus prudent de décocher cette option.' : ''}`]);
   if(r.limited) co.push(['warn','Limite de couple atteinte', `La cible atteint la capacité nominale de la base. Ne compense pas en augmentant aveuglément le gain du jeu : vérifie d’abord le clipping et la sécurité.`]);
   if(lo!=='ok') co.push(['warn','Réactivité relative élevée', `Cet indice n’est pas une prédiction d’oscillation. En cas d’oscillations, vérifie d’abord qu’aucun effet n’amplifie la rotation du volant (WRS à 0 chez Simagic), puis teste un amortissement légèrement supérieur. N’ajoute pas d’inertie ni de friction pour les masquer.`]);
   if(s.game==='lmu' && !r.lmu.feasible) co.push(['warn','Cible non atteignable avec ces hypothèses', `Aucune force en jeu ≤ 100 % ne respecte à la fois 30-60 % de sortie spécifique et 10-60 % de marge avec une voiture à ${fmt(s.H)} Nm (pic estimé ${fmt(r.peak)} Nm sur ${fmt(r.C)} Nm). Cela ne veut pas dire qu'il faut changer le driver : vérifie le couple réel de la voiture, la définition du STC dans ta version et l'écrêtage en télémétrie, puis calibre avec le <a href="https://pureracing-fx.odoo.com/comparateur-ffb" target="_top">comparateur</a>.`]);
+  else if(s.game==='lmu' && r.prefApplied) co.push(['info','Force souhaitée appliquée en jeu', `Avec le driver à 100 %, « ${s.pref==='light'?'Légère':s.pref==='strong'?'Forte':'Normale'} » vise ≈ ${fmt(r.peak)} Nm au volant, le même ressenti qu'avec le driver réduit : force en jeu ${Math.round(r.lmu.pick*100)} %. Marge avant écrêtage ≈ ${Math.round(r.lmu.L*100)} % : la réserve de la base absorbe les chocs et les vibreurs.${r.prefClamped ? ' La valeur a été ramenée dans la plage du comparateur.' : ''} Vérifie l'écrêtage réel en piste avec le FFB Analyzer.`]);
   else if(s.game==='lmu' && r.lmu.pick>r.lmu.target+1e-9) co.push(['info','Force relevée par la fenêtre du comparateur', `La valeur visant 15 % de marge sortait de la plage 30-60 % de sortie spécifique ; la force est ramenée dans la fenêtre du comparateur.`]);
   else if(s.game==='lmu' && r.lmu.pick<r.lmu.target-1e-9) co.push(['info','Force limitée par la fenêtre du comparateur', `Viser 15 % de marge donnerait ${Math.round(Math.min(r.lmu.target,9.99)*100)} %, au-delà de 60 % de sortie spécifique. La force est ramenée à ${Math.round(r.lmu.pick*100)} % : marge de ${Math.round(r.lmu.L*100)} %.`]);
   if(s.game!=='lmu') co.push(['info','Gain en jeu à mesurer', `Assetto Corsa ne travaille pas en Nm : le gain proposé est un simple départ. Mesure le pic de force (FFBClip ou Content Manager) puis règle le gain avec le <a href="https://pureracing-fx.odoo.com/comparateur-ffb" target="_top">comparateur</a>.`]);
