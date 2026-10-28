@@ -227,7 +227,8 @@ label.chk input{width:18px;height:18px;accent-color:#fd1424;flex:none}
         <div id="carBox">
           <label for="car">Voiture de référence <span class="hint">(couple de direction max)</span></label>
           <select id="car">
-            <option value="gt3" selected>GT3 / LMGT3 · ~15 Nm (iRacing)</option>
+            <option value="gt3c">GT3 / LMGT3 moteur central (Ferrari 296, Porsche…) · ~12,5 Nm (mesuré LMU)</option>
+            <option value="gt3f" selected>GT3 / LMGT3 moteur avant (BMW M4, Aston Martin…) · ~15 Nm (mesuré LMU)</option>
             <option value="hyper">Hypercar / LMDh / GTP · ~16 Nm (iRacing)</option>
             <option value="gt4">GT4 · ~18 Nm (iRacing)</option>
             <option value="cup">Porsche 911 Cup (992) · ~20 Nm (iRacing)</option>
@@ -235,7 +236,7 @@ label.chk input{width:18px;height:18px;accent-color:#fd1424;flex:none}
             <option value="custom">Valeur mesurée avec FFB Analyzer / saisie libre</option>
           </select>
           <input id="carNm" type="number" min="5" max="60" step="0.5" value="15" inputmode="decimal" aria-label="Couple de direction max de la voiture (Nm)" style="margin-top:8px">
-          <div class="field-status"><span class="tag">Les catégories reprennent des couples relevés dans iRacing (haut de plage, hors vibreurs) : ils ne sont pas validés pour LMU et rFactor 2. Pour un réglage fiable, saisis le « couple voiture équivalent FFB Lab » affiché par le plugin <a href="https://pureracing-fx.odoo.com/pure-ffb-analyzer" target="_top">FFB Analyzer</a> (dernier tour complet). N’utilise pas le couple de colonne brut du jeu : il n’est pas à la même échelle.</span></div>
+          <div class="field-status"><span class="tag">Les deux catégories GT3 ont été mesurées dans LMU avec le plugin FFB Analyzer (Ferrari 296 à Spa, BMW M4 à Imola). Les autres reprennent des couples relevés dans iRacing (haut de plage, hors vibreurs), non validés pour LMU et rFactor 2. Pour un réglage fiable, saisis le « couple voiture équivalent FFB Lab » affiché par le plugin <a href="https://pureracing-fx.odoo.com/pure-ffb-analyzer" target="_top">FFB Analyzer</a> (dernier tour complet). N’utilise pas le couple de colonne brut du jeu : il n’est pas à la même échelle.</span></div>
         </div>
         <label id="lab-pref">Force souhaitée</label>
         <div class="seg" role="radiogroup" aria-labelledby="lab-pref">
@@ -690,7 +691,7 @@ if(saved && BRANDS[saved.brand]){
   if([...$('model').options].some(o=>o.value===saved.model)) $('model').value = saved.model;
   $('torque').value = saved.torque; $('mass').value = saved.mass; $('diam').value = saved.diam;
   $('dist').value = saved.dist; $('game').value = saved.game;
-  if(saved.car){ $('car').value = [...$('car').options].some(o=>o.value===saved.car) ? saved.car : 'custom'; $('carNm').value = saved.carNm; }
+  if(saved.car){ const c = saved.car === 'gt3' ? 'gt3f' : saved.car; $('car').value = [...$('car').options].some(o=>o.value===c) ? c : 'custom'; $('carNm').value = saved.carNm; }
   const p = document.querySelector(`input[name=pref][value=${saved.pref}]`); if(p) p.checked = true;
   if(typeof saved.drv === 'boolean') drvUser = saved.drv;
 } else {
@@ -706,7 +707,7 @@ $('drv100').addEventListener('change', ()=>{ drvUser = $('drv100').checked; rend
 $('torque').addEventListener('input', ()=>{ $('model').value='custom'; autoDrv(); render(); });
 $('f').addEventListener('input', e=>{ if(e.target.id!=='torque') render(); });
 $('f').addEventListener('change', render);
-const CAR_NM = {gt3:15, hyper:16, gt4:18, cup:20, f3:20};
+const CAR_NM = {gt3c:12.5, gt3f:15, hyper:16, gt4:18, cup:20, f3:20};
 $('car').addEventListener('change', ()=>{ if($('car').value!=='custom') $('carNm').value=CAR_NM[$('car').value]; render(); });
 $('carNm').addEventListener('input', ()=>{ $('car').value='custom'; });
 $('resetRef').addEventListener('click', ()=>{ store.set('ffbRef', REF_DEFAULT); loadRef(); render(); });

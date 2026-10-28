@@ -78,7 +78,7 @@
   }
 
   /* Couples de direction max indicatifs (hors vibreurs, relevés dans iRacing) */
-  const CARS = [["Formula 3",14,20],["Formula Vee",16,22],["GT3",8,15],["GT4",12,18],["GTP / LMDh",10,16],["INDY IR-18",30,60],["Mazda MX-5 Cup",18,22],["NASCAR Next Gen Cup",28,35],["Porsche 911 Cup (992)",18,20],["Street Stock",18,25],["V8 Supercars",22,28]];
+  const CARS = [["Formula 3",14,20],["Formula Vee",16,22],["GT3 (iRacing)",8,15],["GT3 / LMGT3 moteur central (mesuré LMU)",12,12.5],["GT3 / LMGT3 moteur avant (mesuré LMU)",14,15],["GT4",12,18],["GTP / LMDh",10,16],["INDY IR-18",30,60],["Mazda MX-5 Cup",18,22],["NASCAR Next Gen Cup",28,35],["Porsche 911 Cup (992)",18,20],["Street Stock",18,25],["V8 Supercars",22,28]];
 
   root.FFBModel = { LIMITS, CARS, baseTorque, lmuEq, lmuStrength, evaluate, evaluatePeak, windowE, lmuRecommend, acGainWindow, statusG, statusL };
 })(typeof window !== 'undefined' ? window : globalThis);
