@@ -23,6 +23,8 @@ const api=(p,extra)=>p+(qs?qs+(extra?'&'+extra:''):(extra?'?'+extra:''));
 const pc=(v,d=0)=>v==null?'—':fmt(v*100,d);
 const STATUS={Ok:'Correct',Risk:'À surveiller',Clipping:'Écrêtage excessif',Excessive:'Marge excessive',Excluded:'Exclu',Unknown:'Tour trop court'};
 const WARN='#ffb35c',BAD='#ff5a66';
+const OSC={Stable:'Stable',Light:'Légère oscillation',Strong:'Oscillation forte',Unknown:'Pas assez de ligne droite'};
+const oscTxt=l=>l.osc_pkpk==null?'—':(l.osc_status==='Light'||l.osc_status==='Strong')?OSC[l.osc_status]+' · '+fmt(l.osc_pkpk,1)+'° à '+fmt(l.osc_freq,0)+' Hz':(OSC[l.osc_status]||'—');
 let last=null,threshold=.98,drawPending=false,lapSig='';const canvas=$('chart');
 function draw(){drawPending=false;if(!$('live').classList.contains('active')||!last)return;const h0=last.history||{t:[],v:[]};const dpr=window.devicePixelRatio||1,w=canvas.clientWidth,h=canvas.clientHeight;if(!w||!h)return;
  const W=Math.round(w*dpr),H=Math.round(h*dpr);if(canvas.width!==W||canvas.height!==H){canvas.width=W;canvas.height=H}
@@ -36,6 +38,35 @@ function draw(){drawPending=false;if(!$('live').classList.contains('active')||!l
  c.lineWidth=2;['#48d4a1','#ff2b3a'].forEach((col,k)=>{c.strokeStyle=col;c.beginPath();for(let i=1;i<h0.t.length;i++){const red=Math.abs(h0.v[i])>=threshold;if(red!==(k===1))continue;c.moveTo(X(h0.t[i-1]),Y(h0.v[i-1]));c.lineTo(X(h0.t[i]),Y(h0.v[i]))}c.stroke()});
  c.fillStyle='#a7b1cc';c.font='11px system-ui';grid.forEach(g=>{if(g===.25||g===.75)return;c.fillText(Math.round(g*100)+' %',4,Y(g)-3)})}
 function scheduleDraw(){if(drawPending)return;drawPending=true;(window.requestAnimationFrame||(f=>setTimeout(f,16)))(draw)}
+// ---------- Carte du circuit : tracé enregistré par le plugin, voiture placée avec la position sur le tour
+let mapVer=-1,mapLoading=false,mapProj=null,marksSig='';const SVGNS='http://www.w3.org/2000/svg';
+function pctPoint(p){if(!mapProj||!(p>=0&&p<=1))return null;const n=mapProj.X.length,f=(p%1)*n,i=Math.floor(f)%n,j=(i+1)%n,w=f-Math.floor(f);return[mapProj.X[i]+(mapProj.X[j]-mapProj.X[i])*w,mapProj.Y[i]+(mapProj.Y[j]-mapProj.Y[i])*w]}
+async function loadMap(v){mapLoading=true;try{const r=await fetch(api('api/map'),{cache:'no-store'});const m=await r.json();
+  if(!m.x||!m.x.length){mapProj=null}else{
+   // Vue de dessus : X vers la droite, Z vers le haut (à inverser ici si un circuit apparaît en miroir)
+   const xs=m.x,ys=m.z.map(z=>-z),W=320,H=240,P=14;let x0=Math.min(...xs),x1=Math.max(...xs),y0=Math.min(...ys),y1=Math.max(...ys);
+   const k=Math.min((W-2*P)/Math.max(1,x1-x0),(H-2*P)/Math.max(1,y1-y0)),ox=(W-(x1-x0)*k)/2,oy=(H-(y1-y0)*k)/2;
+   mapProj={X:xs.map(x=>ox+(x-x0)*k),Y:ys.map(y=>oy+(y-y0)*k),track:m.track||''}}
+  mapVer=v;marksSig='';drawMapBase()}catch(e){}finally{mapLoading=false}}
+function drawMapBase(){const svg=$('map');svg.replaceChildren();if(!mapProj)return;
+ const d='M'+mapProj.X.map((x,i)=>x.toFixed(1)+' '+mapProj.Y[i].toFixed(1)).join('L')+'Z';
+ [['#1f2b55',9],['#5b6bb0',2.2]].forEach(([c,w])=>{const p=document.createElementNS(SVGNS,'path');p.setAttribute('d',d);p.setAttribute('fill','none');p.setAttribute('stroke',c);p.setAttribute('stroke-width',w);p.setAttribute('stroke-linejoin','round');svg.appendChild(p)});
+ // ligne de départ/arrivée
+ const a=pctPoint(0),b=pctPoint(.004);if(a&&b){const dx=b[0]-a[0],dy=b[1]-a[1],l=Math.hypot(dx,dy)||1,nx=-dy/l*7,ny=dx/l*7,s=document.createElementNS(SVGNS,'line');s.setAttribute('x1',a[0]-nx);s.setAttribute('y1',a[1]-ny);s.setAttribute('x2',a[0]+nx);s.setAttribute('y2',a[1]+ny);s.setAttribute('stroke','#fff');s.setAttribute('stroke-width',2);svg.appendChild(s)}
+ const g=document.createElementNS(SVGNS,'g');g.id='mapMarks';svg.appendChild(g);
+ const car=document.createElementNS(SVGNS,'circle');car.id='mapCar';car.setAttribute('r',5.5);car.setAttribute('fill','#fff');car.setAttribute('stroke','#4cc9ff');car.setAttribute('stroke-width',2.5);car.style.display='none';svg.appendChild(car)}
+function cross(g,p,col){[45,-45].forEach(r=>{const l=document.createElementNS(SVGNS,'line');l.setAttribute('x1',p[0]-5);l.setAttribute('y1',p[1]);l.setAttribute('x2',p[0]+5);l.setAttribute('y2',p[1]);l.setAttribute('stroke',col);l.setAttribute('stroke-width',2.6);l.setAttribute('stroke-linecap','round');l.setAttribute('transform','rotate('+r+' '+p[0]+' '+p[1]+')');g.appendChild(l)})}
+function updateMap(d,L){if(d.map_version!==mapVer&&!mapLoading)loadMap(d.map_version);
+ const card=$('mapCard');card.hidden=!!window.PFA_DEMO&&!mapProj;
+ if(!mapProj){$('mapTag').textContent='—';$('mapCap').textContent=d.has_pos===false?'Tracé indisponible : ce jeu ne publie pas la position de la voiture.':'Le tracé sera enregistré automatiquement à la fin du premier tour propre.';return}
+ $('mapTag').textContent=mapProj.track||'Tracé enregistré';$('mapCap').textContent='Points rouges : écrêtage sur le tour en cours (plein) et le dernier tour valide (atténué). Croix : incident.';
+ const car=$('mapCar'),p=pctPoint(d.track_pct);if(car){if(p){car.setAttribute('cx',p[0]);car.setAttribute('cy',p[1]);car.style.display=''}else car.style.display='none'}
+ const ev=(d.events||[]).filter(e=>e.lap===d.lap||(L&&e.lap===L.lap)),inc=(d.laps||[]).filter(l=>l.incident_pct!=null&&l.status==='Excluded').slice(-3).map(l=>l.incident_pct);
+ if(d.lap_incident_pct!=null)inc.push(d.lap_incident_pct);
+ const sig=JSON.stringify([ev.map(e=>[e.lap,e.track_pct]),inc,d.lap]);if(sig===marksSig)return;marksSig=sig;
+ const g=$('mapMarks');if(!g)return;g.replaceChildren();
+ ev.forEach(e=>{const q=pctPoint(e.track_pct);if(!q)return;const c=document.createElementNS(SVGNS,'circle');c.setAttribute('cx',q[0]);c.setAttribute('cy',q[1]);c.setAttribute('r',4.2);c.setAttribute('fill','#ff3b4a');c.setAttribute('opacity',e.lap===d.lap?1:.4);g.appendChild(c)});
+ inc.forEach(x=>{const q=pctPoint(x);if(q)cross(g,q,'#ffb35c')})}
 function lapTime(s){if(!(s>0))return '—';const m=Math.floor(s/60),r=s-m*60;return m+':'+(r<10?'0':'')+r.toFixed(3)}
 function setPill(text,on){const c=$('conn');if(c.textContent!==text)c.textContent=text;c.className='pill '+(on?'on':'off')}
 function renderLive(d){last=d;threshold=d.threshold||.98;$('ver').textContent='v'+d.version;$('gameName').textContent=d.game||'aucun jeu';
@@ -62,10 +93,20 @@ function renderLive(d){last=d;threshold=d.threshold||.98;$('ver').textContent='v
    else{$('torqueLbl').textContent='COUPLE DE COLONNE P99 DU JEU · '+when;$('torqueVal').innerHTML=fmt(raw,1)+' <small>Nm</small>';
     $('torqueNote').textContent=d.settings_scale_nm==null?'Pas encore la valeur du FFB Lab : saisis STC, force et multiplicateur du jeu dans l’onglet Sources du plugin.':'Pas encore la valeur du FFB Lab : la pleine échelle mesurée apparaît après quelques virages.'}}}
  // Tableau des tours : reconstruit seulement s'il a changé
- const laps=d.laps||[],sig=JSON.stringify(laps.map(l=>[l.lap,l.time,l.status,l.clip_pct,l.events,l.equiv_nm,l.incident]));
- if(sig!==lapSig){lapSig=sig;const rows=$('lapRows');rows.replaceChildren();laps.slice().reverse().forEach(l=>{const tr=rows.insertRow();if(l.status==='Excluded')tr.style.opacity='.55';[l.lap,lapTime(l.time),pc(l.clip_pct,2)+' %',l.events,pc(l.peak)+' %',l.equiv_nm!=null?fmt(l.equiv_nm,1)+' Nm':(l.p99_nm!=null?'(colonne '+fmt(l.p99_nm,1)+')':'—'),pc(l.margin)+' %'].forEach((v,i)=>{const c=tr.insertCell();c.textContent=v;if(i===5)c.className='tq'});const td=tr.insertCell();td.textContent=(STATUS[l.status]||l.status)+(l.incident?' · '+l.incident:'');td.className='st-'+l.status});
-  if(!laps.length){const tr=rows.insertRow(),td=tr.insertCell();td.colSpan=8;td.textContent='Aucun tour complet pour l’instant.'}}
+ const laps=d.laps||[],sig=JSON.stringify(laps.map(l=>[l.lap,l.time,l.status,l.clip_pct,l.events,l.equiv_nm,l.incident,l.osc_status,l.osc_pkpk]));
+ if(sig!==lapSig){lapSig=sig;const rows=$('lapRows');rows.replaceChildren();laps.slice().reverse().forEach(l=>{const tr=rows.insertRow();if(l.status==='Excluded')tr.style.opacity='.55';[l.lap,lapTime(l.time),pc(l.clip_pct,2)+' %',l.events,pc(l.peak)+' %',l.equiv_nm!=null?fmt(l.equiv_nm,1)+' Nm':(l.p99_nm!=null?'(colonne '+fmt(l.p99_nm,1)+')':'—'),pc(l.margin)+' %',oscTxt(l)].forEach((v,i)=>{const c=tr.insertCell();c.textContent=v;if(i===5)c.className='tq';if(i===3)c.className='ev';if(i===7)c.style.color=l.osc_status==='Strong'?BAD:l.osc_status==='Light'?WARN:l.osc_status==='Stable'?'#48d4a1':''});const td=tr.insertCell();td.textContent=(STATUS[l.status]||l.status)+(l.incident?' · '+l.incident:'');td.className='st-'+l.status});
+  if(!laps.length){const tr=rows.insertRow(),td=tr.insertCell();td.colSpan=9;td.textContent='Aucun tour complet pour l’instant.'}}
+ updateOsc(d,L);
+ updateMap(d,L);
  scheduleDraw()}
+// Stabilité en ligne droite : verdict du dernier tour valide, oscillation en cours signalée en direct
+function updateOsc(d,L){const card=$('oscCard');card.hidden=!d.has_steer;if(!d.has_steer)return;
+ $('oscTag').textContent=d.osc_active?'OSCILLATION EN COURS':'VOLANT '+(d.steer_deg!=null?fmt(d.steer_deg,1)+'°':'—');$('oscTag').style.color=d.osc_active?BAD:'';
+ const st=L&&L.osc_status?L.osc_status:null,v=$('oscVal');
+ if(!st||st==='Unknown'){v.textContent='—';v.style.color='';$('oscCap').textContent=L?'Pas assez de ligne droite rapide sur le dernier tour (3 s au-dessus de 150 km/h).':'Verdict après le premier tour complet. Tour en cours : '+(d.lap_osc_events?d.lap_osc_events+' oscillation(s), jusqu’à '+fmt(d.lap_osc_pkpk,1)+'°':'aucune oscillation')+'.';return}
+ v.textContent=OSC[st];v.style.color=st==='Strong'?BAD:st==='Light'?WARN:'#48d4a1';
+ $('oscCap').textContent=st==='Stable'?'Dernier tour valide ('+L.lap+') : aucune oscillation régulière en ligne droite.':
+  'Dernier tour valide ('+L.lap+') : '+fmt(L.osc_pkpk,1)+'° crête à crête à '+fmt(L.osc_freq,0)+' Hz'+(L.osc_pct!=null?', vers '+Math.round(L.osc_pct*100)+' % du tour':'')+'. '+(st==='Strong'?'Vérifie d’abord qu’aucun effet n’amplifie la rotation du volant (WRS à 0 chez Simagic), puis ajoute de l’amortissement par pas de 2.':'Si tu la ressens, ajoute 2 points d’amortissement et compare au tour suivant.')+' Une prise ferme étouffe l’oscillation : garde la même prise pour comparer.'}
 let lastOk=Date.now(),polling=false,fail=0;
 async function poll(){if(polling)return;polling=true;
  const ctl=window.AbortController?new AbortController():null,timer=setTimeout(()=>{if(ctl)ctl.abort()},4000);
