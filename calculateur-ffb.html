@@ -537,6 +537,12 @@ function render(){
 
   drawCurve(s, r);
   drawGauges(vals);
+  // Transmission à l'assistant Test sur piste (même navigateur) : réglages réellement conseillés, en unités de la marque
+  const su = {game:s.game, brand:brandKey, base:b.name+' '+($('model').value==='custom'?'base '+fmt(s.B)+' Nm':($('model').selectedOptions[0]||{textContent:''}).textContent.split(' · ')[0])+' · '+fmt(s.B)+' Nm',
+    driver:r.pct, gain: s.game==='lmu'?Math.round(r.strength*100):(s.game==='ace'?80:70),
+    D:vals[0].v, F:vals[1].v, I:vals[2].v, sm: brandKey==='simagic'?1:null};
+  const pv = store.get('ffbLabSetup');
+  if(!pv || JSON.stringify(Object.assign({},pv,{ts:0}))!==JSON.stringify(Object.assign({},su,{ts:0}))) store.set('ffbLabSetup', Object.assign(su,{ts:Date.now()}));
 
   // Table driver
   $('hDrv').textContent = `Réglages ${b.soft}`;

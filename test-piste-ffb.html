@@ -1,40 +1,352 @@
-<!doctype html><html lang="fr"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Validation sur piste · Pure Racing FX</title><link href="https://fonts.googleapis.com/css2?family=Barlow:wght@400;500;600;700&family=Barlow+Condensed:wght@600;700&display=swap" rel="stylesheet"><style>:root{color-scheme:dark;--navy:#070e2a;--red:#fd1424;--panel:#112244;--line:#314362;--muted:#b6c6dc}*{box-sizing:border-box}body{margin:0;background:radial-gradient(ellipse at top right,#233b67,transparent 45%),var(--navy);color:#fff;font:16px Barlow,Arial,sans-serif;line-height:1.55}.wrap{max-width:1120px;margin:auto;padding:25px 18px 70px}h1,h2,h3{font-family:'Barlow Condensed',sans-serif}h1{font-size:clamp(36px,5vw,58px);line-height:1;margin:0 0 12px}h2{font-size:28px;margin:0 0 12px}.lead{color:var(--muted);max-width:730px}.nav{display:flex;flex-wrap:wrap;gap:9px;margin-bottom:22px}.nav a{background:#15274b;padding:10px 15px;border-radius:9px;color:#fff;text-decoration:none}.nav .active{background:var(--red)}.hero{border-radius:20px;min-height:240px;padding:38px 32px;display:flex;flex-direction:column;justify-content:center;background:linear-gradient(90deg,#070e2af5,#070e2a40),url('https://images.unsplash.com/photo-1552519507-da3b142c6e3d?auto=format&fit=crop&w=1500&q=85') center/cover;box-shadow:0 20px 55px #0008}.grid{display:grid;grid-template-columns:1fr 1fr;gap:20px;margin-top:22px}.card{background:linear-gradient(145deg,#16294d,#0b1731);border:1px solid #ffffff22;border-radius:16px;padding:23px;box-shadow:0 15px 35px #0005}.full{grid-column:1/-1}label{display:block;margin:12px 0 5px;font-weight:600}select,input,textarea,button{font:inherit}select,input,textarea{background:#09152e;color:#fff;border:1px solid #50607b;border-radius:9px;padding:10px;width:100%}button{cursor:pointer;border:0;background:var(--red);color:#fff;padding:12px 18px;border-radius:9px;font-weight:700}button.secondary{background:#243d66}.actions{display:flex;flex-wrap:wrap;gap:10px;margin-top:15px}.step{padding:14px 0;border-bottom:1px solid #ffffff20}.step strong{color:#fff}.small{font-size:14px;color:var(--muted)}.result{border-left:4px solid var(--red);background:#09152e;padding:18px;border-radius:10px;min-height:135px}.check{display:flex;align-items:flex-start;gap:10px;margin:10px 0}.check input{width:auto;margin-top:5px}.map{margin:0;text-align:center}.trackmap{display:block;width:100%;max-width:380px;margin:0 auto;font-family:Barlow,Arial,sans-serif}.map figcaption{margin-top:6px}@media print{.trackmap path:last-of-type{stroke:#666}}.tag{font-size:12px;letter-spacing:2px;color:#ff6973;font-weight:700;text-transform:uppercase}@media(max-width:760px){.grid{grid-template-columns:1fr}.hero{min-height:200px;padding:24px}}@media print{body{background:#fff;color:#000}.card,.result{background:#fff;color:#000;box-shadow:none;border:1px solid #ccc}.nav,.actions{display:none}.small,.lead{color:#444}}</style></head><body><div class="wrap"><nav class="nav"><a href="https://pureracing-fx.odoo.com/ffb-calculateur" target="_top">Calculateur</a><a href="https://pureracing-fx.odoo.com/comparateur-ffb" target="_top">Comparer</a><a class="active" href="https://pureracing-fx.odoo.com/test-piste-ffb" target="_top">Test sur piste</a><a href="https://pureracing-fx.odoo.com/pure-ffb-analyzer" target="_top">Analyzer</a><a href="https://pureracing-fx.odoo.com/notice-ffb" target="_top">Notice</a></nav><header class="hero"><span class="tag">PURE RACING FX / TRACK VALIDATION</span><h1>Le banc d’essai sur piste</h1><p class="lead">Une méthode reproductible pour affiner le FFB sans confondre force, détails, amortissement et clipping.</p></header><div class="grid"><section class="card"><h2>01 / Fiche de session</h2><label for="game">Simulation</label><select id="game"><option>Le Mans Ultimate</option><option>Assetto Corsa</option><option>Assetto Corsa EVO</option><option>rFactor 2</option><option>iRacing</option></select><label for="track">Circuit</label><input id="track" value="Spa-Francorchamps"><label for="car">Voiture</label><input id="car" placeholder="Ex. Mercedes-AMG GT3"><label for="base">Base / volant</label><input id="base" value="Simagic Alpha Mini · 10 Nm"><label for="gain">FFB jeu (%)</label><input id="gain" type="number" min="1" max="200" value="55"><label for="driver">Force driver (%)</label><input id="driver" type="number" min="1" max="100" value="80"><label for="notes">Notes de conduite</label><textarea id="notes" rows="3" placeholder="Pneus, température, conditions, etc."></textarea></section><section class="card"><h2>02 / Diagnostic du ressenti</h2><p class="small">Choisis le symptôme principal. Une seule modification à la fois, puis trois tours de comparaison.</p><label for="symptom">Ce que je ressens</label><select id="symptom"><option value="osc">Oscillations en ligne droite ou au freinage</option><option value="clip">Force plate en courbe rapide, détails perdus</option><option value="light">Volant trop léger</option><option value="heavy">Volant trop lourd ou fatigant</option><option value="slow">Retour au centre lent / direction pâteuse</option><option value="violent">Chocs et vibreurs trop violents</option><option value="empty">Train avant peu lisible</option><option value="fine">Ressenti progressif, précis, sans gêne</option></select><div class="result" id="advice" aria-live="polite"></div><div class="actions"><button id="copy" type="button">Copier ma fiche</button><button class="secondary" id="print" type="button">Imprimer / PDF</button></div></section><section class="card full"><h2>03 / Protocole de validation</h2><div class="grid" style="margin-top:0"><div><div class="step"><strong>1. Ligne droite · Kemmel</strong><div class="small">Mains sur le volant, vérifier l’absence d’oscillations persistantes.</div></div><div class="step"><strong>2. Freinage · Les Combes</strong><div class="small">Contrôler les pics, le transfert de charge et les réactions brusques.</div></div><div class="step"><strong>3. Appui rapide · Pouhon</strong><div class="small">La force doit évoluer progressivement sans devenir un plateau uniforme.</div></div></div><div><div class="step"><strong>4. Vibreurs · Les Combes</strong><div class="small">Vérifier des impacts distincts sans masquage du signal.</div></div><div class="step"><strong>5. Sortie lente · La Source</strong><div class="small">Observer le retour au centre, sans friction excessive.</div></div><div class="step"><strong>6. Répétabilité</strong><div class="small">Même voiture, mêmes pneus, carburant proche et au moins trois tours par essai.</div></div></div></div><div class="grid" style="margin-top:4px;align-items:start"><div><h3>Contrôles effectués</h3><div class="check"><input type="checkbox" id="c1"><label for="c1">Volant tenu à deux mains ; bouton d’arrêt d’urgence accessible</label></div><div class="check"><input type="checkbox" id="c2"><label for="c2">Un seul paramètre modifié entre deux essais</label></div><div class="check"><input type="checkbox" id="c3"><label for="c3">Clipping vérifié avec un indicateur de jeu lorsqu’il est disponible</label></div><div class="check"><input type="checkbox" id="c4"><label for="c4">Réglage confortable après plusieurs tours consécutifs</label></div></div><figure class="map"><svg class="trackmap" viewBox="0 0 420 420" role="img" aria-label="Tracé de Spa-Francorchamps avec les points du protocole"><defs><marker id="arr" viewBox="0 0 10 10" refX="5" refY="5" markerWidth="5" markerHeight="5" orient="auto"><path d="M0,0L10,5L0,10z" fill="#fd1424"/></marker></defs><path d="M92.3,68.4 L90.6,65.3 L89.0,62.2 L87.3,59.1 L85.7,56.0 L84.0,53.0 L82.4,49.9 L80.8,46.8 L79.2,43.7 L77.8,40.7 L77.2,37.8 L77.9,35.5 L80.0,34.2 L82.9,34.0 L86.2,34.8 L89.3,36.1 L92.4,37.5 L95.5,38.9 L98.6,40.4 L101.5,42.0 L104.4,43.7 L107.1,45.4 L109.9,47.3 L112.9,49.5 L116.0,51.9 L119.1,54.5 L122.1,57.2 L124.9,59.8 L127.7,62.7 L130.6,65.8 L133.6,69.1 L136.4,72.4 L139.0,75.3 L141.5,78.1 L144.2,80.9 L147.1,84.0 L150.1,87.1 L153.2,90.1 L156.3,93.0 L159.6,95.6 L163.0,98.1 L166.3,100.5 L169.4,103.0 L172.1,105.8 L174.5,108.8 L176.6,112.2 L178.3,116.0 L179.7,119.9 L180.9,123.8 L182.1,127.4 L183.6,131.0 L185.5,134.7 L187.8,138.5 L190.3,142.2 L192.8,145.8 L195.3,149.1 L197.7,152.5 L200.1,155.8 L202.4,159.2 L204.6,162.4 L206.5,165.5 L208.4,168.7 L210.4,172.1 L212.3,175.9 L214.2,179.9 L215.9,183.8 L217.4,187.6 L218.8,191.2 L220.0,194.9 L221.4,198.8 L222.7,202.9 L224.0,206.9 L225.2,210.7 L226.5,214.5 L227.8,218.4 L229.1,222.3 L230.4,226.2 L231.8,230.0 L233.2,234.0 L234.5,237.9 L235.9,241.8 L237.2,245.7 L238.5,249.8 L239.9,253.9 L241.2,257.8 L242.5,261.6 L243.8,265.5 L245.1,269.3 L246.4,273.2 L247.8,277.1 L249.1,280.9 L250.4,284.8 L251.8,288.8 L253.1,292.7 L254.3,296.4 L255.4,300.1 L256.3,303.8 L256.6,307.6 L256.2,311.3 L254.8,314.9 L252.7,318.2 L250.7,321.6 L249.3,325.1 L248.9,328.8 L249.4,332.7 L250.4,336.8 L251.3,340.8 L251.7,344.7 L251.1,348.5 L249.7,352.1 L247.5,355.4 L244.6,358.4 L241.4,361.0 L238.0,363.5 L234.7,365.9 L231.4,368.2 L228.1,370.7 L224.8,373.2 L221.4,375.7 L218.2,378.2 L215.0,380.6 L211.7,382.9 L208.2,384.8 L204.5,386.0 L201.0,386.0 L197.8,384.6 L195.7,382.0 L194.9,378.6 L195.7,375.1 L197.8,371.9 L200.9,369.2 L204.4,366.8 L208.0,364.6 L211.3,362.3 L214.0,359.6 L216.1,356.5 L217.3,353.1 L217.7,349.5 L217.2,345.7 L216.2,341.8 L214.8,337.7 L213.3,333.7 L211.8,329.8 L210.5,326.0 L209.2,322.1 L208.0,318.1 L206.9,314.2 L205.9,310.4 L205.0,306.6 L204.1,302.7 L203.2,298.7 L202.4,294.6 L201.5,290.5 L200.7,286.4 L199.7,282.3 L198.7,278.3 L197.5,274.5 L195.8,270.9 L193.5,267.7 L190.5,264.8 L187.1,262.6 L183.3,261.0 L179.4,260.1 L175.4,259.9 L171.3,260.1 L167.2,260.9 L163.3,262.1 L159.5,263.8 L156.2,265.9 L153.2,268.3 L150.5,271.2 L148.1,274.4 L146.1,277.9 L144.4,281.6 L143.0,285.6 L141.7,289.6 L140.5,293.7 L139.2,297.9 L138.0,302.0 L136.8,305.9 L135.6,309.6 L134.3,313.3 L133.0,317.1 L131.6,320.9 L130.1,324.6 L128.3,328.1 L125.9,331.3 L123.0,333.9 L119.6,335.6 L116.0,336.3 L112.3,336.1 L108.6,335.1 L104.8,334.0 L101.0,333.1 L97.1,333.1 L93.3,334.1 L90.0,336.1 L87.2,338.8 L84.9,342.0 L82.8,345.6 L80.8,349.4 L78.8,353.1 L76.8,356.7 L74.7,360.3 L72.5,363.8 L69.9,366.8 L66.8,369.0 L63.3,370.1 L59.5,370.0 L55.7,368.9 L52.1,367.1 L48.5,364.9 L45.1,362.5 L42.0,359.9 L39.2,357.0 L36.9,353.7 L35.3,350.0 L34.3,346.1 L34.0,342.1 L34.4,338.1 L35.3,334.2 L36.7,330.2 L38.3,326.5 L40.1,322.9 L42.0,319.5 L44.1,316.1 L46.5,312.6 L49.3,309.0 L52.3,305.5 L55.3,302.3 L58.2,299.3 L61.0,296.7 L63.7,294.3 L66.5,292.0 L69.6,289.6 L73.1,287.2 L76.8,284.8 L80.5,282.6 L84.1,280.6 L87.4,278.8 L90.8,276.9 L94.5,274.8 L98.2,272.5 L101.7,270.2 L105.0,267.9 L108.1,265.4 L111.2,262.6 L114.1,259.7 L116.8,256.6 L119.2,253.3 L121.4,249.7 L123.5,246.0 L125.3,242.3 L126.9,238.7 L128.4,234.9 L129.9,231.2 L131.2,227.2 L132.4,223.1 L133.3,218.9 L133.8,214.7 L133.9,210.7 L133.6,206.8 L132.8,202.8 L131.8,199.0 L130.4,195.3 L128.8,191.6 L127.1,187.9 L125.2,184.0 L123.4,180.1 L121.7,176.2 L120.1,172.5 L118.6,168.7 L117.3,164.8 L116.1,160.9 L115.0,156.9 L114.1,152.9 L113.2,148.9 L112.5,144.9 L111.9,141.1 L111.4,137.3 L111.0,133.3 L110.6,129.3 L110.7,125.4 L111.7,122.2 L113.6,119.7 L116.1,117.7 L118.0,115.4 L118.6,112.5 L117.7,109.1 L116.0,105.5 L113.9,102.1 L111.7,98.7 L109.4,95.2 L107.1,91.6 L104.8,88.0 L102.5,84.5 L100.2,81.0 L98.0,77.7 L96.0,74.6 L94.0,71.5Z" fill="none" stroke="#0a1633" stroke-width="11" stroke-linejoin="round"/><path d="M92.3,68.4 L90.6,65.3 L89.0,62.2 L87.3,59.1 L85.7,56.0 L84.0,53.0 L82.4,49.9 L80.8,46.8 L79.2,43.7 L77.8,40.7 L77.2,37.8 L77.9,35.5 L80.0,34.2 L82.9,34.0 L86.2,34.8 L89.3,36.1 L92.4,37.5 L95.5,38.9 L98.6,40.4 L101.5,42.0 L104.4,43.7 L107.1,45.4 L109.9,47.3 L112.9,49.5 L116.0,51.9 L119.1,54.5 L122.1,57.2 L124.9,59.8 L127.7,62.7 L130.6,65.8 L133.6,69.1 L136.4,72.4 L139.0,75.3 L141.5,78.1 L144.2,80.9 L147.1,84.0 L150.1,87.1 L153.2,90.1 L156.3,93.0 L159.6,95.6 L163.0,98.1 L166.3,100.5 L169.4,103.0 L172.1,105.8 L174.5,108.8 L176.6,112.2 L178.3,116.0 L179.7,119.9 L180.9,123.8 L182.1,127.4 L183.6,131.0 L185.5,134.7 L187.8,138.5 L190.3,142.2 L192.8,145.8 L195.3,149.1 L197.7,152.5 L200.1,155.8 L202.4,159.2 L204.6,162.4 L206.5,165.5 L208.4,168.7 L210.4,172.1 L212.3,175.9 L214.2,179.9 L215.9,183.8 L217.4,187.6 L218.8,191.2 L220.0,194.9 L221.4,198.8 L222.7,202.9 L224.0,206.9 L225.2,210.7 L226.5,214.5 L227.8,218.4 L229.1,222.3 L230.4,226.2 L231.8,230.0 L233.2,234.0 L234.5,237.9 L235.9,241.8 L237.2,245.7 L238.5,249.8 L239.9,253.9 L241.2,257.8 L242.5,261.6 L243.8,265.5 L245.1,269.3 L246.4,273.2 L247.8,277.1 L249.1,280.9 L250.4,284.8 L251.8,288.8 L253.1,292.7 L254.3,296.4 L255.4,300.1 L256.3,303.8 L256.6,307.6 L256.2,311.3 L254.8,314.9 L252.7,318.2 L250.7,321.6 L249.3,325.1 L248.9,328.8 L249.4,332.7 L250.4,336.8 L251.3,340.8 L251.7,344.7 L251.1,348.5 L249.7,352.1 L247.5,355.4 L244.6,358.4 L241.4,361.0 L238.0,363.5 L234.7,365.9 L231.4,368.2 L228.1,370.7 L224.8,373.2 L221.4,375.7 L218.2,378.2 L215.0,380.6 L211.7,382.9 L208.2,384.8 L204.5,386.0 L201.0,386.0 L197.8,384.6 L195.7,382.0 L194.9,378.6 L195.7,375.1 L197.8,371.9 L200.9,369.2 L204.4,366.8 L208.0,364.6 L211.3,362.3 L214.0,359.6 L216.1,356.5 L217.3,353.1 L217.7,349.5 L217.2,345.7 L216.2,341.8 L214.8,337.7 L213.3,333.7 L211.8,329.8 L210.5,326.0 L209.2,322.1 L208.0,318.1 L206.9,314.2 L205.9,310.4 L205.0,306.6 L204.1,302.7 L203.2,298.7 L202.4,294.6 L201.5,290.5 L200.7,286.4 L199.7,282.3 L198.7,278.3 L197.5,274.5 L195.8,270.9 L193.5,267.7 L190.5,264.8 L187.1,262.6 L183.3,261.0 L179.4,260.1 L175.4,259.9 L171.3,260.1 L167.2,260.9 L163.3,262.1 L159.5,263.8 L156.2,265.9 L153.2,268.3 L150.5,271.2 L148.1,274.4 L146.1,277.9 L144.4,281.6 L143.0,285.6 L141.7,289.6 L140.5,293.7 L139.2,297.9 L138.0,302.0 L136.8,305.9 L135.6,309.6 L134.3,313.3 L133.0,317.1 L131.6,320.9 L130.1,324.6 L128.3,328.1 L125.9,331.3 L123.0,333.9 L119.6,335.6 L116.0,336.3 L112.3,336.1 L108.6,335.1 L104.8,334.0 L101.0,333.1 L97.1,333.1 L93.3,334.1 L90.0,336.1 L87.2,338.8 L84.9,342.0 L82.8,345.6 L80.8,349.4 L78.8,353.1 L76.8,356.7 L74.7,360.3 L72.5,363.8 L69.9,366.8 L66.8,369.0 L63.3,370.1 L59.5,370.0 L55.7,368.9 L52.1,367.1 L48.5,364.9 L45.1,362.5 L42.0,359.9 L39.2,357.0 L36.9,353.7 L35.3,350.0 L34.3,346.1 L34.0,342.1 L34.4,338.1 L35.3,334.2 L36.7,330.2 L38.3,326.5 L40.1,322.9 L42.0,319.5 L44.1,316.1 L46.5,312.6 L49.3,309.0 L52.3,305.5 L55.3,302.3 L58.2,299.3 L61.0,296.7 L63.7,294.3 L66.5,292.0 L69.6,289.6 L73.1,287.2 L76.8,284.8 L80.5,282.6 L84.1,280.6 L87.4,278.8 L90.8,276.9 L94.5,274.8 L98.2,272.5 L101.7,270.2 L105.0,267.9 L108.1,265.4 L111.2,262.6 L114.1,259.7 L116.8,256.6 L119.2,253.3 L121.4,249.7 L123.5,246.0 L125.3,242.3 L126.9,238.7 L128.4,234.9 L129.9,231.2 L131.2,227.2 L132.4,223.1 L133.3,218.9 L133.8,214.7 L133.9,210.7 L133.6,206.8 L132.8,202.8 L131.8,199.0 L130.4,195.3 L128.8,191.6 L127.1,187.9 L125.2,184.0 L123.4,180.1 L121.7,176.2 L120.1,172.5 L118.6,168.7 L117.3,164.8 L116.1,160.9 L115.0,156.9 L114.1,152.9 L113.2,148.9 L112.5,144.9 L111.9,141.1 L111.4,137.3 L111.0,133.3 L110.6,129.3 L110.7,125.4 L111.7,122.2 L113.6,119.7 L116.1,117.7 L118.0,115.4 L118.6,112.5 L117.7,109.1 L116.0,105.5 L113.9,102.1 L111.7,98.7 L109.4,95.2 L107.1,91.6 L104.8,88.0 L102.5,84.5 L100.2,81.0 L98.0,77.7 L96.0,74.6 L94.0,71.5Z" fill="none" stroke="#7f93b5" stroke-width="5" stroke-linejoin="round"/><line x1="100.2" y1="64.1" x2="84.4" y2="72.7" stroke="#fff" stroke-width="3"/><line x1="127.7" y1="62.7" x2="141.5" y2="78.1" stroke="#fd1424" stroke-width="2.5" marker-end="url(#arr)"/><g><circle cx="225.2" cy="210.7" r="11" fill="#fd1424" stroke="#fff" stroke-width="2"/><text x="225.2" y="215.2" text-anchor="middle" font-size="13" font-weight="700" fill="#fff">1</text><text x="239.2" y="214.7" text-anchor="start" font-size="14" font-weight="600" fill="#d7e4f7">Kemmel</text></g><g><circle cx="249.3" cy="325.1" r="13" fill="#fd1424" stroke="#fff" stroke-width="2"/><text x="249.3" y="329.6" text-anchor="middle" font-size="11" font-weight="700" fill="#fff">2·4</text><text x="265.3" y="329.1" text-anchor="start" font-size="14" font-weight="600" fill="#d7e4f7">Les Combes</text></g><g><circle cx="163.3" cy="262.1" r="11" fill="#fd1424" stroke="#fff" stroke-width="2"/><text x="163.3" y="266.6" text-anchor="middle" font-size="13" font-weight="700" fill="#fff">3</text><text x="163.3" y="246.10000000000002" text-anchor="middle" font-size="14" font-weight="600" fill="#d7e4f7">Pouhon</text></g><g><circle cx="80.0" cy="34.2" r="11" fill="#fd1424" stroke="#fff" stroke-width="2"/><text x="80.0" y="38.7" text-anchor="middle" font-size="13" font-weight="700" fill="#fff">5</text><text x="94.0" y="42.2" text-anchor="start" font-size="14" font-weight="600" fill="#d7e4f7">La Source</text></g></svg><figcaption class="small">Spa-Francorchamps, sens de la course en rouge, ligne de départ en blanc. Tracé enregistré dans Le Mans Ultimate par le FFB Analyzer.</figcaption></figure></div></section></div><p class="small" style="margin-top:22px">Attention : un volant Direct Drive peut réagir violemment. Ne pas lâcher le volant pour provoquer des oscillations. Les recommandations sont des tests progressifs, non des garanties de sécurité.</p></div><script>const $=x=>document.getElementById(x);const tips={osc:['Oscillations / instabilité','1. Supprimer la cause avant de compenser : tout effet qui amplifie la rotation du volant doit être à 0 (WRS, vitesse de rotation de la roue, chez Simagic). C’est la cause la plus fréquente des oscillations en ligne droite. 2. Si l’oscillation persiste, ajouter un peu d’amortissement côté driver, par pas de 2 points. 3. Ne pas monter l’inertie ni la friction pour masquer une oscillation : l’inertie la ralentit sans la supprimer, la friction gomme aussi les détails autour du centre. Garder les mains sur le volant pendant les essais.'],clip:['Saturation potentielle','Observer un indicateur de clipping si disponible. Réduire le gain en jeu de 5 % relatif (ex. 60 → 57 %) ou le multiplicateur par voiture de 0,05. Ne pas conclure au clipping sur la seule sensation de poids.'],light:['Direction trop légère','Si le signal ne sature pas et que la base reste confortable, augmenter le gain en jeu par petits pas (+2 à +3 points) ou la force du driver. Éviter de modifier plusieurs gains simultanément.'],heavy:['Direction trop lourde','Réduire légèrement la force dans le driver ou le gain en jeu. Vérifier si la friction et le damping sont trop élevés avant d’augmenter la force pour récupérer des détails.'],slow:['Retour au centre ralenti','Diminuer légèrement le damping puis la friction, un paramètre à la fois. L’inertie simulée peut aussi ralentir les transitions.'],violent:['Pics de couple excessifs','Diminuer la force globale si les chocs sont dangereux ; ensuite vérifier les effets artificiels, collision et lissage selon le jeu. Un filtre de variation de couple peut être utile si disponible.'],empty:['Avant de voiture peu lisible','Vérifier le clipping, l’état des pneus et la force de direction. Réduire les effets artificiels et les filtres trop élevés ; ne pas augmenter automatiquement le damping.'],fine:['Profil à conserver','Conserver le profil et noter les paramètres. Le valider sur une deuxième voiture avant d’en faire un réglage universel.']};function update(){let t=tips[$('symptom').value];$('advice').innerHTML='<h3>'+t[0]+'</h3><p>'+t[1]+'</p>'}function report(){return ['PURE RACING FX — FICHE TEST FFB','Jeu : '+$('game').value,'Circuit : '+$('track').value,'Voiture : '+$('car').value,'Base : '+$('base').value,'FFB jeu : '+$('gain').value+' %','Driver : '+$('driver').value+' %','Symptôme : '+tips[$('symptom').value][0],'Recommandation : '+tips[$('symptom').value][1],'Notes : '+$('notes').value].join('\n')}$('symptom').addEventListener('change',update);$('copy').onclick=()=>{if(navigator.clipboard)navigator.clipboard.writeText(report()).then(()=>{$('copy').textContent='Fiche copiée'}).catch(()=>prompt('Copier la fiche',report()));else prompt('Copier la fiche',report())};$('print').onclick=()=>window.print();update();</script><script>
-/* Reprise automatique : valeurs les plus récentes du calculateur ou du comparateur (même navigateur),
-   et mémorisation de la fiche saisie ici. */
+<!doctype html><html lang="fr"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Validation sur piste · Pure Racing FX</title>
+<link href="https://fonts.googleapis.com/css2?family=Barlow:wght@400;500;600;700&family=Barlow+Condensed:wght@600;700&display=swap" rel="stylesheet">
+<style>
+:root{color-scheme:dark;--navy:#070e2a;--red:#fd1424;--panel:#112244;--line:#314362;--muted:#b6c6dc;--s1:#4cc9ff;--s2:#fd1424;--s3:#f5b301;--ok:#2fd47a;--warn:#f5a524;--bad:#ff4d5e}
+*{box-sizing:border-box}body{margin:0;background:radial-gradient(ellipse at top right,#233b67,transparent 45%),var(--navy);color:#fff;font:16px Barlow,Arial,sans-serif;line-height:1.5}
+.wrap{max-width:1180px;margin:auto;padding:25px 16px 70px}h1,h2,h3{font-family:'Barlow Condensed',sans-serif}h1{font-size:clamp(34px,5vw,56px);line-height:1;margin:0 0 12px}h2{font-size:27px;margin:0 0 12px}h3{font-size:20px;margin:0 0 6px}
+.lead{color:var(--muted);max-width:760px}.nav{display:flex;flex-wrap:wrap;gap:9px;margin-bottom:22px}.nav a{background:#15274b;padding:10px 15px;border-radius:9px;color:#fff;text-decoration:none}.nav .active{background:var(--red)}
+.hero{border-radius:20px;min-height:220px;padding:34px 30px;display:flex;flex-direction:column;justify-content:center;background:linear-gradient(90deg,#070e2af5,#070e2a40),url('https://images.unsplash.com/photo-1552519507-da3b142c6e3d?auto=format&fit=crop&w=1500&q=85') center/cover;box-shadow:0 20px 55px #0008}
+.grid{display:grid;grid-template-columns:1fr 1fr;gap:20px;margin-top:22px}.card{background:linear-gradient(145deg,#16294d,#0b1731);border:1px solid #ffffff22;border-radius:16px;padding:22px;box-shadow:0 15px 35px #0005;min-width:0}.full{grid-column:1/-1}
+label{display:block;margin:10px 0 4px;font-weight:600;font-size:14px}select,input,textarea,button{font:inherit}select,input,textarea{background:#09152e;color:#fff;border:1px solid #50607b;border-radius:9px;padding:8px 10px;width:100%}
+button{cursor:pointer;border:0;background:var(--red);color:#fff;padding:10px 16px;border-radius:9px;font-weight:700}button.secondary{background:#243d66}button:disabled{opacity:.45;cursor:default}
+.small{font-size:14px;color:var(--muted)}.tag{font-size:12px;letter-spacing:2px;color:#ff6973;font-weight:700;text-transform:uppercase}
+.f2{display:grid;grid-template-columns:1fr 1fr;gap:0 12px}.f3{display:grid;grid-template-columns:repeat(3,1fr);gap:0 12px}.chk{display:flex;gap:8px;align-items:flex-start;font-weight:500}.chk input{width:auto;margin-top:4px}
+.info{border:1px solid rgba(76,201,255,.45);background:rgba(76,201,255,.1);border-radius:10px;padding:9px 12px;margin:0 0 12px}
+.legend{display:flex;flex-wrap:wrap;gap:6px 16px;margin:4px 0 8px}.legend span{display:flex;align-items:center;gap:7px;font-size:14px}.legend i{width:22px;height:5px;border-radius:3px;display:inline-block}
+.trackmap{display:block;width:100%;max-width:330px;margin:0 auto;font-family:Barlow,Arial,sans-serif}.trackmap .mk{cursor:pointer}.trackmap .mk:hover circle{stroke-width:3.5}
+.sector{margin-top:18px}.sector>h3{display:flex;align-items:center;gap:10px}.sector>h3 i{width:12px;height:12px;border-radius:50%}
+.test{display:grid;grid-template-columns:44px 1.25fr 1.6fr 1fr;gap:14px;align-items:start;padding:14px 0;border-top:1px solid #ffffff1c}
+.num{width:40px;height:40px;border-radius:10px;display:grid;place-items:center;font:700 24px 'Barlow Condensed',sans-serif;border:2px solid}
+.test ul{margin:4px 0 0;padding-left:18px;font-size:14px;color:#d7e4f7}.test .zone{font-size:13px;color:var(--muted);font-weight:600;letter-spacing:.5px;text-transform:uppercase}
+.goal{font-size:13px;color:#9fe3bd;margin-top:6px}.ans{display:flex;flex-direction:column;gap:6px}.ans button{background:#13254a;border:1px solid #3c5277;font-weight:600;padding:7px 10px;text-align:left}
+.ans button.sel.ok{background:#1b5e3d;border-color:var(--ok)}.ans button.sel.pb{background:#6b2a0f;border-color:var(--warn)}.state{font-size:12px;font-weight:700;letter-spacing:1px;text-transform:uppercase;margin-top:2px}
+.flash{animation:fl 1.6s}@keyframes fl{0%{background:#4cc9ff33}100%{background:transparent}}
+.fix{border-left:4px solid var(--red);background:#09152e;border-radius:10px;padding:18px}.fix .val{display:flex;flex-wrap:wrap;gap:12px;margin:10px 0}.fix .box{background:#13254a;border-radius:10px;padding:10px 14px;min-width:150px}
+.fix .box b{display:block;font:700 28px 'Barlow Condensed',sans-serif}.fix .box.to b{color:#ffd166}.actions{display:flex;flex-wrap:wrap;gap:10px;margin-top:14px}
+.queue{margin:12px 0 0;padding-left:18px;color:var(--muted);font-size:14px}
+.bars .row{display:grid;grid-template-columns:28px 1fr 110px;gap:10px;align-items:center;padding:6px 0;font-size:14px}.bars .b{height:8px;border-radius:5px;background:#24365a;overflow:hidden}.bars .b i{display:block;height:100%}
+.hist{font-size:14px;margin:0;padding-left:18px}.hist li{margin:4px 0}.ok{color:var(--ok)}.warn{color:var(--warn)}.bad{color:var(--bad)}
+@media(max-width:900px){.grid{grid-template-columns:1fr}.test{grid-template-columns:40px 1fr}.test .proc,.test .ans{grid-column:2}.ans{flex-direction:row;flex-wrap:wrap}.ans button{flex:1 1 30%}}
+@media(max-width:560px){.f3{grid-template-columns:1fr 1fr}.hero{padding:22px}}
+@media print{body{background:#fff;color:#000}.card,.fix{background:#fff;color:#000;box-shadow:none;border:1px solid #ccc}.nav,.actions,.ans button:not(.sel),.hero{display:none}.small,.lead{color:#444}}
+</style></head><body><div class="wrap">
+<nav class="nav"><a href="https://pureracing-fx.odoo.com/ffb-calculateur" target="_top">Calculateur</a><a href="https://pureracing-fx.odoo.com/comparateur-ffb" target="_top">Comparer</a><a class="active" href="https://pureracing-fx.odoo.com/test-piste-ffb" target="_top">Test sur piste</a><a href="https://pureracing-fx.odoo.com/pure-ffb-analyzer" target="_top">Analyzer</a><a href="https://pureracing-fx.odoo.com/notice-ffb" target="_top">Notice</a></nav>
+<header class="hero"><span class="tag">PURE RACING FX / TRACK VALIDATION</span><h1>Assistant de diagnostic à Spa</h1><p class="lead">Huit tests ciblés, secteur par secteur. Tu indiques ton ressenti, l'assistant propose une seule correction chiffrée pour ta base, tu refais le passage, et il garde ou annule le changement.</p></header>
+
+<div class="grid">
+<section class="card"><h2>01 / Ta configuration</h2><div id="from"></div>
+ <div class="f2"><div><label for="game">Simulation</label><select id="game"><option value="lmu">Le Mans Ultimate / rFactor 2</option><option value="ac">Assetto Corsa</option><option value="ace">Assetto Corsa EVO</option></select></div>
+ <div><label for="brand">Marque de la base</label><select id="brand"></select></div></div>
+ <div class="f2"><div><label for="car">Voiture</label><input id="car" placeholder="Ex. Ferrari 296 GT3"></div><div><label for="base">Base / volant</label><input id="base" placeholder="Ex. Alpha Mini · GT Neo"></div></div>
+ <div class="f2"><div><label for="driver" id="lDriver">Puissance driver (%)</label><input id="driver" type="number" min="1" max="100"></div><div><label for="gain" id="lGain">Force en jeu (%)</label><input id="gain" type="number" min="1" max="200"></div></div>
+ <div class="f3"><div><label for="D" id="lD">Damper</label><input id="D" type="number" step="1"></div><div><label for="F" id="lF">Friction</label><input id="F" type="number" step="0.5"></div><div><label for="I" id="lI">Inertie</label><input id="I" type="number" step="1"></div></div>
+ <div class="f2"><div><label for="sm" id="lSm">Lissage</label><input id="sm" type="number" min="0" max="20" step="1"></div><div id="wrsBox"><label>&nbsp;</label><label class="chk" for="wrs"><input type="checkbox" id="wrs"> WRS (vitesse de rotation de la roue) à 0</label></div></div>
+ <h3 style="margin-top:16px">Mesures FFB Analyzer <span class="small">(facultatif, dernier tour complet)</span></h3>
+ <div class="f2"><div><label for="p995">Niveau de référence, 99,5e centile (%)</label><input id="p995" type="number" min="1" max="300" placeholder="ex. 94"></div><div><label for="clip">Écrêtage du tour (%)</label><input id="clip" type="number" min="0" max="100" step="0.1" placeholder="ex. 0,4"></div></div>
+ <p class="small" style="margin-top:10px">Avec ces deux mesures, l'assistant distingue une force « plate » due à l'écrêtage d'une force plate due aux filtres. Sans elles, il reste prudent.</p>
+</section>
+
+<section class="card"><h2>02 / Spa-Francorchamps par secteur</h2>
+ <div class="legend"><span><i style="background:var(--s1)"></i>Secteur 1 · stabilité et centre</span><span><i style="background:var(--s2)"></i>Secteur 2 · réactivité et train avant</span><span><i style="background:var(--s3)"></i>Secteur 3 · vibreurs</span></div>
+ <svg id="map" class="trackmap" viewBox="0 0 275 400" role="img" aria-label="Tracé de Spa-Francorchamps avec les huit tests"></svg>
+ <p class="small" style="text-align:center;margin:6px 0 0">Clique sur un numéro pour aller au test. Sens horaire, ligne de départ en blanc. Tracé enregistré dans Le Mans Ultimate par le FFB Analyzer. Les secteurs sont ceux du protocole, pas les secteurs officiels.</p>
+</section>
+
+<section class="card full"><h2>03 / Les tests</h2>
+ <p class="small">Même voiture, mêmes pneus, carburant proche, 2 tours de chauffe. Garde toujours les deux mains sur le volant et l'arrêt d'urgence à portée. Fais les tests dans l'ordre que tu veux, l'assistant traite d'abord ce qui touche à la sécurité.</p>
+ <div id="tests"></div>
+</section>
+
+<section class="card full" id="fixCard"><h2>04 / Correction à tester</h2><div id="fix"></div></section>
+
+<section class="card"><h2>05 / Synthèse</h2><div class="bars" id="bars"></div><p class="small" id="score" style="margin-top:10px"></p></section>
+<section class="card"><h2>Historique des essais</h2><ol class="hist" id="hist"></ol>
+ <div class="actions"><button id="copy" type="button">Copier le rapport</button><button class="secondary" id="print" type="button">Imprimer / PDF</button><button class="secondary" id="reset" type="button">Nouvelle séance</button></div></section>
+</div>
+<p class="small" style="margin-top:22px">Attention : une base Direct Drive peut réagir violemment. Ne lâche jamais le volant pour provoquer une oscillation. Les corrections proposées sont des essais progressifs, pas des réglages universels ni des garanties de sécurité.</p>
+</div>
+<script>
 (function(){
-  'use strict';
-  const $=id=>document.getElementById(id);
-  const get=k=>{try{return JSON.parse(localStorage.getItem(k)||'null')}catch(e){return null}};
-  const put=(k,v)=>{try{localStorage.setItem(k,JSON.stringify(v))}catch(e){}};
-  const fmt=v=>Number(v).toLocaleString('fr-FR',{maximumFractionDigits:1});
-  const FIELDS=['game','track','car','base','gain','driver','notes'];
-  const sheet=get('ffbTrackSheet'), h=get('ffbLabHandoff'), c=get('ffb-calc-v2');
+'use strict';
+const $=id=>document.getElementById(id);
+const get=k=>{try{return JSON.parse(localStorage.getItem(k)||'null')}catch(e){return null}};
+const put=(k,v)=>{try{localStorage.setItem(k,JSON.stringify(v))}catch(e){}};
+const fmt=(v,d)=>Number(v).toLocaleString('fr-FR',{maximumFractionDigits:d==null?1:d});
+const esc=s=>String(s==null?'':s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
 
-  let cand=null;
-  if(h&&h.st){
-    const g={lmu:'Le Mans Ultimate',ac:'Assetto Corsa',ace:'Assetto Corsa EVO'}[h.calcGame]||(h.game==='lmu'?'Le Mans Ultimate':'Assetto Corsa');
-    cand={ts:h.ts||0,from:'calculateur',v:{game:g,base:h.base||'',driver:Math.round(h.st.B*100),
-      gain:h.game==='lmu'?Math.round(h.st.s*100):Math.round((h.st.g||0)*100)}};
-  }
-  if(c&&c.savedAt&&c.game&&c[c.game]&&c[c.game].st&&(!cand||c.savedAt>cand.ts)){
-    const st=c[c.game].st, g={lmu:'Le Mans Ultimate',ac:'Assetto Corsa',iracing:'iRacing'}[c.game];
-    const v={game:g,driver:Math.round(st.B*100),base:'Base '+fmt(st.A)+' Nm'+(st.T<st.A?' (limitée à '+fmt(st.T)+' Nm)':'')};
-    if(h&&h.base&&h.st&&Math.abs(h.st.A-st.A)<0.01&&!(st.T<st.A))v.base=h.base; // même base : garder le nom du modèle
-    if(c.game==='lmu')v.gain=Math.round(st.s*100); else if(c.game==='ac')v.gain=Math.round(st.g*100);
-    cand={ts:c.savedAt,from:'comparateur',v};
-  }
+/* Tracé mesuré (FFB Analyzer, LMU) : 300 points, sens horaire, index 0 = ligne de départ */
+const PTS=[[86,63],[85,60],[83,57],[82,54],[80,51],[78,48],[77,45],[75,42],[74,39],[72,36],[72,34],[72,31],[74,30],[77,30],[80,31],[83,32],[86,33],[89,35],[92,36],[95,38],[98,39],[101,41],[103,43],[106,45],[109,47],[112,50],[115,52],[118,55],[120,58],[123,61],[126,64],[129,67],[131,70],[134,73],[136,75],[139,78],[142,81],[145,84],[148,87],[151,90],[155,92],[158,94],[161,97],[163,99],[166,102],[168,106],[169,109],[171,113],[172,117],[173,120],[175,124],[176,127],[179,131],[181,135],[183,138],[186,141],[188,144],[190,148],[193,151],[195,154],[197,157],[198,160],[200,163],[202,167],[204,171],[206,175],[207,178],[208,182],[210,185],[211,189],[212,193],[214,197],[215,201],[216,204],[217,208],[218,212],[220,216],[221,219],[222,223],[224,227],[225,231],[226,235],[228,238],[229,242],[230,246],[231,250],[233,254],[234,257],[235,261],[236,265],[238,268],[239,272],[240,276],[242,280],[243,283],[244,287],[245,291],[245,294],[245,298],[243,301],[241,305],[239,308],[238,311],[238,315],[238,319],[239,322],[240,326],[240,330],[240,334],[238,337],[236,340],[233,343],[230,346],[227,348],[224,351],[221,353],[218,355],[214,358],[211,360],[208,362],[205,365],[202,367],[198,369],[195,370],[191,370],[188,369],[186,366],[185,363],[186,359],[188,356],[191,354],[195,351],[198,349],[201,347],[204,345],[206,342],[207,338],[207,335],[207,331],[206,327],[205,323],[203,320],[202,316],[200,312],[199,308],[198,304],[197,301],[196,297],[195,293],[194,290],[193,286],[193,282],[192,278],[191,274],[190,270],[189,266],[188,262],[186,259],[184,256],[181,253],[178,251],[174,249],[170,248],[167,248],[163,248],[159,249],[155,250],[151,252],[148,254],[145,256],[143,259],[140,262],[138,266],[137,269],[135,273],[134,277],[133,281],[132,285],[130,289],[129,293],[128,296],[127,300],[126,303],[124,307],[123,311],[121,314],[119,317],[116,320],[113,321],[109,322],[106,322],[102,321],[98,320],[95,319],[91,319],[87,320],[84,322],[81,324],[79,328],[77,331],[75,335],[73,338],[71,342],[69,345],[67,349],[65,351],[62,354],[58,355],[55,355],[51,354],[47,352],[44,350],[41,347],[38,345],[35,342],[33,339],[31,335],[30,331],[30,328],[30,324],[31,320],[33,316],[34,312],[36,309],[38,306],[40,302],[42,299],[45,296],[48,292],[51,289],[53,286],[56,284],[59,281],[61,279],[64,277],[68,275],[71,272],[75,270],[78,268],[82,266],[85,265],[88,263],[92,260],[95,258],[99,256],[102,254],[105,251],[107,248],[110,245],[112,242],[114,238],[116,235],[118,231],[120,228],[121,224],[123,220],[124,217],[125,213],[126,209],[126,205],[126,201],[126,197],[125,193],[124,189],[123,186],[122,182],[120,179],[118,175],[116,171],[115,167],[113,164],[112,160],[110,156],[109,153],[108,149],[107,145],[107,141],[106,137],[105,133],[105,130],[104,126],[104,122],[104,118],[105,115],[107,113],[109,111],[111,109],[112,106],[111,103],[109,99],[107,96],[105,92],[103,89],[101,86],[98,82],[96,79],[94,75],[92,72],[90,69],[88,66]];
+const SECT=[[0,96,'s1'],[96,222,'s2'],[222,300,'s3']];
 
-  if(sheet&&sheet.f) FIELDS.forEach(k=>{if(sheet.f[k]!=null&&$(k))$(k).value=sheet.f[k]});
-  if(cand&&(!sheet||cand.ts>sheet.ts)){
-    Object.keys(cand.v).forEach(k=>{if($(k)&&cand.v[k]!==''&&cand.v[k]!=null)$(k).value=cand.v[k]});
-    const card=$('game').closest('section'), box=document.createElement('p');
-    box.className='small';
-    box.style.cssText='border:1px solid rgba(76,201,255,.45);background:rgba(76,201,255,.1);border-radius:10px;padding:9px 12px;margin:0 0 12px';
-    box.textContent='Valeurs reprises du '+cand.from+' ('+new Date(cand.ts).toLocaleString('fr-FR',{dateStyle:'short',timeStyle:'short'})+'). Complète la voiture et le circuit, puis note tes essais.';
-    const h2=card.querySelector('h2'); h2.after(box);
-    saveSheet();
-  }
-  function saveSheet(){const f={};FIELDS.forEach(k=>{if($(k))f[k]=$(k).value});put('ffbTrackSheet',{ts:Date.now(),f});}
-  FIELDS.forEach(k=>{if($(k)){$(k).addEventListener('input',saveSheet);$(k).addEventListener('change',saveSheet);}});
+/* Paramètres driver par marque. slope : unités de la marque par point d'équivalent Simagic (mêmes échelles que le calculateur). */
+const BRANDS={
+ simagic:{name:'Simagic',soft:'SimPro Manager',D:['Mechanical Damper',1,0,50,' %'],F:['Mechanical Friction',1,0,20,' %'],I:['Mechanical Inertia',1,0,40,' %'],sm:['Smoothing',0,10],wrs:true},
+ moza:{name:'Moza',soft:'Pit House',D:['Wheel Damper',1,0,60,' %'],F:['Wheel Friction',4,10,60,' %'],I:['Natural Inertia',5,100,250,' %'],sm:null},
+ fanatec:{name:'Fanatec',soft:'Fanatec App',D:['NDP',1,0,100,''],F:['NFR',2.5,0,100,''],I:['NIN',0.8,0,100,''],sm:['INT',0,20]},
+ simucube:{name:'Simucube',soft:'Simucube Tuner',D:['Damping',0.6,0,40,' %'],F:['Friction',1.5,0,20,' %'],I:['Inertia',0.4,0,20,' %'],sm:['Reconstruction Filter',0,10]},
+ asetek:{name:'Asetek',soft:'RaceHub',D:['Damping',0.6,0,40,' %'],F:['Friction',4,0,40,' %'],I:['Inertia',0.3,0,10,''],sm:null}
+};
+const GAMES={lmu:{name:'Le Mans Ultimate',gain:'Force Feedback Strength',sm:['Force Feedback Smoothing (LMU)',0,20]},ac:{name:'Assetto Corsa',gain:'Gain FFB',sm:null},ace:{name:'Assetto Corsa EVO',gain:'Gain FFB',sm:null}};
+/* Limites de travail en équivalent Simagic (référence validée 7 / 2 / 4) */
+const CAP={D:[0,20],F:[0,4],I:[0,15]};
+
+/* Les huit tests. ans : [id, libellé, ok?] */
+const TESTS=[
+ {id:'T1',sec:'s1',idx:22,zone:'Sortie de La Source',title:'Retour au centre',
+  proc:['Sortie d\'épingle en 2e, accélère progressivement','Desserre légèrement les mains en ligne','Observe le volant revenir droit','Répète 3 tours'],
+  goal:'Retour franc et naturel, sans dépasser le centre.',
+  ans:[['slow','Trop lent, collant'],['ok','Naturel',1],['over','Dépasse le centre']]},
+ {id:'T2',sec:'s1',idx:46,zone:'Eau Rouge – Raidillon',title:'Compression et écrêtage',
+  proc:['Passage à fond ou presque','Sens la charge monter en compression','La force doit grimper sans « mur »','Compare avec le FFB Analyzer : c\'est là que l\'écrêtage apparaît'],
+  goal:'La force augmente avec la compression, les détails restent présents.',
+  ans:[['flat','Plate, saturée'],['ok','Progressive',1],['hit','Coups violents']]},
+ {id:'T3',sec:'s1',idx:64,zone:'Kemmel',title:'Stabilité en ligne droite',
+  proc:['Au-delà de 230 km/h, mains posées normalement','Aucune correction volontaire','Observe le volant pendant 3 à 4 secondes','Ne jamais lâcher le volant'],
+  goal:'Volant calme, aucune oscillation qui s\'entretient.',
+  ans:[['ok','Stable',1],['osc1','Légère oscillation'],['osc2','Oscillation forte']]},
+ {id:'T4',sec:'s1',idx:80,zone:'Kemmel',title:'Zone centrale',
+  proc:['Petites corrections de ±2 à 5°','À vitesse élevée puis plus basse','Sens-tu la voiture répondre dès le premier degré ?'],
+  goal:'Un léger effort dès qu\'on quitte le centre, sans point dur.',
+  ans:[['empty','Vide, flou'],['ok','Précise',1],['sticky','Collante, lourde']]},
+ {id:'T5',sec:'s1',idx:93,zone:'Freinage des Combes',title:'Stabilité au freinage',
+  proc:['Freinage fort de 280 à 110 km/h, en ligne droite','Sans bloquer les roues','Observe le volant pendant le freinage et l\'entrée'],
+  goal:'Volant stable, le transfert de charge vers l\'avant se sent.',
+  ans:[['ok','Stable',1],['brk1','Secousses légères'],['brk2','Secousses fortes']]},
+ {id:'T6',sec:'s2',idx:190,zone:'Fagnes',title:'Réactivité',
+  proc:['Enchaînement droite-gauche à vitesse réaliste','Le volant suit-il tes mains sans retard ?','Répète 3 tours'],
+  goal:'Réponse immédiate, sans retard ni nervosité.',
+  ans:[['slow','Lent, pâteux'],['ok','Correcte',1],['nervous','Nerveux']]},
+ {id:'T7',sec:'s2',idx:166,zone:'Pouhon',title:'Train avant en appui long',
+  proc:['Double gauche en appui','Cherche la limite d\'adhérence de l\'avant','La force doit s\'alléger quand l\'avant décroche'],
+  goal:'Charge et début de sous-virage lisibles, sans fatigue.',
+  ans:[['plateau','Peu lisible, plateau'],['ok','Lisible',1],['heavy','Trop lourd, fatigant']]},
+ {id:'T8',sec:'s3',idx:284,zone:'Bus Stop',title:'Vibreurs',
+  proc:['Monte sur les vibreurs de la chicane','Même angle et même vitesse à chaque passage','Compare intérieur et extérieur'],
+  goal:'Impacts nets et proportionnés, sans masquer la force de direction.',
+  ans:[['weak','Trop faibles'],['ok','Nets',1],['violent','Trop violents']]}
+];
+const PRIO=['T3','T5','T2','T7','T6','T1','T4','T8']; // sécurité d'abord
+const AFFECTS={D:['T3','T5','T6','T1'],F:['T4','T1','T6'],I:['T6','T3'],sm:['T8','T2','T7','T4'],gain:['T2','T7','T8','T3']};
+
+/* ---------- État ---------- */
+const KEY='ffbTrackAssistant';
+let S=get(KEY)||{};
+S.ans=S.ans||{};S.tried=S.tried||{};S.hist=S.hist||[];S.cfg=S.cfg||null;S.rep=S.rep||{};
+const setup=get('ffbLabSetup');
+function defaults(){return {game:'ac',brand:'simagic',car:'',base:'',driver:100,gain:70,D:7,F:2,I:4,sm:1,wrs:false,p995:'',clip:''};}
+if(!S.cfg){S.cfg=defaults();}
+if(setup&&(!S.cfgTs||setup.ts>S.cfgTs)){
+ Object.assign(S.cfg,{game:setup.game,brand:setup.brand,base:setup.base||S.cfg.base,driver:setup.driver,gain:setup.gain,D:setup.D,F:setup.F,I:setup.I});
+ if(setup.sm!=null)S.cfg.sm=setup.sm;
+ S.cfgTs=setup.ts;S.fromCalc=setup.ts;
+}
+const save=()=>put(KEY,S);
+
+/* ---------- Configuration ---------- */
+$('brand').innerHTML=Object.keys(BRANDS).map(k=>`<option value="${k}">${BRANDS[k].name}</option>`).join('');
+const CF=['game','brand','car','base','driver','gain','D','F','I','sm','p995','clip'];
+function fillCfg(){CF.forEach(k=>{$(k).value=S.cfg[k]==null?'':S.cfg[k]});$('wrs').checked=!!S.cfg.wrs;labels();}
+function readCfg(){CF.forEach(k=>{const el=$(k);S.cfg[k]=el.type==='number'?(el.value===''?'':Number(el.value)):el.value});S.cfg.wrs=$('wrs').checked;}
+function smParam(){const b=BRANDS[S.cfg.brand];return b.sm?{name:b.sm[0]+' ('+b.soft+')',min:b.sm[1],max:b.sm[2]}:(GAMES[S.cfg.game].sm?{name:GAMES[S.cfg.game].sm[0],min:0,max:GAMES[S.cfg.game].sm[2]}:null);}
+function labels(){
+ const b=BRANDS[S.cfg.brand],g=GAMES[S.cfg.game],u=p=>p[4]?' ('+p[4].trim()+')':'';
+ $('lD').textContent=b.D[0]+u(b.D);$('lF').textContent=b.F[0]+u(b.F);$('lI').textContent=b.I[0]+u(b.I);
+ $('lGain').textContent=g.gain+' (%)';$('lDriver').textContent='Puissance driver, '+b.soft+' (%)';
+ const sp=smParam();$('lSm').textContent=sp?sp.name:'Lissage (non utilisé)';$('sm').disabled=!sp;
+ $('wrsBox').style.visibility=b.wrs?'visible':'hidden';
+}
+if(S.fromCalc){$('from').innerHTML='<p class="small info">Réglages repris du calculateur ('+new Date(S.fromCalc).toLocaleString('fr-FR',{dateStyle:'short',timeStyle:'short'})+'). Corrige-les s\'ils diffèrent de ce que tu utilises vraiment.</p>';}
+CF.concat(['wrs']).forEach(k=>{const el=$(k);el.addEventListener('change',()=>{readCfg();labels();save();renderFix();renderSummary();}); /* sans reconstruire les tests : un clic sur une réponse juste après une saisie serait perdu */if(el.type==='number'||el.tagName==='INPUT')el.addEventListener('input',()=>{readCfg();save();renderFix();});});
+
+/* ---------- Conversion d'une variation en unités de la marque ---------- */
+function par(k){const b=BRANDS[S.cfg.brand];return {k,name:b[k][0]+' ('+b.soft+')',slope:b[k][1],off:b[k][2],max:b[k][3],unit:b[k][4]};}
+function eqOf(k){const p=par(k);return (Number(S.cfg[k])-p.off)/p.slope;}
+function stepTo(k,dEq){
+ const p=par(k),cur=Number(S.cfg[k]);
+ let raw=cur+p.slope*dEq; let to=Math.round(raw);
+ if(to===cur)to=cur+Math.sign(dEq);                       // au moins une unité
+ const lo=Math.max(p.off+CAP[k][0]*p.slope,0), hi=Math.min(p.off+CAP[k][1]*p.slope,p.max);
+ to=Math.min(hi,Math.max(lo,to));
+ return to===cur?null:to;
+}
+
+/* ---------- Bibliothèque de règles : candidats dans l'ordre, pour chaque problème ---------- */
+function candidates(t,a){
+ const c=S.cfg,b=BRANDS[c.brand],gN=GAMES[c.game].gain,p=Number(c.p995)/100,clip=Number(c.clip),hasP=c.p995!==''&&p>0;
+ const L=[],drv=(id,k,dEq,why,watch,rep)=>{const to=stepTo(k,dEq);if(to!=null)L.push({id,type:'param',k,from:Number(c[k]),to,name:par(k).name,unit:par(k).unit,why,watch,rep});};
+ const sm=(id,d,why,watch)=>{const sp=smParam();if(!sp)return;const cur=Number(c.sm)||0,to=Math.min(sp.max,Math.max(sp.min,cur+d));if(to!==cur)L.push({id,type:'param',k:'sm',from:cur,to,name:sp.name,unit:'',why,watch});};
+ const gain=(id,f,why,watch)=>{const cur=Number(c.gain);let to=Math.round(cur*f);if(to===cur)to=cur+(f<1?-1:1);to=Math.max(1,to);L.push({id,type:'param',k:'gain',from:cur,to,name:gN+' ('+GAMES[c.game].name+')',unit:' %',why,watch});};
+ const check=(id,title,text)=>L.push({id,type:'check',title,text});
+ const key=t+':'+a;
+ if(key==='T3:osc1'||key==='T3:osc2'){
+  if(b.wrs&&!c.wrs) check('wrs','Mettre la WRS à 0','La WRS (vitesse de rotation de la roue) amplifie la rotation du volant : c\'est un amortissement négatif, première cause d\'oscillation en ligne droite chez Simagic. Règle-la à 0 dans SimPro Manager, puis coche la case dans ta configuration.');
+  if(!b.wrs) check('fx','Neutraliser les effets qui amplifient la rotation','Vérifie dans '+b.soft+' qu\'aucun effet n\'accélère le volant au-delà de ce que calcule le jeu (effets « vitesse », « réactivité », assistance au centre). Ils doivent être neutres avant d\'ajouter de l\'amortissement.');
+  drv('D+','D',a==='osc2'?4:2,'L\'amortissement freine la vitesse de rotation du volant : il calme l\'oscillation sans changer la force en appui.','Si la direction devient lente en Fagnes (test 6) ou le retour au centre pâteux (test 1), l\'essai est trop fort.',true);
+  gain('g-',0.95,'Si l\'oscillation persiste malgré l\'amortissement, le couple de rappel est trop fort pour ce volant : baisse légèrement la force en jeu.','Vérifie que l\'appui à Pouhon (test 7) reste lisible.');
+ }
+ if(key==='T5:brk1'||key==='T5:brk2'){
+  check('lock','Écarter le blocage et l\'ABS','Refais le freinage sans bloquer les roues. Si les secousses n\'apparaissent qu\'au blocage ou quand l\'ABS travaille, c\'est l\'information du jeu : ne la filtre pas.');
+  drv('D+','D',a==='brk2'?4:2,'Un peu plus d\'amortissement stabilise le volant pendant le transfert de charge vers l\'avant.','La réactivité en Fagnes (test 6) ne doit pas se dégrader.',true);
+  sm('sm+',1,'Un cran de lissage atténue les variations brutales de couple au freinage.','Les vibreurs (test 8) peuvent devenir moins nets.');
+ }
+ if(key==='T2:flat'){
+  if(hasP&&(p>0.90||clip>0.5)) gain('g-clip',0.85/p,`Le FFB Analyzer confirme l'écrêtage (niveau de référence ${fmt(p*100,0)} %${c.clip!==''?', écrêtage '+fmt(clip)+' %':''}). Viser 85 % de niveau de référence : force en jeu × ${fmt(0.85/p,2)}.`,'Remesure avec l\'Analyzer : niveau entre 75 et 90 %, écrêtage sous 0,5 %.');
+  else if(hasP) { drv('D-','D',-2,`L'Analyzer ne montre pas d'écrêtage (niveau ${fmt(p*100,0)} %) : la sensation plate vient plutôt des filtres. Moins d'amortissement rend les variations de force plus lisibles.`,'Recontrôle Kemmel (test 3) : aucune oscillation ne doit apparaître.',true); sm('sm-',-1,'Moins de lissage laisse passer les variations fines de couple.','Le FFB ne doit pas devenir granuleux.'); }
+  else { check('measure','Mesurer avant de corriger','Fais un tour avec le FFB Analyzer et saisis le niveau de référence et l\'écrêtage dans ta configuration : une force plate peut venir de l\'écrêtage (baisser la force en jeu) ou des filtres (les réduire), et la correction est opposée.'); gain('g-',0.95,'Sans mesure, on teste prudemment une force en jeu un peu plus basse.','Si la force devient simplement plus légère sans gagner en détails, annule.'); }
+ }
+ if(key==='T2:hit'){
+  if(hasP&&p>0.90) gain('g-clip',0.85/p,`Niveau de référence ${fmt(p*100,0)} % : les pics dépassent la pleine échelle. Force en jeu × ${fmt(0.85/p,2)}.`,'Niveau visé entre 75 et 90 %.');
+  sm('sm+',1,'Un cran de lissage arrondit les pics de compression.','Les vibreurs (test 8) restent-ils nets ?');
+  gain('g-',0.95,'Les coups restent trop forts : baisse légère de la force en jeu.','Pouhon (test 7) doit rester lisible.');
+ }
+ if(key==='T7:heavy'){
+  gain('g-',0.92,'La force moyenne est trop élevée pour tenir plusieurs tours : on baisse la force en jeu plutôt que les filtres.','La compression du Raidillon (test 2) doit garder du relief.');
+ }
+ if(key==='T7:plateau'){
+  if(hasP&&(p>0.90||clip>0.5)) gain('g-clip',0.85/p,`Plateau en appui avec écrêtage mesuré (niveau ${fmt(p*100,0)} %) : la base reçoit un signal saturé. Force en jeu × ${fmt(0.85/p,2)}.`,'Remesure : niveau 75–90 %.');
+  sm('sm-',-1,'Moins de lissage rend les variations de charge du train avant plus perceptibles.','Pas de grésillement en ligne droite.');
+  drv('D-','D',-2,'L\'amortissement gomme une partie de l\'allègement quand l\'avant décroche.','Kemmel (test 3) doit rester stable.',true);
+  if(!hasP) check('measure','Mesurer l\'écrêtage','Saisis le niveau de référence mesuré par le FFB Analyzer : s\'il dépasse 90 %, le plateau vient de l\'écrêtage et la bonne correction est de baisser la force en jeu.');
+ }
+ if(key==='T6:slow'){
+  if(eqOf('D')>2) drv('D-','D',-2,'Trop d\'amortissement retarde le volant dans les changements d\'appui.','Kemmel (test 3) et le freinage (test 5) doivent rester stables.',true);
+  if(eqOf('I')>0) drv('I-','I',-2,'L\'inertie simulée alourdit les changements de direction.','Le volant ne doit pas devenir nerveux.',true);
+  sm('sm-',-1,'Le lissage ajoute un léger retard au signal.','Pas de grésillement.');
+ }
+ if(key==='T6:nervous'){
+  drv('D+','D',2,'Un peu d\'amortissement calme les réactions trop vives.','Le retour au centre (test 1) ne doit pas devenir pâteux.',true);
+  drv('I+','I',2,'Un peu d\'inertie redonne le poids d\'une vraie colonne de direction.','La réactivité ne doit pas devenir lente.',true);
+ }
+ if(key==='T1:slow'){
+  if(eqOf('F')>0) drv('F-','F',-1,'La friction freine le retour au centre à basse vitesse.','La zone centrale à Kemmel (test 4) ne doit pas devenir vide.',true);
+  if(eqOf('D')>2) drv('D-','D',-2,'L\'amortissement ralentit aussi le retour.','Kemmel (test 3) doit rester stable.',true);
+ }
+ if(key==='T1:over'){
+  drv('D+','D',2,'Le volant revient trop vite et dépasse : un peu d\'amortissement le pose.','La réactivité en Fagnes (test 6) doit rester bonne.',true);
+ }
+ if(key==='T4:empty'){
+  if(c.game==='lmu') check('mst','Vérifier le Minimum Steering Torque','Dans LMU, laisse le Minimum Steering Torque à 0 % : il crée une zone artificielle autour du centre. Vérifie aussi qu\'aucun ressort central n\'est actif dans '+b.soft+'.');
+  drv('F+','F',1,'Un point de friction donne un léger effort dès qu\'on quitte le centre, sans toucher à la force en appui.','Le retour au centre (test 1) ne doit pas devenir collant.',true);
+  sm('sm-',-1,'Moins de lissage laisse passer les petites variations de couple autour du centre.','Pas de grésillement.');
+ }
+ if(key==='T4:sticky'){
+  if(eqOf('F')>0) drv('F-','F',-1,'La friction crée un point dur autour du centre.','La zone centrale ne doit pas devenir vide.',true);
+  if(eqOf('D')>2) drv('D-','D',-2,'L\'amortissement alourdit les petites corrections.','Kemmel (test 3) doit rester stable.',true);
+ }
+ if(key==='T8:violent'){
+  if(c.game!=='lmu') check('kerb','Baisser l\'effet vibreurs du jeu','Dans '+GAMES[c.game].name+', baisse l\'effet vibreurs (Kerb effect) de 10 points : c\'est un effet ajouté au signal, le réduire ne touche pas à la force de direction.');
+  sm('sm+',1,'Un cran de lissage adoucit les impacts.','Les détails fins de la route peuvent diminuer.');
+  if(hasP&&p>0.90) gain('g-clip',0.85/p,`Les vibreurs poussent le signal à saturation (niveau ${fmt(p*100,0)} %).`,'Niveau 75–90 %.');
+ }
+ if(key==='T8:weak'){
+  if(c.game!=='lmu') check('kerb+','Monter l\'effet vibreurs du jeu','Dans '+GAMES[c.game].name+', monte l\'effet vibreurs (Kerb effect) de 10 points.');
+  sm('sm-',-1,'Le lissage atténue les impacts courts des vibreurs.','Pas de grésillement en ligne droite.');
+ }
+ return L;
+}
+
+/* ---------- Moteur : premier problème, premier candidat non essayé ---------- */
+function problems(){return PRIO.filter(t=>S.ans[t]&&!TESTS.find(x=>x.id===t).ans.find(a=>a[0]===S.ans[t])[2]);}
+function nextAction(t){const a=S.ans[t];const tr=S.tried[t+':'+a]||[];return candidates(t,a).find(x=>!tr.includes(x.id));}
+function current(){
+ for(const t of problems()){const act=nextAction(t);if(act)return {t,act};}
+ return null;
+}
+
+/* ---------- Rendu ---------- */
+const SCOL={s1:'var(--s1)',s2:'var(--s2)',s3:'var(--s3)'};
+function drawMap(){
+ const P=PTS,path=(a,b)=>'M'+P.slice(a,Math.min(b+1,P.length)).map(p=>p.join(',')).join(' L')+(b>=P.length?' L'+P[0].join(','):'');
+ let h=`<path d="${path(0,300)}" fill="none" stroke="#0a1633" stroke-width="12" stroke-linejoin="round"/>`;
+ SECT.forEach(([a,b,s])=>h+=`<path d="${path(a,b)}" fill="none" stroke="${SCOL[s]}" stroke-width="5" stroke-linejoin="round" stroke-linecap="round"/>`);
+ const [ax,ay]=P[0],[bx,by]=P[3],dx=bx-ax,dy=by-ay,L=Math.hypot(dx,dy),nx=-dy/L,ny=dx/L;
+ h+=`<line x1="${ax+nx*9}" y1="${ay+ny*9}" x2="${ax-nx*9}" y2="${ay-ny*9}" stroke="#fff" stroke-width="3"/>`;
+ const names=[[14,'La Source',8,4],[50,'Eau Rouge',8,6],[108,'Les Combes',-12,4,'end'],[126,'Bruxelles',0,20,'middle'],[166,'Pouhon',-14,4,'end'],[192,'Fagnes',0,-14,'middle'],[214,'Stavelot',4,22,'middle'],[252,'Blanchimont',-12,4,'end'],[284,'Bus Stop',-13,4,'end']];
+ names.forEach(([i,n,ox,oy,an])=>{const [x,y]=P[i];h+=`<text x="${x+ox}" y="${y+oy}" text-anchor="${an||'start'}" font-size="10.5" fill="#9fb3d1">${n}</text>`;});
+ TESTS.forEach((t,j)=>{const [x,y]=P[t.idx],st=state(t.id),ring=st==='ok'?'#2fd47a':st==='pb'?'#f5a524':'#fff';
+  h+=`<g class="mk" data-t="${t.id}"><circle cx="${x}" cy="${y}" r="9.5" fill="${SCOL[t.sec]}" stroke="${ring}" stroke-width="2.5"/><text x="${x}" y="${y+4}" text-anchor="middle" font-size="11" font-weight="700" fill="${t.sec==='s3'?'#07102b':'#fff'}">${j+1}</text></g>`;});
+ $('map').innerHTML=h;
+ $('map').querySelectorAll('.mk').forEach(g=>g.addEventListener('click',()=>{const el=$('row-'+g.dataset.t);el.scrollIntoView({behavior:'smooth',block:'center'});el.classList.remove('flash');void el.offsetWidth;el.classList.add('flash');}));
+}
+function state(t){const a=S.ans[t];if(!a)return S.rep[t]?'re':'';const T=TESTS.find(x=>x.id===t);return T.ans.find(x=>x[0]===a)[2]?'ok':'pb';}
+function drawTests(){
+ const secs=[['s1','Secteur 1 · La Source → Les Combes','stabilité, centre, freinage'],['s2','Secteur 2 · Les Combes → Stavelot','réactivité, train avant'],['s3','Secteur 3 · Stavelot → arrivée','vibreurs']];
+ $('tests').innerHTML=secs.map(([s,t,d])=>`<div class="sector"><h3><i style="background:${SCOL[s]}"></i>${t} <span class="small">· ${d}</span></h3>`+
+  TESTS.filter(x=>x.sec===s).map(T=>{const n=TESTS.indexOf(T)+1,st=state(T.id);
+   return `<div class="test" id="row-${T.id}"><div class="num" style="border-color:${SCOL[s]};color:${SCOL[s]}">${n}</div>
+   <div><div class="zone">${T.zone}</div><h3>${T.title}</h3><div class="state ${st==='ok'?'ok':st==='pb'?'warn':st==='re'?'warn':'small'}">${st==='ok'?'Validé':st==='pb'?'À corriger':st==='re'?'À recontrôler après la correction':'Non testé'}</div></div>
+   <div class="proc"><ul>${T.proc.map(p=>'<li>'+p+'</li>').join('')}</ul><div class="goal">✓ ${T.goal}</div></div>
+   <div class="ans">${T.ans.map(([id,l,ok])=>`<button type="button" data-t="${T.id}" data-a="${id}" class="${S.ans[T.id]===id?'sel '+(ok?'ok':'pb'):''}">${l}</button>`).join('')}</div></div>`;}).join('')+'</div>').join('');
+ $('tests').querySelectorAll('.ans button').forEach(bt=>bt.addEventListener('click',()=>{
+  const t=bt.dataset.t,a=bt.dataset.a;
+  S.ans[t]=S.ans[t]===a&&!S.pending?undefined:a; if(S.ans[t]===undefined)delete S.ans[t]; delete S.rep[t]; save(); renderAll();
+ }));
+}
+function valTxt(act,v){return fmt(v,1)+(act.unit||'');}
+function renderFix(){
+ const el=$('fix'),pend=S.pending;
+ if(pend){
+  const T=TESTS.find(x=>x.id===pend.t),n=TESTS.indexOf(T)+1,a=pend.act;
+  const protect=(a.type==='param'?(AFFECTS[a.k]||[]):[]).filter(x=>x!==pend.t&&state(x)==='ok');
+  el.innerHTML=`<div class="fix"><span class="tag">Contre-test en cours · test ${n}</span>
+   <h3>${a.type==='check'?a.title:a.name+' : '+valTxt(a,a.from)+' → '+valTxt(a,a.to)}</h3>
+   <p>Refais le test ${n} (${T.zone}) sur 2 à 3 tours${protect.length?', puis recontrôle '+protect.map(x=>'le test '+(TESTS.findIndex(y=>y.id===x)+1)+' ('+TESTS.find(y=>y.id===x).zone+')').join(' et ')+' : ces critères étaient validés, la correction ne doit pas les dégrader':''}.</p>
+   <p class="small">Résultat :</p>
+   <div class="actions"><button data-v="solved" type="button">Problème réglé</button><button data-v="better" class="secondary" type="button">Mieux, mais pas réglé</button><button data-v="same" class="secondary" type="button">Aucune différence</button><button data-v="worse" class="secondary" type="button">Moins bien, ou un autre critère s'est dégradé</button></div></div>`;
+  el.querySelectorAll('[data-v]').forEach(b=>b.addEventListener('click',()=>verdict(b.dataset.v)));
+  return;
+ }
+ const cur=current(), pb=problems(), untested=TESTS.filter(t=>!S.ans[t.id]).length;
+ if(!cur){
+  if(pb.length){el.innerHTML=`<div class="fix"><h3 class="warn">Plus de correction automatique à proposer</h3><p>Toutes les corrections prévues pour ${pb.map(t=>'le test '+(TESTS.findIndex(x=>x.id===t)+1)).join(', ')} ont été essayées sans résultat. Repars des valeurs du <a href="https://pureracing-fx.odoo.com/ffb-calculateur" target="_top" style="color:#4cc9ff">calculateur</a>, vérifie l'écrêtage avec le FFB Analyzer et teste une autre voiture : le défaut peut venir de la voiture ou du jeu.</p></div>`;return;}
+  el.innerHTML=`<div class="fix"><h3 class="${untested?'':'ok'}">${untested?'Aucun problème signalé pour l\'instant':'Profil validé sur les huit tests'}</h3><p class="small">${untested?untested+' test(s) restant(s). Réponds aux tests : l\'assistant proposera une correction dès qu\'un critère n\'est pas bon.':'Note ces réglages et valide-les sur une deuxième voiture avant d\'en faire ton réglage de base.'}</p></div>`;return;
+ }
+ const T=TESTS.find(x=>x.id===cur.t),n=TESTS.indexOf(T)+1,a=cur.act,ansL=T.ans.find(x=>x[0]===S.ans[cur.t])[1];
+ const queue=pb.filter(t=>t!==cur.t);
+ el.innerHTML=`<div class="fix"><span class="tag">Priorité · test ${n} · ${T.zone} · « ${ansL} »</span>
+  ${a.type==='check'?`<h3>Vérification : ${a.title}</h3><p>${a.text}</p>`:
+  `<h3>${a.name}</h3><div class="val"><div class="box"><span class="small">Valeur actuelle</span><b>${valTxt(a,a.from)}</b></div><div class="box to"><span class="small">Valeur à essayer</span><b>${valTxt(a,a.to)}</b></div></div>
+   <p><b>Pourquoi :</b> ${a.why}</p><p class="small"><b>À surveiller :</b> ${a.watch}</p>`}
+  <div class="actions"><button id="apply" type="button">${a.type==='check'?'C\'est fait, je refais le test':'J\'ai appliqué, je refais le test'}</button><button id="skip" class="secondary" type="button">Ne pas essayer cette piste</button></div>
+  ${queue.length?`<p class="small" style="margin:14px 0 0">Ensuite : ${queue.map(t=>{const X=TESTS.find(x=>x.id===t);return 'test '+(TESTS.indexOf(X)+1)+' ('+X.title.toLowerCase()+')';}).join(', ')}. Une seule modification à la fois.</p>`:''}</div>`;
+ $('apply').onclick=()=>{S.pending={t:cur.t,ans:S.ans[cur.t],act:a};if(a.type==='param'){S.cfg[a.k]=a.to;fillCfg();}if(a.id==='wrs'){S.cfg.wrs=true;fillCfg();}save();renderAll();$('fixCard').scrollIntoView({behavior:'smooth',block:'start'});};
+ $('skip').onclick=()=>{tried(cur.t,S.ans[cur.t],a.id);log(cur.t,a,'écarté');save();renderAll();};
+}
+function tried(t,ans,id){const k=t+':'+ans;(S.tried[k]=S.tried[k]||[]).push(id);}
+function log(t,a,res){S.hist.push({ts:Date.now(),t,txt:a.type==='check'?a.title:a.name+' '+valTxt(a,a.from)+' → '+valTxt(a,a.to),res});}
+function verdict(v){
+ const p=S.pending,a=p.act;
+ if(v==='same'||v==='worse'){ if(a.type==='param'){S.cfg[a.k]=a.from;fillCfg();} tried(p.t,p.ans,a.id); log(p.t,a,v==='same'?'aucun effet, annulé':'moins bien, annulé'); }
+ else{
+  log(p.t,a,v==='solved'?'retenu, problème réglé':'retenu, amélioré');
+  if(v==='solved'){const T=TESTS.find(x=>x.id===p.t);S.ans[p.t]=T.ans.find(x=>x[2])[0];}
+  if(!(v==='better'&&a.rep)) tried(p.t,p.ans,a.id);  // « mieux » : le même pas peut être répété jusqu'à la limite
+ }
+ delete S.pending; save(); renderAll();
+}
+function renderSummary(){
+ const sc={ok:100,pb:35,'':0,re:60};
+ $('bars').innerHTML=TESTS.map((T,i)=>{const st=state(T.id),c=st==='ok'?'var(--ok)':st==='pb'?'var(--warn)':'#50607b';return `<div class="row"><b style="color:${SCOL[T.sec]}">${i+1}</b><div><div>${T.title} <span class="small">· ${T.zone}</span></div><div class="b"><i style="width:${sc[st]}%;background:${c}"></i></div></div><span class="${st==='ok'?'ok':st==='pb'?'warn':'small'}">${st==='ok'?'Validé':st==='pb'?'À corriger':'Non testé'}</span></div>`;}).join('');
+ const ok=TESTS.filter(t=>state(t.id)==='ok').length,done=TESTS.filter(t=>S.ans[t.id]).length;
+ $('score').innerHTML=`<b>${ok} / 8</b> critères validés · ${done} testé(s).`;
+ $('hist').innerHTML=S.hist.length?S.hist.map(h=>{const n=TESTS.findIndex(x=>x.id===h.t)+1;const c=/retenu/.test(h.res)?'ok':/annulé/.test(h.res)?'bad':'small';return `<li>Test ${n} · ${esc(h.txt)} · <span class="${c}">${h.res}</span></li>`;}).join(''):'<li class="small" style="list-style:none;margin-left:-18px">Aucun essai pour l\'instant.</li>';
+}
+function renderAll(){drawMap();drawTests();renderFix();renderSummary();}
+
+function report(){
+ const c=S.cfg,b=BRANDS[c.brand];
+ const L=['PURE RACING FX — VALIDATION FFB À SPA','Jeu : '+GAMES[c.game].name,'Voiture : '+(c.car||'—'),'Base : '+(c.base||b.name),
+  'Driver : '+c.driver+' % · '+GAMES[c.game].gain+' : '+c.gain+' %',
+  b.D[0]+' : '+c.D+b.D[4]+' · '+b.F[0]+' : '+c.F+b.F[4]+' · '+b.I[0]+' : '+c.I+b.I[4]+(smParam()?' · '+smParam().name+' : '+c.sm:''),
+  c.p995!==''?'FFB Analyzer : niveau de référence '+c.p995+' %'+(c.clip!==''?', écrêtage '+c.clip+' %':''):'','','Tests :'];
+ TESTS.forEach((T,i)=>{const a=S.ans[T.id];L.push((i+1)+'. '+T.title+' ('+T.zone+') : '+(a?T.ans.find(x=>x[0]===a)[1]:'non testé'));});
+ if(S.hist.length){L.push('','Essais :');S.hist.forEach(h=>L.push('- Test '+(TESTS.findIndex(x=>x.id===h.t)+1)+' · '+h.txt+' · '+h.res));}
+ return L.filter((x,i)=>x!==''||i>0).join('\n');
+}
+$('copy').onclick=()=>{const r=report();if(navigator.clipboard)navigator.clipboard.writeText(r).then(()=>{$('copy').textContent='Rapport copié'}).catch(()=>prompt('Copier le rapport',r));else prompt('Copier le rapport',r);};
+$('print').onclick=()=>window.print();
+$('reset').onclick=()=>{if(!confirm('Effacer les réponses et l\'historique ? Les réglages actuels sont conservés.'))return;S.ans={};S.tried={};S.hist=[];S.rep={};delete S.pending;save();renderAll();};
+
+fillCfg();renderAll();
 })();
 </script></body></html>
