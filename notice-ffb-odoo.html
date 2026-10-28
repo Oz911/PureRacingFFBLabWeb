@@ -79,6 +79,7 @@
       <li><a href="#jeux">Réglages en jeu</a></li>
       <li><a href="#comparateur">Formules du comparateur</a></li>
       <li><a href="#marques">Équivalences entre marques</a></li>
+      <li><a href="#wrs">Oscillations et WRS</a></li>
       <li><a href="#validation">Valider sur piste</a></li>
       <li><a href="#ajuster">Ajuster selon le ressenti</a></li>
       <li><a href="#analyzer">FFB Analyzer</a></li>
@@ -154,7 +155,7 @@
     <p>Recalés sur un montage de référence : base 10 Nm, plafond 8 Nm, volant 1,1 kg / 300 mm, Damping 16 %, Friction 2 %, Inertie 10 % (échelle Simagic).</p>
     <div class="formula">Damping = Dréf × √( (T / Tréf) × (I / Iréf) )</div>
     <div class="formula">Inertie = Inertie réf. × √( (T / Tréf) × (Iréf / I) )</div>
-    <p>Le damping suit le principe d'un taux d'amortissement constant (amortissement critique = 2√(raideur × inertie)) : plus de couple et plus de masse demandent plus de freinage. Un volant léger reçoit davantage d'inertie simulée. La friction reste fixe.</p>
+    <p>Le damping suit le principe d'un taux d'amortissement constant (amortissement critique = 2√(raideur × inertie)) : plus de couple et plus de masse demandent plus de freinage. Un volant léger reçoit davantage d'inertie simulée : il s'agit de retrouver le poids d'une vraie colonne de direction, pas de corriger une oscillation. La friction reste fixe.</p>
 
     <h3>4. Réactivité relative</h3>
     <div class="formula">Indice = (T / I) ÷ (Tréf / Iréf)</div>
@@ -206,6 +207,12 @@
     <div class="callout warn"><b>Correspondances indicatives</b>Les marques n'appliquent pas leurs filtres de la même façon, et certaines expriment le damping par rapport au couple maximal de la base. Une même valeur ne donne donc pas exactement le même ressenti : vérifie avec le test sur piste.</div>
   </section>
 
+  <section id="wrs">
+    <h2>Oscillations : supprimer la cause, pas la masquer</h2>
+    <p>Chez Simagic, la <b>vitesse de rotation de la roue (WRS)</b> amplifie la vitesse et la facilité avec lesquelles le volant tourne par rapport à ce que calcule le jeu. Physiquement, c'est un amortissement négatif : au-dessus de 0, elle provoque oscillations en ligne droite, volant « élastique » quand on le lâche, rebonds en butée et voiture nerveuse à basse vitesse.</p>
+    <p>La correction souvent conseillée, monter l'inertie ou la friction, ne règle rien : l'inertie ralentit l'oscillation sans la supprimer, la friction l'étouffe mais gomme aussi les détails autour du centre, et l'amortissement se bat contre la WRS. <b>Règle la WRS à 0</b>, puis n'ajoute de l'amortissement que si une oscillation persiste. Le calculateur part de cette hypothèse.</p>
+  </section>
+
   <section id="validation">
     <h2>Valider sur piste</h2>
     <p>Fais 5 tours à Spa-Francorchamps avec une voiture que tu connais, mains toujours sur le volant. Change un seul réglage à la fois. L'onglet <a href="/test-piste-ffb">Test sur piste</a> permet de noter la session et de l'imprimer.</p>
@@ -222,7 +229,7 @@
     <h2>Ajuster selon le ressenti</h2>
     <div class="tbl"><table>
       <tr><th>Ce que tu ressens</th><th>Ce qu'il faut toucher</th></tr>
-      <tr><td>Oscillations en ligne droite</td><td>Monte le damping par pas de 2 (NDP chez Fanatec, Wheel Damper chez Moza, Anti-Oscillation chez Asetek). Sur AC EVO, monte d'abord le Dynamic Damping.</td></tr>
+      <tr><td>Oscillations en ligne droite</td><td>Supprime d'abord la cause : tout effet qui amplifie la rotation du volant doit être à 0 (WRS chez Simagic). Si elle persiste, monte le damping par pas de 2 (Mechanical Damper chez Simagic, NDP chez Fanatec, Wheel Damper chez Moza, Anti-Oscillation chez Asetek). Sur AC EVO, monte d'abord le Dynamic Damping. N'ajoute pas d'inertie ni de friction pour la masquer.</td></tr>
       <tr><td>Mur plat en courbe rapide</td><td>Écrêtage : baisse la force en jeu ou le multiplicateur de la voiture par pas de 0,05. Vérifie avec le comparateur.</td></tr>
       <tr><td>Volant lourd et lent dans les enchaînements</td><td>Baisse d'abord le damping, puis l'inertie.</td></tr>
       <tr><td>Volant nerveux, sensation « vide »</td><td>Monte un peu l'inertie, puis la friction si besoin.</td></tr>

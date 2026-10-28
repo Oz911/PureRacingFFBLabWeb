@@ -324,7 +324,7 @@ const BRANDS = {
       {k:'D', name:'Mechanical Damper (amortissement)', f:x=>x, max:50, typ:[8,25]},
       {k:'F', name:'Mechanical Friction', f:x=>x, max:20, typ:[0,6]},
       {k:'I', name:'Mechanical Inertia (inertie)', f:x=>x, max:40, typ:[0,20]}],
-    extras:[['Smoothing (lissage)','3'],['FFB Detail','0'],['Other Effects · Mechanical Spring, Center Damper','0 %'],['Other Effects · Game Spring, Damper, Friction, Inertia','100 (neutre)']]},
+    extras:[['Vitesse de rotation de la roue (WRS)','0'],['Smoothing (lissage)','3'],['FFB Detail','0'],['Other Effects · Mechanical Spring, Center Damper','0 %'],['Other Effects · Game Spring, Damper, Friction, Inertia','100 (neutre)']]},
   moza:{name:'Moza', soft:'Pit House', strength:'Maximum Output Torque Limit', strengthUnit:'pct',
     models:[['R3',3.9],['R5',5.5],['R9',9],['R12',12],['R16',16],['R21',21],['R25 Ultra',25]],
     params:[
@@ -539,7 +539,7 @@ function render(){
   if(lt==='bad') co.push(['bad','Couple très élevé', `${fmt(r.T)} Nm peuvent blesser poignets et pouces en cas de choc ou de survirage. Commence en « Légère » et ne lâche jamais le volant en roulant.`]);
   if(s.full) co.push([s.B > SMALL_BASE ? 'warn' : 'info', 'Driver à 100 %', `La base peut délivrer ses ${fmt(s.B, s.B%1?1:0)} Nm : la force ressentie se règle uniquement dans le jeu, voiture par voiture. Le plafond de sécurité ne dépend plus du driver : en cas de choc ou de contre-braquage, toute la puissance de la base peut passer.${s.B > SMALL_BASE ? ' Sur une base de cette puissance, il est plus prudent de décocher cette option.' : ''}`]);
   if(r.limited) co.push(['warn','Limite de couple atteinte', `La cible atteint la capacité nominale de la base. Ne compense pas en augmentant aveuglément le gain du jeu : vérifie d’abord le clipping et la sécurité.`]);
-  if(lo!=='ok') co.push(['warn','Réactivité relative élevée', `Cet indice n’est pas une prédiction d’oscillation. En cas d’oscillations, garde les mains sur le volant et teste un amortissement légèrement supérieur.`]);
+  if(lo!=='ok') co.push(['warn','Réactivité relative élevée', `Cet indice n’est pas une prédiction d’oscillation. En cas d’oscillations, vérifie d’abord qu’aucun effet n’amplifie la rotation du volant (WRS à 0 chez Simagic), puis teste un amortissement légèrement supérieur. N’ajoute pas d’inertie ni de friction pour les masquer.`]);
   if(s.game==='lmu' && !r.lmu.feasible) co.push(['warn','Cible non atteignable avec ces hypothèses', `Aucune force en jeu ≤ 100 % ne respecte à la fois 30-60 % de sortie spécifique et 10-60 % de marge avec une voiture à ${fmt(s.H)} Nm (pic estimé ${fmt(r.peak)} Nm sur ${fmt(r.C)} Nm). Cela ne veut pas dire qu'il faut changer le driver : vérifie le couple réel de la voiture, la définition du STC dans ta version et l'écrêtage en télémétrie, puis calibre avec le <a href="https://pureracing-fx.odoo.com/comparateur-ffb" target="_top">comparateur</a>.`]);
   else if(s.game==='lmu' && r.lmu.pick>r.lmu.target+1e-9) co.push(['info','Force relevée par la fenêtre du comparateur', `La valeur visant 15 % de marge sortait de la plage 30-60 % de sortie spécifique ; la force est ramenée dans la fenêtre du comparateur.`]);
   else if(s.game==='lmu' && r.lmu.pick<r.lmu.target-1e-9) co.push(['info','Force limitée par la fenêtre du comparateur', `Viser 15 % de marge donnerait ${Math.round(Math.min(r.lmu.target,9.99)*100)} %, au-delà de 60 % de sortie spécifique. La force est ramenée à ${Math.round(r.lmu.pick*100)} % : marge de ${Math.round(r.lmu.L*100)} %.`]);
