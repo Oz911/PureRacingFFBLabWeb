@@ -6,7 +6,7 @@
 (function (root) {
   'use strict';
 
-  /* Hypothèses de calibration (repères communautaires iRacing, non validés pour LMU) */
+  /* Hypothèses de calibration (repères communautaires, non validés pour LMU) */
   const LIMITS = {
     G: { min: 0.30, max: 0.60 },        // sortie spécifique visée : Nm de base par Nm de voiture
     margin: { min: 0.10, max: 0.60 },   // marge avant écrêtage visée
@@ -77,8 +77,8 @@
     return ['ok', 'Marge correcte'];
   }
 
-  /* Couples de direction max indicatifs (hors vibreurs, relevés dans iRacing) */
-  const CARS = [["Formula 3",14,20],["Formula Vee",16,22],["GT3 (iRacing)",8,15],["GT3 / LMGT3 moteur central (mesuré LMU)",12,12.5],["GT3 / LMGT3 moteur avant (mesuré LMU)",14,15],["GT4",12,18],["GTP / LMDh",10,16],["INDY IR-18",30,60],["Mazda MX-5 Cup",18,22],["NASCAR Next Gen Cup",28,35],["Porsche 911 Cup (992)",18,20],["Street Stock",18,25],["V8 Supercars",22,28]];
+  /* Couples de direction max indicatifs (hors vibreurs). Seules les GT3 sont mesurées dans LMU ; les autres sont des estimations. */
+  const CARS = [["GT3 / LMGT3 moteur central (mesuré LMU)",12,12.5],["GT3 / LMGT3 moteur avant (mesuré LMU)",14,15],["Hypercar / LMDh / GTP",10,16],["GT4",12,18],["Porsche 911 Cup (992)",18,20],["Formula 3",14,20]];
 
   root.FFBModel = { LIMITS, CARS, baseTorque, lmuEq, lmuStrength, evaluate, evaluatePeak, windowE, lmuRecommend, acGainWindow, statusG, statusL };
 })(typeof window !== 'undefined' ? window : globalThis);

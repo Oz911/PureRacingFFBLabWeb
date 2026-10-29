@@ -146,7 +146,6 @@ details>div{margin-inline:auto;text-align:center}
     <h1>Comparateur FFB · Pure Racing FX</h1>
     <p class="lead">Trouvez le réglage de force qui évite l'écrêtage (clipping), garde un maximum de détails dans les mains et ne gaspille pas la résolution de la base.</p>
     <div class="games" role="group" aria-label="Jeu">
-      <button type="button" data-game="iracing" id="g-iracing">iRacing</button>
       <button type="button" data-game="lmu" id="g-lmu">Le Mans Ultimate</button>
       <button type="button" data-game="ac" id="g-ac">Assetto Corsa / EVO</button>
     </div>
@@ -274,8 +273,7 @@ details>div{margin-inline:auto;text-align:center}
       <details>
         <summary>Comment chaque jeu est calculé</summary>
         <div style="display:grid;gap:10px;margin-top:10px;font-size:14px;max-width:80ch">
-          <p><b>iRacing.</b> Formules du tableur d'origine. Sortie spécifique G = Wheel Force / Max Force. Couple ressenti J = G × couple voiture.</p>
-          <p><b>Le Mans Ultimate.</b> Le jeu calcule le couple de direction en Nm et l'envoie à 1 pour 1 quand Steering Torque Capability (STC) correspond à la base et que la force est à 100 % (comportement documenté pour rFactor 2, dont LMU reprend le moteur). Le calculateur en déduit un « Max Force équivalent » = STC / (force × multiplicateur voiture), puis applique les formules d'iRacing. Si votre menu n'affiche pas STC, laissez-le égal au couple de la base. C'est un modèle : vérifiez au ressenti et avec un outil de télémétrie.</p>
+          <p><b>Le Mans Ultimate.</b> Le jeu calcule le couple de direction en Nm et l'envoie à 1 pour 1 quand Steering Torque Capability (STC) correspond à la base et que la force est à 100 % (comportement documenté pour rFactor 2, dont LMU reprend le moteur). Le calculateur en déduit un « Max Force équivalent » = STC / (force × multiplicateur voiture), puis calcule la sortie spécifique G = C / E et le couple ressenti J = G × couple voiture. Si votre menu n'affiche pas STC, laissez-le égal au couple de la base. C'est un modèle : vérifiez au ressenti et avec un outil de télémétrie.</p>
           <p><b>Assetto Corsa / EVO.</b> Ces jeux ne travaillent pas en Nm. Le calcul part du pic de force mesuré (appli FFBClip ou outil de Content Manager / CSP dans AC). Couple ressenti J = pic × couple réel de la base. Le gain conseillé vise un pic de 75 à 90 %. Dans EVO, faute d'outil de mesure intégré, partez d'un gain d'environ 80 % et estimez le pic au ressenti.</p>
         </div>
       </details>
@@ -287,33 +285,19 @@ details>div{margin-inline:auto;text-align:center}
 <script>
 (function(){
 const FM=window.FFBModel;
-const STRENGTH=[[1,327],[1.5,221],[2,167],[2.5,134],[3,112],[3.5,96],[4,84],[4.5,75],[5,68],[5.5,61],[6,56],[6.5,52],[7,48],[7.5,45],[8,42],[8.5,40],[9,38],[9.5,36],[10,34],[10.5,32.3],[11,30.8],[11.5,29.5],[12,28.2],[12.5,27.1],[13,26.1],[13.5,25.1],[14,24.2],[14.5,23.4],[15,22.6],[15.5,21.9],[16,21.2],[16.5,20.6],[17,20],[17.5,19.4],[18,18.8],[18.5,18.3],[19,17.9],[19.5,17.4],[20,17],[21,16.2],[22,15.4],[23,14.8],[24,14.1],[25,13.6],[26,13.1],[27,12.6],[28,12.4],[29,11.7],[30,11.3],[31,11],[32,10.6],[33,10.1],[34,9.8],[35,9.7],[36,9.4],[37,9.2],[38,8.9],[39,8.7],[40,8.5]];
 const CARS=FM.CARS;
 const $=id=>document.getElementById(id);
 const nf=(v,d=1)=>Number.isFinite(v)?v.toLocaleString('fr-FR',{minimumFractionDigits:d,maximumFractionDigits:d}):'–';
 const pct=(v,d=0)=>Number.isFinite(v)?(v*100).toLocaleString('fr-FR',{minimumFractionDigits:d,maximumFractionDigits:d})+' %':'–';
 const clamp=(v,a,b)=>Math.min(b,Math.max(a,v));
 
-function strengthFromMF(mf){
-  if(!(mf>0))return NaN;
-  for(let i=0;i<STRENGTH.length-1;i++){const[s1,m1]=STRENGTH[i],[s2,m2]=STRENGTH[i+1];
-    if(mf<=m1&&mf>=m2)return s1+(s2-s1)*(m1-mf)/(m1-m2);}
-  return mf>STRENGTH[0][1]?STRENGTH[0][0]*STRENGTH[0][1]/mf:STRENGTH.at(-1)[0]*STRENGTH.at(-1)[1]/mf;
-}
 
 /* ---- Définition des jeux ----
    Champs : clé, libellé, unité, min, max, pas, facteur d'affichage (100 pour les %), aide */
 const GAMES={
-  iracing:{
-    name:'iRacing', usesCar:true,
-    note:'iRacing règle la force en Nm : <b>Max Force</b> est le couple de la voiture virtuelle qui donne 100 % sur la base. Formules identiques au tableur d\'origine.',
-    group:'iRacing › Settings › Haptics & FFB',
-    fields:[['E','iRacing Max Force','Nm',8,400,0.1,1,'Plus petit = plus fort. Réglez aussi « Wheel Force » sur la valeur C.']],
-    eq:s=>s.E,
-  },
   lmu:{
     name:'Le Mans Ultimate', usesCar:true,
-    note:'LMU calcule le couple de direction en Nm et le transmet à 1 pour 1 si <b>Steering Torque Capability</b> correspond à votre base et que la force est à 100 %. Le calculateur en déduit un Max Force équivalent, puis applique les formules d\'iRacing. Modèle issu de rFactor 2 : à confirmer au ressenti.',
+    note:'LMU calcule le couple de direction en Nm et le transmet à 1 pour 1 si <b>Steering Torque Capability</b> correspond à votre base et que la force est à 100 %. Le calculateur en déduit un Max Force équivalent, puis calcule la sortie spécifique et le couple ressenti. Modèle issu de rFactor 2 : à confirmer au ressenti.',
     group:'LMU › Settings › Controls › Force Feedback',
     fields:[['STC','Steering Torque Capability','Nm',1,50,0.5,1,'Couple réellement délivré par la base (C = couple × % driver). Absent du menu chez certaines marques : mettez alors cette valeur dans controller.JSON ou laissez le défaut.'],
             ['s','Force Feedback Strength','%',1,200,1,100,'Force globale en jeu.'],
@@ -330,8 +314,8 @@ const GAMES={
   }
 };
 const DEF_BASE={A:10,T:10,B:1,H:15};
-const DEF_GAME={iracing:{E:22.6},lmu:{STC:10,s:0.45,m:1},ac:{g:0.8,P:0.85}};
-const DEF2_GAME={iracing:{E:28.2},lmu:{STC:10,s:0.6,m:1},ac:{g:0.7,P:0.75}};
+const DEF_GAME={lmu:{STC:10,s:0.45,m:1},ac:{g:0.8,P:0.85}};
+const DEF2_GAME={lmu:{STC:10,s:0.6,m:1},ac:{g:0.7,P:0.75}};
 
 let game='lmu', st={...DEF_BASE,...DEF_GAME.lmu}, store={};
 try{const s=JSON.parse(localStorage.getItem('ffb-calc-v2')||'null'); if(s){store=s; if(GAMES[s.game])game=s.game;}}catch(e){}
@@ -400,20 +384,20 @@ function buildGameInputs(){
     `<div class="field"><span class="tag">${k.length>2?k.slice(0,1):k}</span><label for="in_${k}">${l}</label>
       <div class="ctrl"><input type="number" id="in_${k}" min="${mn}" max="${mx}" step="${step}"><span class="unit">${u}</span></div>
       <span class="hint">${h}</span></div>`).join('')+
-    (G.eq?`<div class="field"><span class="tag">E</span><label>${game==='iracing'?'Équivalent Strength':'Max Force équivalent'}</label><span class="derived" id="eqOut">–</span></div>`:'');
+    (G.eq?`<div class="field"><span class="tag">E</span><label>Max Force équivalent</label><span class="derived" id="eqOut">–</span></div>`:'');
   G.fields.forEach(([k,,,,,,f])=>{const el=$('in_'+k);el.addEventListener('input',()=>{st[k]=parseFloat(el.value)/f;render();});});
   $('carGroup').hidden=!G.usesCar;
   $('gamenote').innerHTML=G.note;
   document.querySelectorAll('.games button').forEach(b=>b.setAttribute('aria-pressed',b.dataset.game===game?'true':'false'));
   $('carHint').textContent=game==='lmu'
-    ?'Couple de direction max (hors vibreurs). Les voitures de la liste reprennent des valeurs relevées dans iRacing, non validées pour LMU : saisis de préférence le « couple voiture équivalent FFB Lab » affiché par le plugin FFB Analyzer (dernier tour complet), pas le couple de colonne brut du jeu, qui n\'est pas à la même échelle.'
+    ?'Couple de direction max (hors vibreurs). Les voitures de la liste sans mention « mesuré LMU » sont des estimations, non mesurées dans LMU : saisis de préférence le « couple voiture équivalent FFB Lab » affiché par le plugin FFB Analyzer (dernier tour complet), pas le couple de colonne brut du jeu, qui n\'est pas à la même échelle.'
     :'Couple de direction max estimé en usage normal (hors vibreurs et bosses). Le choix d\'une voiture prend le haut de sa plage, par prudence.';
   $('vGk').textContent=G.eq?'Sortie spécifique · G':'Couple ressenti max · J';
   $('fixTable').innerHTML=fixRows().map((r,i)=>`<tr><td>${i+1}</td><td>${r[0]}</td><td><span class="pill neutral">${r[1]}</span></td></tr>`).join('');
 }
 function fixRows(){
-  const up={iracing:'Augmenter iRacing Max Force (E)',lmu:'Baisser Force Feedback Strength ou le multiplicateur voiture',ac:'Baisser le gain en jeu'}[game];
-  const down={iracing:'Baisser iRacing Max Force (E)',lmu:'Augmenter Force Feedback Strength ou le multiplicateur voiture',ac:'Augmenter le gain en jeu'}[game];
+  const up={lmu:'Baisser Force Feedback Strength ou le multiplicateur voiture',ac:'Baisser le gain en jeu'}[game];
+  const down={lmu:'Augmenter Force Feedback Strength ou le multiplicateur voiture',ac:'Augmenter le gain en jeu'}[game];
   return [['Augmenter le % FFB de la base (B) s\'il n\'est pas à 100 %','Base plus forte'],[up,'Force plus légère'],['Baisser le % FFB de la base (B) s\'il est à 100 %','Base plus faible'],[down,'Force plus dure']];
 }
 function fill(){
@@ -443,8 +427,7 @@ function render(){
   $('outC').textContent=nf(r.C,1)+' Nm';
   if(G.eq){
     const eqEl=$('eqOut');
-    if(game==='iracing'){const se=strengthFromMF(r.Eq);eqEl.innerHTML=`Strength ≈ <b>${nf(se,1)}</b>. Wheel Force à régler sur <b>${nf(r.C,1)} Nm</b>.`;}
-    else eqEl.innerHTML=`<b>${nf(r.Eq,1)} Nm</b> de couple voiture donnent 100 % sur la base.`;
+    eqEl.innerHTML=`<b>${nf(r.Eq,1)} Nm</b> de couple voiture donnent 100 % sur la base.`;
     const [gC,gS]=stG(r.G); setVerdict('vG',gC,pct(r.G,1),gS);
   } else {
     setVerdict('vG','neutral',nf(r.J,1)+' Nm',`sur ${nf(r.C,1)} Nm disponibles (pic × C)`);
@@ -468,16 +451,15 @@ function renderReco(r,ok){
     else if(r.L>0.6) tips.push('Pic très bas : augmentez le gain en jeu pour profiter de la résolution.');
   } else {
     const w=FM.windowE(r.C,r.H), lo=w.lo, hi=w.hi;
-    const toSetting=E=> game==='iracing'?`${nf(E,1)} Nm (Strength ≈ ${nf(strengthFromMF(E),1)})`:`${pct(st.STC/(E*st.m))}`;
+    const toSetting=E=>`${pct(st.STC/(E*st.m))}`;
     if(lo<=hi){
-      if(game==='iracing') out.push(`Max Force conseillé : <b class="num">${nf(lo,1)} à ${nf(hi,1)} Nm</b> (Strength ≈ ${nf(strengthFromMF(hi),1)} à ${nf(strengthFromMF(lo),1)}).`);
-      else out.push(`Force Feedback Strength conseillée : <b class="num">${pct(st.STC/(hi*st.m))} à ${pct(st.STC/(lo*st.m))}</b> avec STC = ${nf(st.STC,1)} Nm et un multiplicateur de ${pct(st.m)}.`);
+      out.push(`Force Feedback Strength conseillée : <b class="num">${pct(st.STC/(hi*st.m))} à ${pct(st.STC/(lo*st.m))}</b> avec STC = ${nf(st.STC,1)} Nm et un multiplicateur de ${pct(st.m)}.`);
       out.push('Cette fenêtre donne 30-60 % de sortie spécifique et 10-60 % de marge avec cette voiture.');
     } else {
       out.push(`Aucun réglage ne donne à la fois 30-60 % de sortie spécifique et 10-60 % de marge avec ${nf(r.C,1)} Nm de base et une voiture à ${nf(r.H,1)} Nm.`);
       if(r.H/(1-FM.LIMITS.margin.min)>r.N){
         const Esafe=r.H/(1-FM.LIMITS.margin.min);
-        out.push(`La base est trop juste pour cette voiture. Pour ne pas écrêter, visez ${game==='iracing'?'un Max Force d\'au moins':'une force d\'au plus'} <b class="num">${toSetting(Esafe)}</b> : la sortie spécifique sera alors de ${pct(r.C/Esafe)}, sous les 30 % conseillés.`);
+        out.push(`La base est trop juste pour cette voiture. Pour ne pas écrêter, visez une force d\'au plus <b class="num">${toSetting(Esafe)}</b> : la sortie spécifique sera alors de ${pct(r.C/Esafe)}, sous les 30 % conseillés.`);
       } else out.push('Voiture très légère pour ce couple de base : baissez le % FFB de la base, ce qui adoucit aussi les chocs.');
     }
     if(r.L<0) tips.push('Écrêtage : option 1 ou option 2 ci-dessous.');
@@ -525,7 +507,6 @@ function renderDetail(r,ok){
     ['B','% FFB logiciel de la base','saisie',pct(r.B),bad('B','1 à 100 %')],
     ['C','Couple réel max de la base','min(A,T) × B',nf(r.C,2)+' Nm',''],
   ];
-  if(game==='iracing') rows.push(['E','iRacing Max Force','saisie',nf(r.Eq,1)+' Nm','']);
   if(game==='lmu') rows.push(['STC','Steering Torque Capability','saisie',nf(st.STC,1)+' Nm',''],['s','Force Feedback Strength','saisie',pct(st.s),''],['m','Multiplicateur voiture','saisie',pct(st.m),''],['E','Max Force équivalent','STC / (s × m)',nf(r.Eq,1)+' Nm','']);
   if(game==='ac') rows.push(['g','Gain en jeu','saisie',pct(st.g),''],['P','Pic mesuré','saisie',pct(st.P,1),st.P>1?'<span class="pill bad">Écrêtage</span>':'']);
   if(GAMES[game].eq) rows.push(
@@ -542,8 +523,6 @@ function renderDetail(r,ok){
   $('detail').innerHTML=rows.map(([t,n,f,v,s])=>`<tr><td>${t}</td><td>${n}</td><td class="formula">${f}</td><td class="r num">${v}</td><td>${s}</td></tr>`).join('');
 }
 function gridItems(r){
-  if(game==='iracing') return {lead:'Sortie spécifique obtenue pour chaque cran de Strength iRacing avec votre Wheel Force (C). En jaune : 30-60 %. En rouge : au-delà de 100 %. Cliquez sur un cran pour l\'appliquer.',
-    items:STRENGTH.map(([s,mf])=>{const so=r.C/mf;return{a:nf(s,1),b:nf(mf,1)+' Nm',c:Math.round(so*100)+' %',cls:so>1?'over':(so>=FM.LIMITS.G.min&&so<=FM.LIMITS.G.max+0.0025?'in':''),cur:Math.abs(mf-st.E)<0.05,set:()=>{st.E=mf;}};})};
   if(game==='lmu'){const list=[];for(let s=10;s<=150;s+=5)list.push(s/100);
     return {lead:'Sortie spécifique et couple ressenti selon la Force Feedback Strength, avec votre STC, votre multiplicateur et la voiture choisie. En jaune : 30-60 % sans écrêtage. En rouge : écrêtage. Cliquez pour appliquer.',
     items:list.map(s=>{const E=st.STC/(s*st.m),so=r.C/E,J=so*st.H;return{a:Math.round(s*100)+' %',b:nf(J,1)+' Nm',c:Math.round(so*100)+' %',cls:J>r.C?'over':(so>=FM.LIMITS.G.min&&so<=FM.LIMITS.G.max+0.0025?'in':''),cur:Math.abs(s-st.s)<0.001,set:()=>{st.s=s;}};})};}

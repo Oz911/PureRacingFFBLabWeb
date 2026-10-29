@@ -95,7 +95,7 @@ code,.mono{font-family:"JetBrains Mono",monospace;font-size:14px}
     <div class="tbl"><table>
       <tr><th>Outil</th><th>À quoi il sert</th></tr>
       <tr><td><b>Calculateur</b></td><td>Donne un réglage de départ cohérent (driver et jeu) à partir de la base, du volant, du jeu et de la force souhaitée.</td></tr>
-      <tr><td><b>Comparateur</b></td><td>Vérifie un réglage existant : couple ressenti, marge avant écrêtage, comparaison de deux configurations. Couvre iRacing, LMU et Assetto Corsa.</td></tr>
+      <tr><td><b>Comparateur</b></td><td>Vérifie un réglage existant : couple ressenti, marge avant écrêtage, comparaison de deux configurations. Couvre LMU, rFactor 2, Assetto Corsa et AC EVO.</td></tr>
       <tr><td><b>Test sur piste</b></td><td>Fiche de session, diagnostic d'un symptôme et protocole de validation imprimable.</td></tr>
       <tr><td><b>FFB Analyzer</b></td><td>Maquette du futur plugin SimHub qui affichera et enregistrera le signal FFB et l'écrêtage en session. Les courbes actuelles sont une démonstration.</td></tr>
     </table></div>
@@ -174,7 +174,7 @@ code,.mono{font-family:"JetBrains Mono",monospace;font-size:14px}
     <p>Valeurs GT3 mesurées dans LMU avec le plugin (octobre 2026) : environ 12,5 Nm pour une GT3 à moteur central (Ferrari 296 à Spa) et 15 Nm pour une GT3 à moteur avant (BMW M4 à Imola). Le calculateur propose les deux catégories.</p>
     <p>Exemple en GT3 (~15 Nm), force « Normale » : 45 % sur une base de 10 Nm, 57 % sur 15 Nm, 61 % sur 25 Nm (limitée par les 60 % de sortie spécifique, marge 27 %).</p>
     <div class="callout warn"><b>Quand la cible n'est pas atteignable</b>Si aucune force ≤ 100 % ne respecte la fenêtre (petite base et voiture lourde, par exemple), le calculateur l'indique. Cela signifie seulement que la cible ne peut pas être atteinte avec ces hypothèses : ce n'est pas automatiquement une raison de modifier le driver. Il faut d'abord vérifier le couple réel de la voiture, la définition du STC dans ta version du jeu et l'écrêtage en télémétrie (Analyzer).</div>
-    <p style="margin-top:14px">Les couples des voitures proposés par le calculateur et le comparateur sont relevés dans iRacing (haut de plage, hors vibreurs) et ne sont pas validés pour LMU et rFactor 2. Pour un réglage fiable, roule quelques tours avec le plugin <a href="https://pureracing-fx.odoo.com/pure-ffb-analyzer" target="_top">FFB Analyzer</a>, après avoir saisi STC, force et multiplicateur du jeu dans son onglet Sources, et reporte le « couple voiture équivalent FFB Lab » qu'il affiche.</p>
+    <p style="margin-top:14px">Les couples des voitures proposés par le calculateur et le comparateur sont, en dehors des deux GT3 mesurées, des estimations (haut de plage, hors vibreurs), non mesurées dans LMU et rFactor 2. Pour un réglage fiable, roule quelques tours avec le plugin <a href="https://pureracing-fx.odoo.com/pure-ffb-analyzer" target="_top">FFB Analyzer</a>, après avoir saisi STC, force et multiplicateur du jeu dans son onglet Sources, et reporte le « couple voiture équivalent FFB Lab » qu'il affiche.</p>
     <p>Pourquoi pas le couple de colonne brut du jeu ? Il n'est pas à la même échelle : lors d'un premier essai en LMU, il fallait 78,9 Nm de couple de colonne pour envoyer 100 % au volant, alors que la formule STC ÷ (force × multiplicateur) donnait 17,5 Nm. Le plugin mesure ce rapport en roulant (« pleine échelle mesurée ») et convertit le couple de colonne en couple équivalent. Le minimum steering torque reste à 0 sur une base Direct Drive.</p>
     <h3>Assetto Corsa</h3>
     <p>AC ne travaille pas en Nm : le gain proposé (70 %) est un départ. Mesure le pic de force sur un tour (FFBClip, ou l'outil de Content Manager / CSP), puis règle le gain avec le comparateur pour viser un pic de 75 à 90 %. Filtre et force minimale à 0, effets artificiels bas, post-traitement FFB de Content Manager désactivé.</p>
@@ -184,11 +184,11 @@ code,.mono{font-family:"JetBrains Mono",monospace;font-size:14px}
 
   <section id="comparateur">
     <h2>Formules du comparateur</h2>
-    <p>Le comparateur reprend le modèle du tableur iRacing d'origine et l'étend à LMU et AC. C'est l'outil de calibration : ses hypothèses (fenêtres de sortie spécifique et de marge, définition du STC) sont regroupées dans <code>ffb-model.js</code> et réutilisées telles quelles par le calculateur. Les modifier à cet endroit met à jour les deux outils.</p>
+    <p>Le comparateur couvre LMU et AC. C'est l'outil de calibration : ses hypothèses (fenêtres de sortie spécifique et de marge, définition du STC) sont regroupées dans <code>ffb-model.js</code> et réutilisées telles quelles par le calculateur. Les modifier à cet endroit met à jour les deux outils.</p>
     <div class="tbl"><table>
       <tr><th>Grandeur</th><th>Formule</th><th>Sens</th></tr>
       <tr><td>C · couple disponible</td><td class="mono">min(A, T) × B</td><td>Couple nominal, limite logicielle et % driver de la base</td></tr>
-      <tr><td>E · Max Force équivalent</td><td class="mono">iRacing : saisi · LMU : STC ÷ (Strength × multiplicateur)</td><td>Couple voiture qui donne 100 % du signal</td></tr>
+      <tr><td>E · Max Force équivalent</td><td class="mono">LMU : STC ÷ (Strength × multiplicateur)</td><td>Couple voiture qui donne 100 % du signal</td></tr>
       <tr><td>G · sortie spécifique</td><td class="mono">C ÷ E</td><td>Nm de base par Nm de voiture. Repère communautaire : 30 à 60 %</td></tr>
       <tr><td>J · couple ressenti max</td><td class="mono">G × H (AC : pic mesuré × C)</td><td>H = couple de direction max de la voiture</td></tr>
       <tr><td>L · marge</td><td class="mono">(C − J) ÷ C</td><td>Négative = écrêtage. Visée : 10 à 60 %</td></tr>
