@@ -40,7 +40,7 @@ button{cursor:pointer;border:0;background:var(--red);color:#fff;padding:10px 16p
  <div class="f2"><div><label for="car">Voiture</label><input id="car" placeholder="Ex. Ferrari 296 GT3"></div><div><label for="base">Base / volant</label><input id="base" placeholder="Ex. Alpha Mini · GT Neo"></div></div>
  <div class="f2"><div><label for="driver" id="lDriver">Puissance driver (%)</label><input id="driver" type="number" min="1" max="100"></div><div><label for="gain" id="lGain">Force en jeu (%)</label><input id="gain" type="number" min="1" max="200"></div></div>
  <div class="f3"><div><label for="D" id="lD">Damper</label><input id="D" type="number" step="1"></div><div><label for="F" id="lF">Friction</label><input id="F" type="number" step="0.5"></div><div><label for="I" id="lI">Inertie</label><input id="I" type="number" step="1"></div></div>
- <div class="f2"><div><label for="sm" id="lSm">Lissage</label><input id="sm" type="number" min="0" max="20" step="1"></div><div id="wrsBox"><label>&nbsp;</label><label class="chk" for="wrs"><input type="checkbox" id="wrs"> WRS (vitesse de rotation de la roue) à 0</label></div></div>
+ <div class="f2"><div><label for="sm" id="lSm">Lissage</label><input id="sm" type="number" min="0" max="20" step="1"></div><div id="wrsBox"><label for="wrs">WRS (vitesse de rotation)</label><input id="wrs" type="number" min="0" max="10" step="1" placeholder="0 à 3"></div></div>
  <h3 style="margin-top:16px">Mesures FFB Analyzer <span class="small">(facultatif, dernier tour complet)</span></h3>
  <div class="f2"><div><label for="p995">Niveau de référence, 99,5e centile (%)</label><input id="p995" type="number" min="1" max="300" placeholder="ex. 94"></div><div><label for="clip">Écrêtage du tour (%)</label><input id="clip" type="number" min="0" max="100" step="0.1" placeholder="ex. 0,4"></div></div>
  <p class="small" style="margin-top:10px">Avec ces deux mesures, l'assistant distingue une force « plate » due à l'écrêtage d'une force plate due aux filtres. Sans elles, il reste prudent.</p>
@@ -126,15 +126,17 @@ const TESTS=[
   ans:[['weak','Trop faibles'],['ok','Nets',1],['violent','Trop violents']]}
 ];
 const PRIO=['T3','T5','T2','T7','T6','T1','T4','T8']; // sécurité d'abord
-const AFFECTS={D:['T3','T5','T6','T1'],F:['T4','T1','T6'],I:['T6','T3'],sm:['T8','T2','T7','T4'],gain:['T2','T7','T8','T3']};
+const AFFECTS={wrs:['T3','T5','T6','T1'],D:['T3','T5','T6','T1'],F:['T4','T1','T6'],I:['T6','T3'],sm:['T8','T2','T7','T4'],gain:['T2','T7','T8','T3']};
 
 /* ---------- État ---------- */
 const KEY='ffbTrackAssistant';
 let S=get(KEY)||{};
 S.ans=S.ans||{};S.tried=S.tried||{};S.hist=S.hist||[];S.cfg=S.cfg||null;S.rep=S.rep||{};
 const setup=get('ffbLabSetup');
-function defaults(){return {game:'ac',brand:'simagic',car:'',base:'',driver:100,gain:70,D:7,F:2,I:4,sm:1,wrs:false,p995:'',clip:''};}
+function defaults(){return {game:'ac',brand:'simagic',car:'',base:'',driver:100,gain:70,D:7,F:2,I:4,sm:1,wrs:0,p995:'',clip:''};}
 if(!S.cfg){S.cfg=defaults();}
+// Ancienne case « WRS à 0 » (oui/non) -> valeur numérique (inconnue si la case n'était pas cochée)
+if(typeof S.cfg.wrs==='boolean')S.cfg.wrs=S.cfg.wrs?0:'';
 if(setup&&(!S.cfgTs||setup.ts>S.cfgTs)){
  Object.assign(S.cfg,{game:setup.game,brand:setup.brand,base:setup.base||S.cfg.base,driver:setup.driver,gain:setup.gain,D:setup.D,F:setup.F,I:setup.I});
  if(setup.sm!=null)S.cfg.sm=setup.sm;
@@ -145,8 +147,8 @@ const save=()=>put(KEY,S);
 /* ---------- Configuration ---------- */
 $('brand').innerHTML=Object.keys(BRANDS).map(k=>`<option value="${k}">${BRANDS[k].name}</option>`).join('');
 const CF=['game','brand','car','base','driver','gain','D','F','I','sm','p995','clip'];
-function fillCfg(){CF.forEach(k=>{$(k).value=S.cfg[k]==null?'':S.cfg[k]});$('wrs').checked=!!S.cfg.wrs;labels();}
-function readCfg(){CF.forEach(k=>{const el=$(k);S.cfg[k]=el.type==='number'?(el.value===''?'':Number(el.value)):el.value});S.cfg.wrs=$('wrs').checked;}
+function fillCfg(){CF.forEach(k=>{$(k).value=S.cfg[k]==null?'':S.cfg[k]});$('wrs').value=S.cfg.wrs==null?'':S.cfg.wrs;labels();}
+function readCfg(){CF.forEach(k=>{const el=$(k);S.cfg[k]=el.type==='number'?(el.value===''?'':Number(el.value)):el.value});S.cfg.wrs=$('wrs').value===''?'':Math.max(0,Math.round(Number($('wrs').value)));}
 function smParam(){const b=BRANDS[S.cfg.brand];return b.sm?{name:b.sm[0]+' ('+b.soft+')',min:b.sm[1],max:b.sm[2]}:(GAMES[S.cfg.game].sm?{name:GAMES[S.cfg.game].sm[0],min:0,max:GAMES[S.cfg.game].sm[2]}:null);}
 function labels(){
  const b=BRANDS[S.cfg.brand],g=GAMES[S.cfg.game],u=p=>p[4]?' ('+p[4].trim()+')':'';
@@ -173,18 +175,27 @@ function stepTo(k,dEq){
 /* ---------- Bibliothèque de règles : candidats dans l'ordre, pour chaque problème ---------- */
 function candidates(t,a){
  const c=S.cfg,b=BRANDS[c.brand],gN=GAMES[c.game].gain,p=Number(c.p995)/100,clip=Number(c.clip),hasP=c.p995!==''&&p>0;
- const L=[],drv=(id,k,dEq,why,watch,rep)=>{const to=stepTo(k,dEq);if(to!=null)L.push({id,type:'param',k,from:Number(c[k]),to,name:par(k).name,unit:par(k).unit,why,watch,rep});};
+ const L=[],drv=(id,k,dEq,why,watch,rep)=>{let to=stepTo(k,dEq);
+  // Simagic : le Mechanical Damper reste toujours au-dessus de la WRS (amortissement net positif)
+  if(to!=null&&k==='D'&&b.wrs&&wrsV>0&&to<=wrsV){to=wrsV+1;if(to>=Number(c[k]))to=null;}
+  if(to!=null)L.push({id,type:'param',k,from:Number(c[k]),to,name:par(k).name,unit:par(k).unit,why,watch,rep});};
  const sm=(id,d,why,watch)=>{const sp=smParam();if(!sp)return;const cur=Number(c.sm)||0,to=Math.min(sp.max,Math.max(sp.min,cur+d));if(to!==cur)L.push({id,type:'param',k:'sm',from:cur,to,name:sp.name,unit:'',why,watch});};
  const gain=(id,f,why,watch)=>{const cur=Number(c.gain);let to=Math.round(cur*f);if(to===cur)to=cur+(f<1?-1:1);to=Math.max(1,to);L.push({id,type:'param',k:'gain',from:cur,to,name:gN+' ('+GAMES[c.game].name+')',unit:' %',why,watch});};
  const check=(id,title,text)=>L.push({id,type:'check',title,text});
+ // WRS Simagic (amortissement négatif) : valeur saisie, '' si inconnue. Plafond 3, toujours sous le Mechanical Damper.
+ const wrsV=c.wrs===''||c.wrs==null?-1:Number(c.wrs);
+ const wrsTo=(id,to,why,watch)=>{to=Math.max(0,Math.min(3,to));if(wrsV>=0&&to!==wrsV)L.push({id,type:'param',k:'wrs',from:wrsV,to,name:'WRS (vitesse de rotation de la roue, '+b.soft+')',unit:'',why,watch});};
+ const wrsUp=()=>{if(b.wrs&&wrsV>=0&&wrsV<3&&wrsV+1<Number(c.D))wrsTo('wrs+',wrsV+1,'Variante plus vive : une petite WRS, gardée sous le Mechanical Damper, rend de la vivacité à un volant trop amorti. Validée sur LMU à Spa avec WRS 3 et Damper 4.','Test mains lâchées en sortie de virage et au freinage en ligne droite : au moindre pompage, reviens à la valeur précédente.');};
  const key=t+':'+a;
  if(key==='T3:osc1'||key==='T3:osc2'){
-  if(b.wrs&&!c.wrs) check('wrs','Mettre la WRS à 0','La WRS (vitesse de rotation de la roue) amplifie la rotation du volant : c\'est un amortissement négatif, première cause d\'oscillation en ligne droite chez Simagic. Règle-la à 0 dans SimPro Manager, puis coche la case dans ta configuration.');
+  if(b.wrs&&c.wrs==='') check('wrs?','Indiquer la WRS','La WRS (vitesse de rotation de la roue) amplifie la rotation du volant : c\'est un amortissement négatif, première cause d\'oscillation chez Simagic. Saisis sa valeur dans ta configuration (SimPro Manager) pour recevoir le bon conseil.');
+  if(b.wrs&&wrsV>0) wrsTo('wrs-',a==='osc2'?0:wrsV-1,'La WRS amplifie la rotation du volant (amortissement négatif) : c\'est la première cause d\'oscillation chez Simagic. On la baisse avant d\'ajouter de l\'amortissement'+(wrsV>=Number(c.D)?' ; ici elle n\'est pas sous le Mechanical Damper, ce qui rend l\'amortissement net nul ou négatif':'')+'.','Si le volant redevient mou ou pâteux, garde cette valeur et monte plutôt le Damper d\'un cran.');
   if(!b.wrs) check('fx','Neutraliser les effets qui amplifient la rotation','Vérifie dans '+b.soft+' qu\'aucun effet n\'accélère le volant au-delà de ce que calcule le jeu (effets « vitesse », « réactivité », assistance au centre). Ils doivent être neutres avant d\'ajouter de l\'amortissement.');
   drv('D+','D',a==='osc2'?4:2,'L\'amortissement freine la vitesse de rotation du volant : il calme l\'oscillation sans changer la force en appui.','Si la direction devient lente en Fagnes (test 6) ou le retour au centre pâteux (test 1), l\'essai est trop fort.',true);
   gain('g-',0.95,'Si l\'oscillation persiste malgré l\'amortissement, le couple de rappel est trop fort pour ce volant : baisse légèrement la force en jeu.','Vérifie que l\'appui à Pouhon (test 7) reste lisible.');
  }
  if(key==='T5:brk1'||key==='T5:brk2'){
+  if(b.wrs&&wrsV>0) wrsTo('wrs-',wrsV-1,'Au freinage en ligne droite, la WRS peut entretenir les secousses du volant (amortissement négatif). On la baisse d\'un cran avant de toucher au reste.','Le volant ne doit pas redevenir pâteux en Fagnes (test 6).');
   check('lock','Écarter le blocage et l\'ABS','Refais le freinage sans bloquer les roues. Si les secousses n\'apparaissent qu\'au blocage ou quand l\'ABS travaille, c\'est l\'information du jeu : ne la filtre pas.');
   drv('D+','D',a==='brk2'?4:2,'Un peu plus d\'amortissement stabilise le volant pendant le transfert de charge vers l\'avant.','La réactivité en Fagnes (test 6) ne doit pas se dégrader.',true);
   sm('sm+',1,'Un cran de lissage atténue les variations brutales de couple au freinage.','Les vibreurs (test 8) peuvent devenir moins nets.');
@@ -209,19 +220,23 @@ function candidates(t,a){
   if(!hasP) check('measure','Mesurer l\'écrêtage','Saisis le niveau de référence mesuré par le FFB Analyzer : s\'il dépasse 90 %, le plateau vient de l\'écrêtage et la bonne correction est de baisser la force en jeu.');
  }
  if(key==='T6:slow'){
+  wrsUp();
   if(eqOf('D')>2) drv('D-','D',-2,'Trop d\'amortissement retarde le volant dans les changements d\'appui.','Kemmel (test 3) et le freinage (test 5) doivent rester stables.',true);
   if(eqOf('I')>0) drv('I-','I',-2,'L\'inertie simulée alourdit les changements de direction.','Le volant ne doit pas devenir nerveux.',true);
   sm('sm-',-1,'Le lissage ajoute un léger retard au signal.','Pas de grésillement.');
  }
  if(key==='T6:nervous'){
+  if(b.wrs&&wrsV>0) wrsTo('wrs-',wrsV-1,'La WRS rend le volant plus vif : un cran de moins calme les réactions sans ajouter de filtre.','La réactivité ne doit pas devenir pâteuse.');
   drv('D+','D',2,'Un peu d\'amortissement calme les réactions trop vives.','Le retour au centre (test 1) ne doit pas devenir pâteux.',true);
   drv('I+','I',2,'Un peu d\'inertie redonne le poids d\'une vraie colonne de direction.','La réactivité ne doit pas devenir lente.',true);
  }
  if(key==='T1:slow'){
+  wrsUp();
   if(eqOf('F')>0) drv('F-','F',-1,'La friction freine le retour au centre à basse vitesse.','La zone centrale à Kemmel (test 4) ne doit pas devenir vide.',true);
   if(eqOf('D')>2) drv('D-','D',-2,'L\'amortissement ralentit aussi le retour.','Kemmel (test 3) doit rester stable.',true);
  }
  if(key==='T1:over'){
+  if(b.wrs&&wrsV>0) wrsTo('wrs-',wrsV-1,'La WRS pousse le volant : avec un cran de moins, il revient sans dépasser le centre.','Le retour ne doit pas devenir collant.');
   drv('D+','D',2,'Le volant revient trop vite et dépasse : un peu d\'amortissement le pose.','La réactivité en Fagnes (test 6) doit rester bonne.',true);
  }
  if(key==='T4:empty'){
@@ -309,7 +324,7 @@ function renderFix(){
    <p><b>Pourquoi :</b> ${a.why}</p><p class="small"><b>À surveiller :</b> ${a.watch}</p>`}
   <div class="actions"><button id="apply" type="button">${a.type==='check'?'C\'est fait, je refais le test':'J\'ai appliqué, je refais le test'}</button><button id="skip" class="secondary" type="button">Ne pas essayer cette piste</button></div>
   ${queue.length?`<p class="small" style="margin:14px 0 0">Ensuite : ${queue.map(t=>{const X=TESTS.find(x=>x.id===t);return 'test '+(TESTS.indexOf(X)+1)+' ('+X.title.toLowerCase()+')';}).join(', ')}. Une seule modification à la fois.</p>`:''}</div>`;
- $('apply').onclick=()=>{S.pending={t:cur.t,ans:S.ans[cur.t],act:a};if(a.type==='param'){S.cfg[a.k]=a.to;fillCfg();}if(a.id==='wrs'){S.cfg.wrs=true;fillCfg();}save();renderAll();$('fixCard').scrollIntoView({behavior:'smooth',block:'start'});};
+ $('apply').onclick=()=>{S.pending={t:cur.t,ans:S.ans[cur.t],act:a};if(a.type==='param'){S.cfg[a.k]=a.to;fillCfg();}save();renderAll();$('fixCard').scrollIntoView({behavior:'smooth',block:'start'});};
  $('skip').onclick=()=>{tried(cur.t,S.ans[cur.t],a.id);log(cur.t,a,'écarté');save();renderAll();};
 }
 function tried(t,ans,id){const k=t+':'+ans;(S.tried[k]=S.tried[k]||[]).push(id);}
@@ -337,7 +352,7 @@ function report(){
  const c=S.cfg,b=BRANDS[c.brand];
  const L=['PURE RACING FX — VALIDATION FFB À SPA','Jeu : '+GAMES[c.game].name,'Voiture : '+(c.car||'—'),'Base : '+(c.base||b.name),
   'Driver : '+c.driver+' % · '+GAMES[c.game].gain+' : '+c.gain+' %',
-  b.D[0]+' : '+c.D+b.D[4]+' · '+b.F[0]+' : '+c.F+b.F[4]+' · '+b.I[0]+' : '+c.I+b.I[4]+(smParam()?' · '+smParam().name+' : '+c.sm:''),
+  b.D[0]+' : '+c.D+b.D[4]+' · '+b.F[0]+' : '+c.F+b.F[4]+' · '+b.I[0]+' : '+c.I+b.I[4]+(smParam()?' · '+smParam().name+' : '+c.sm:'')+(b.wrs&&c.wrs!==''?' · WRS : '+c.wrs:''),
   c.p995!==''?'FFB Analyzer : niveau de référence '+c.p995+' %'+(c.clip!==''?', écrêtage '+c.clip+' %':''):'','','Tests :'];
  TESTS.forEach((T,i)=>{const a=S.ans[T.id];L.push((i+1)+'. '+T.title+' ('+T.zone+') : '+(a?T.ans.find(x=>x[0]===a)[1]:'non testé'));});
  if(S.hist.length){L.push('','Essais :');S.hist.forEach(h=>L.push('- Test '+(TESTS.findIndex(x=>x.id===h.t)+1)+' · '+h.txt+' · '+h.res));}

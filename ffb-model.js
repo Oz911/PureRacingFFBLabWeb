@@ -10,7 +10,8 @@
   const LIMITS = {
     G: { min: 0.30, max: 0.60 },        // sortie spécifique visée : Nm de base par Nm de voiture
     margin: { min: 0.10, max: 0.60 },   // marge avant écrêtage visée
-    marginTarget: 0.15,                 // valeur préférée à l'intérieur de la fenêtre
+    marginTarget: 0.20,                 // valeur préférée (hors vibreurs) : laisse la place aux pics des vibreurs en attaque
+                                        // (essai LMU Spa, Mercedes LMGT3, oct. 2026 : 24 % hors vibreurs -> pic 90 %, écrêtage 0,2 %)
     acPeak: { min: 0.75, max: 0.90 }    // AC : pic de force visé (fraction de la pleine échelle)
   };
 
@@ -41,7 +42,7 @@
   }
 
   /* LMU : recommandation de Force Feedback Strength (fraction, plafonnée à 100 %).
-     pick = valeur visant 15 % de marge, ramenée dans la fenêtre du comparateur.
+     pick = valeur visant la marge préférée (marginTarget, 20 %), ramenée dans la fenêtre du comparateur.
      feasible = false si aucune valeur ≤ 100 % ne respecte la fenêtre :
      la cible ne peut pas être atteinte avec ces hypothèses (à vérifier en télémétrie),
      ce qui n'implique pas automatiquement de modifier le driver. */
