@@ -210,18 +210,19 @@
 
   <section id="wrs">
     <h2>Oscillations : supprimer la cause, pas la masquer</h2>
-    <p>Chez Simagic, la <b>vitesse de rotation de la roue (WRS)</b> amplifie la vitesse et la facilité avec lesquelles le volant tourne par rapport à ce que calcule le jeu. Physiquement, c'est un amortissement négatif : au-dessus de 0, elle provoque oscillations en ligne droite, volant « élastique » quand on le lâche, rebonds en butée et voiture nerveuse à basse vitesse.</p>
-    <p>La correction souvent conseillée, monter l'inertie ou la friction, ne règle rien : l'inertie ralentit l'oscillation sans la supprimer, la friction l'étouffe mais gomme aussi les détails autour du centre, et l'amortissement se bat contre la WRS. <b>Règle la WRS à 0</b>, puis n'ajoute de l'amortissement que si une oscillation persiste. Le calculateur part de cette hypothèse.</p>
+    <p>Chez Simagic, la <b>vitesse de rotation de la roue (WRS)</b> amplifie la vitesse et la facilité avec lesquelles le volant tourne par rapport à ce que calcule le jeu. Physiquement, c'est un amortissement négatif : trop haute par rapport au Mechanical Damper, elle provoque oscillations en ligne droite, volant « élastique » quand on le lâche, rebonds en butée et voiture nerveuse à basse vitesse.</p>
+    <p>La correction souvent conseillée, monter l'inertie ou la friction, ne règle rien : l'inertie ralentit l'oscillation sans la supprimer, la friction l'étouffe mais gomme aussi les détails autour du centre, et l'amortissement se bat contre la WRS. <b>Pars d'une WRS à 0</b>, puis n'ajoute de l'amortissement que si une oscillation persiste. Le calculateur part de cette hypothèse.</p>
+    <p>Ce qui compte est l'amortissement <b>net</b> : Mechanical Damper moins l'effet de la WRS. Une petite WRS, gardée sous le Damper, rend de la vivacité à un volant trop amorti sans le rendre instable. Validé sur piste (LMU, Spa, Mercedes LMGT3, Alpha Mini 10 Nm + GT Neo 1,1 kg, driver 100 %, force en jeu 54 %, octobre 2026) : <b>WRS 3 avec Mechanical Damper 4</b>, Friction 2 et Inertie 4 donnent un train avant plus précis et des transferts de masse plus lisibles qu'avec une WRS à 0. Ne dépasse pas 3, garde le Damper au-dessus et refais le test mains lâchées à chaque changement de jeu : au moindre pompage, baisse la WRS d'un cran.</p>
     <h3>Réglages de vitesse selon les marques</h3>
     <div class="tbl"><table>
       <tr><th>Marque</th><th>Réglage</th><th>Effet</th><th>Conseil</th></tr>
-      <tr><td>Simagic</td><td>Vitesse de rotation de la roue (WRS)</td><td>Amplifie la vitesse de rotation : amortissement négatif</td><td><b>0</b></td></tr>
+      <tr><td>Simagic</td><td>Vitesse de rotation de la roue (WRS)</td><td>Amplifie la vitesse de rotation : amortissement négatif</td><td><b>0</b> au départ · 3 max, sous le Mechanical Damper, pour plus de vivacité</td></tr>
       <tr><td>Fanatec</td><td>NDP, NFR, NIN</td><td>Amortissement, friction, inertie</td><td>Valeurs du calculateur</td></tr>
       <tr><td>Moza</td><td>Maximum Wheel Speed</td><td>Limite la vitesse maximale du volant</td><td>Par défaut. Plus bas : plus stable mains lâchées, mais contre-braquages ralentis</td></tr>
       <tr><td>Simucube</td><td>Slew Rate Limit</td><td>Limite la vitesse de variation du couple</td><td>Off</td></tr>
       <tr><td>Asetek</td><td>Limite d'accélération du couple (slew rate), si présente</td><td>Même principe que Simucube</td><td>Pas de limite</td></tr>
     </table></div>
-    <p style="margin-top:12px">Seule la WRS de Simagic amplifie le mouvement et peut créer une oscillation. Les limiteurs de vitesse ou de variation du couple des autres marques freinent ou filtrent : ils ne provoquent pas d'oscillation, mais trop bas, ils rendent le volant lent à réagir.</p>
+    <p style="margin-top:12px">Seule la WRS de Simagic amplifie le mouvement et peut créer une oscillation si elle dépasse l'amortissement. Les limiteurs de vitesse ou de variation du couple des autres marques freinent ou filtrent : ils ne provoquent pas d'oscillation, mais trop bas, ils rendent le volant lent à réagir.</p>
   </section>
 
   <section id="validation">
@@ -240,7 +241,7 @@
     <h2>Ajuster selon le ressenti</h2>
     <div class="tbl"><table>
       <tr><th>Ce que tu ressens</th><th>Ce qu'il faut toucher</th></tr>
-      <tr><td>Oscillations en ligne droite</td><td>Supprime d'abord la cause : tout effet qui amplifie la rotation du volant doit être à 0 (WRS chez Simagic). Si elle persiste, monte le damping par pas de 2 (Mechanical Damper chez Simagic, NDP chez Fanatec, Wheel Damper chez Moza, Anti-Oscillation chez Asetek). Sur AC EVO, monte d'abord le Dynamic Damping. N'ajoute pas d'inertie ni de friction pour la masquer.</td></tr>
+      <tr><td>Oscillations en ligne droite</td><td>Supprime d'abord la cause : tout effet qui amplifie la rotation du volant doit être à 0 ou nettement sous l'amortissement (WRS chez Simagic : baisse-la d'abord). Si elle persiste, monte le damping par pas de 2 (Mechanical Damper chez Simagic, NDP chez Fanatec, Wheel Damper chez Moza, Anti-Oscillation chez Asetek). Sur AC EVO, monte d'abord le Dynamic Damping. N'ajoute pas d'inertie ni de friction pour la masquer.</td></tr>
       <tr><td>Mur plat en courbe rapide</td><td>Écrêtage : baisse la force en jeu ou le multiplicateur de la voiture par pas de 0,05. Vérifie avec le comparateur.</td></tr>
       <tr><td>Volant lourd et lent dans les enchaînements</td><td>Baisse d'abord le damping, puis l'inertie.</td></tr>
       <tr><td>Volant nerveux, sensation « vide »</td><td>Monte un peu l'inertie, puis la friction si besoin.</td></tr>
