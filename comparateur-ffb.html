@@ -663,8 +663,8 @@ function rows(P,pr){
     L.push({k:'wrs',name:'Vitesse de rotation de la roue (WRS)',mine:w,prop:keep?w:0,u:'',d:0,
       why:keep?'Variante plus vive conservée (3 max, toujours sous le Mechanical Damper).':w>0?'WRS au niveau du Damper proposé ou au-dessus : amortissement net nul ou négatif, risque d\'oscillation.':'Point de départ sûr. Jusqu\'à 3 possible, sous le Damper, si le volant paraît pâteux.'});
   }
-  L.push({k:'fx',name:'Effets supplémentaires du gestionnaire',mine:c.fx?'activés':'désactivés',prop:'désactivés',u:'',txt:true,
-    why:c.fx?'Ils modifient le signal du jeu : les désactiver avant de régler, puis les réintroduire un par un si besoin.':'Rien à changer.'});
+  L.push({k:'fx',name:'Effets supplémentaires du gestionnaire',mine:c.fx?'modifiés':'neutres',prop:'neutres',u:'',txt:true,
+    why:c.fx?'Ils modifient le signal du jeu : remets-les au neutre (0, ou 100 pour les effets du jeu chez Simagic) avant de régler, puis réintroduis-les un par un si besoin.':'Effets au neutre : rien à changer.'});
   return L;
 }
 /* Niveau de référence prévu : le signal (part de la pleine échelle) varie comme force × multiplicateur ÷ STC */
@@ -727,7 +727,7 @@ function setup(P){const e=P.equip,c=P.cur;
 function apply(P,L){
   const v=chosen(L),c=Object.assign({},P.cur);
   ['driver','strength','stc','mult','gain','D','F','I','sm','wrs'].forEach(k=>{if(v[k]!=null)c[k]=k==='driver'&&(C.BRANDS[P.equip.brand]||{}).strengthUnit==='nm'?Math.round(v[k]/P.equip.baseNm*100):v[k];});
-  if(v.fx!=null)c.fx=v.fx==='activés';
+  if(v.fx!=null)c.fx=v.fx==='modifiés';
   P.prev=P.cur;P.cur=c;P.applied={at:Date.now(),from:'comparateur'};P.gEdit=Date.now();P.ts=Date.now();
   // Les mesures précédentes ne correspondent plus au nouveau réglage : la fiche attendra un nouveau tour
   P.sentAt=Date.now();P.measure=null;P.manual={};
