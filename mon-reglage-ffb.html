@@ -1,0 +1,219 @@
+<!doctype html><html lang="fr"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Mon réglage · Pure Racing FX</title>
+<link href="https://fonts.googleapis.com/css2?family=Barlow:wght@400;500;600;700&family=Barlow+Condensed:wght@600;700&display=swap" rel="stylesheet">
+<style>
+:root{color-scheme:dark;--navy:#070e2a;--red:#fd1424;--line:#314362;--muted:#b6c6dc;--info:#4cc9ff;--ok:#2fd47a;--warn:#f5a524;--bad:#ff4d5e}
+*{box-sizing:border-box}body{margin:0;background:radial-gradient(ellipse at top right,#233b67,transparent 45%),var(--navy);color:#fff;font:16px Barlow,Arial,sans-serif;line-height:1.5}
+.wrap{max-width:1180px;margin:auto;padding:25px 16px 70px}h1,h2,h3{font-family:'Barlow Condensed',sans-serif}h1{font-size:clamp(34px,5vw,56px);line-height:1;margin:0 0 12px}h2{font-size:27px;margin:0 0 4px}h3{font-size:20px;margin:16px 0 4px}
+.lead{color:var(--muted);max-width:780px}.nav{display:flex;flex-wrap:wrap;gap:9px;margin-bottom:22px}.nav a{background:#15274b;padding:10px 15px;border-radius:9px;color:#fff;text-decoration:none}.nav .active{background:var(--red)}
+.hero{border-radius:20px;padding:30px;background:linear-gradient(90deg,#070e2af2 0%,#070e2ab0 45%,#070e2a30 85%),url('img/raidillon.jpg') 50% 80%/cover;box-shadow:0 20px 55px #0008}
+.steps{display:flex;flex-wrap:wrap;gap:8px;margin-top:18px}.steps a,.steps span{display:flex;align-items:center;gap:8px;padding:8px 14px;border-radius:10px;background:#0b1731cc;border:1px solid #ffffff22;color:#fff;text-decoration:none;font-weight:600;font-size:14px}
+.steps b{display:inline-grid;place-items:center;width:24px;height:24px;border-radius:50%;background:#243d66;font-size:13px}.steps .cur{border-color:var(--red)}.steps .cur b{background:var(--red)}.steps .done b{background:var(--ok);color:#06210f}
+.grid{display:grid;grid-template-columns:1fr 1fr;gap:20px;margin-top:22px}.card{background:linear-gradient(145deg,#16294d,#0b1731);border:1px solid #ffffff22;border-radius:16px;padding:22px;box-shadow:0 15px 35px #0005;min-width:0}.full{grid-column:1/-1}
+label{display:block;margin:10px 0 4px;font-weight:600;font-size:14px}select,input,button{font:inherit}select,input{background:#09152e;color:#fff;border:1px solid #50607b;border-radius:9px;padding:8px 10px;width:100%}
+input:invalid{border-color:var(--bad)}button{cursor:pointer;border:0;background:var(--red);color:#fff;padding:10px 16px;border-radius:9px;font-weight:700}button.secondary{background:#243d66}button:disabled{opacity:.45;cursor:default}
+.small{font-size:14px;color:var(--muted)}.tag{font-size:12px;letter-spacing:2px;color:#ff6973;font-weight:700;text-transform:uppercase}
+.f2{display:grid;grid-template-columns:1fr 1fr;gap:0 12px}.f3{display:grid;grid-template-columns:repeat(3,1fr);gap:0 12px}
+.chk{display:flex;gap:10px;align-items:flex-start;font-weight:600;margin-top:14px}.chk input{width:auto;margin-top:5px}.chk span{display:block}.chk small{display:block;font-weight:400;color:var(--muted);font-size:13px}
+.note{border-radius:10px;padding:10px 13px;margin:12px 0 0;font-size:14px}.note.info{border:1px solid rgba(76,201,255,.45);background:rgba(76,201,255,.1)}.note.warn{border:1px solid rgba(245,165,36,.5);background:rgba(245,165,36,.1)}.note.ok{border:1px solid rgba(47,212,122,.45);background:rgba(47,212,122,.1)}
+.kpis{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-top:14px}.kpi{background:#09152e;border:1px solid #ffffff1c;border-radius:12px;padding:12px 14px}.kpi small{display:block;color:var(--muted);font-size:12px;letter-spacing:1px;text-transform:uppercase;font-weight:700}
+.kpi b{display:block;font:700 32px 'Barlow Condensed',sans-serif;line-height:1.1;margin-top:2px}.kpi span{font-size:13px;color:var(--muted)}
+.live{display:flex;align-items:center;gap:8px;font-weight:600}.dot{width:10px;height:10px;border-radius:50%;background:#5b63a8;flex:none}.dot.on{background:var(--ok);box-shadow:0 0 10px var(--ok)}
+.actions{display:flex;flex-wrap:wrap;gap:10px;margin-top:16px}.hidden{display:none!important}
+.ok{color:var(--ok)}.warn{color:var(--warn)}.bad{color:var(--bad)}
+@media(max-width:900px){.grid{grid-template-columns:1fr}.kpis{grid-template-columns:1fr 1fr}}
+@media(max-width:560px){.f3{grid-template-columns:1fr 1fr}.kpis{grid-template-columns:1fr}}
+</style></head><body><div class="wrap">
+<nav class="nav"><a class="active" href="https://pureracing-fx.odoo.com/mon-reglage-ffb" target="_top">Mon réglage</a><a href="https://pureracing-fx.odoo.com/ffb-calculateur" target="_top">Calculateur</a><a href="https://pureracing-fx.odoo.com/comparateur-ffb" target="_top">Comparer</a><a href="https://pureracing-fx.odoo.com/test-piste-ffb" target="_top">Test sur piste</a><a href="https://pureracing-fx.odoo.com/notice-ffb" target="_top">Notice</a></nav>
+
+<header class="hero"><span class="tag">PURE RACING FX / FFB LAB</span><h1>Mon réglage</h1>
+<p class="lead">On part de ce que tu as vraiment. Renseigne ton matériel et tes réglages actuels, roule 3 tours avec le FFB Analyzer, puis compare avec ce que le FFB Lab propose.</p>
+<div class="steps" id="steps">
+ <span class="cur" id="st1"><b>1</b>Mon matériel et mes réglages</span>
+ <span id="st2"><b>2</b>3 tours avec l'Analyzer</span>
+ <a href="https://pureracing-fx.odoo.com/comparateur-ffb" target="_top" id="st3"><b>3</b>Comparer avec la proposition</a>
+ <a href="https://pureracing-fx.odoo.com/test-piste-ffb" target="_top" id="st4"><b>4</b>Valider sur piste</a>
+</div></header>
+
+<div class="grid">
+<section class="card"><span class="tag">Étape 1</span><h2>Mon matériel</h2>
+ <div class="f2"><div><label for="game">Simulation</label><select id="game"><option value="lmu">Le Mans Ultimate / rFactor 2</option><option value="ac">Assetto Corsa</option><option value="ace">Assetto Corsa EVO</option></select></div>
+ <div><label for="brand">Marque de la base</label><select id="brand"></select></div></div>
+ <div class="f2"><div><label for="baseName">Base</label><input id="baseName" placeholder="Ex. Alpha Mini"></div><div><label for="baseNm">Couple de la base (Nm)</label><input id="baseNm" type="number" min="2" max="40" step="0.5" placeholder="Ex. 10"></div></div>
+ <div class="f3"><div><label for="wheel">Volant</label><input id="wheel" placeholder="Ex. GT Neo"></div><div><label for="wheelKg">Masse (kg)</label><input id="wheelKg" type="number" min="0.3" max="5" step="0.05" placeholder="1,1"></div><div><label for="wheelMm">Diamètre (mm)</label><input id="wheelMm" type="number" min="200" max="400" step="5" placeholder="300"></div></div>
+ <div class="f2"><div><label for="car">Voiture</label><input id="car" placeholder="Ex. Oreca 07 LMP2"></div><div><label for="track">Circuit</label><input id="track" placeholder="Ex. Spa-Francorchamps"></div></div>
+</section>
+
+<section class="card"><span class="tag">Étape 1</span><h2>Mes réglages actuels</h2>
+ <p class="small" style="margin:0">Ce qui est réellement réglé aujourd'hui, pas ce qui est conseillé.</p>
+ <div class="f2"><div><label for="driver" id="lDriver">Puissance driver (%)</label><input id="driver" type="number" min="1" max="100" step="1"></div>
+  <div class="lmuOnly"><label for="strength">Force Feedback Strength (%)</label><input id="strength" type="number" min="1" max="200" step="1"></div>
+  <div class="acOnly"><label for="gain">Gain FFB en jeu (%)</label><input id="gain" type="number" min="1" max="200" step="1"></div></div>
+ <div class="f2 lmuOnly"><div><label for="stc">Steering Torque Capability (Nm)</label><input id="stc" type="number" min="1" max="60" step="0.5"></div><div><label for="mult">Multiplicateur FFB de la voiture (%)</label><input id="mult" type="number" min="1" max="200" step="1"></div></div>
+ <div class="f3"><div><label for="D" id="lD">Damper</label><input id="D" type="number" step="1" min="0"></div><div><label for="F" id="lF">Friction</label><input id="F" type="number" step="0.5" min="0"></div><div><label for="I" id="lI">Inertie</label><input id="I" type="number" step="1" min="0"></div></div>
+ <div class="f2"><div><label for="sm" id="lSm">Lissage</label><input id="sm" type="number" min="0" max="20" step="1"></div><div id="wrsBox"><label for="wrs">WRS (vitesse de rotation)</label><input id="wrs" type="number" min="0" max="10" step="1"></div></div>
+ <label class="chk" for="fx"><input type="checkbox" id="fx"><span>Effets supplémentaires activés dans le gestionnaire<small id="fxHint"></small></span></label>
+</section>
+
+<section class="card full"><span class="tag">Étape 2</span><h2>3 tours avec le FFB Analyzer</h2>
+ <div id="anaBox">
+  <p class="live"><i class="dot" id="anaDot"></i><span id="anaState">Recherche du FFB Analyzer…</span></p>
+  <div id="syncNote"></div>
+ </div>
+ <p class="small" id="measHelp">Roule 3 tours propres avec la même voiture. Le FFB Lab retient le dernier tour valide (hors sortie de piste, tête-à-queue ou tour lent).</p>
+ <div class="kpis">
+  <div class="kpi"><small>Niveau de référence</small><b id="kLevel">—</b><span>99,5e centile du signal · visé 75 à 90 %</span></div>
+  <div class="kpi"><small>Écrêtage du tour</small><b id="kClip">—</b><span>part du tour au plafond · visé sous 0,5 %</span></div>
+  <div class="kpi"><small>Couple voiture</small><b id="kCar">—</b><span>équivalent FFB Lab · LMU / rF2</span></div>
+ </div>
+ <div id="manual">
+  <h3>Saisie manuelle <span class="small">(sans le plugin Pure Racing FX)</span></h3>
+  <div class="f3"><div><label for="mLevel">Niveau de référence (%)</label><input id="mLevel" type="number" min="1" max="300" step="1" placeholder="ex. 75"></div><div><label for="mClip">Écrêtage du tour (%)</label><input id="mClip" type="number" min="0" max="100" step="0.1" placeholder="ex. 0,1"></div><div class="lmuOnly"><label for="mCar">Couple voiture (Nm)</label><input id="mCar" type="number" min="3" max="60" step="0.1" placeholder="ex. 13,2"></div></div>
+ </div>
+ <div id="measNote"></div>
+ <div class="actions"><button type="button" id="next">Étape 3 : comparer avec la proposition →</button><button type="button" class="secondary" id="toTrack">Aller à la validation sur piste</button></div>
+</section>
+</div>
+<p class="small" style="margin-top:22px">Ta fiche est enregistrée sur cet appareil (et, avec le plugin Pure Racing FX, partagée entre le PC et la tablette). Le comparateur et la validation sur piste la reprennent automatiquement.</p>
+</div>
+<script>
+(function(){
+'use strict';
+const $=id=>document.getElementById(id);
+const get=k=>{try{return JSON.parse(localStorage.getItem(k)||'null')}catch(e){return null}};
+const put=(k,v)=>{try{localStorage.setItem(k,JSON.stringify(v))}catch(e){}};
+const num=v=>{const x=parseFloat(String(v).replace(',','.'));return isFinite(x)?x:null};
+const fmt=(v,d=1)=>v==null||!isFinite(v)?'—':v.toLocaleString('fr-FR',{minimumFractionDigits:d,maximumFractionDigits:d});
+
+/* Libellés des réglages par marque (mêmes noms que le calculateur et la validation sur piste) */
+const BRANDS={
+ simagic:{name:'Simagic',soft:'SimPro Manager',D:'Mechanical Damper (%)',F:'Mechanical Friction (%)',I:'Mechanical Inertia (%)',sm:'Smoothing',wrs:true,def:{D:7,F:2,I:4,sm:1,wrs:0},
+  fx:'Mechanical Spring ou Center Damper au-dessus de 0, ou effets du jeu (Game Spring, Damper, Friction, Inertia) différents de 100.'},
+ moza:{name:'Moza',soft:'Pit House',D:'Wheel Damper (%)',F:'Wheel Friction (%)',I:'Natural Inertia (%)',sm:'FFB Smoothing / filtre',def:{D:10,F:20,I:120,sm:0},
+  fx:'Ressort central, Hands-Off Protection, Road Sensitivity ou autres effets ajoutés par Pit House.'},
+ fanatec:{name:'Fanatec',soft:'Fanatec App',D:'NDP',F:'NFR',I:'NIN',sm:'INT (interpolation)',def:{D:7,F:5,I:3,sm:1},
+  fx:'SPR ou DPR différents de 100, BLI, FEI réduit ou autres effets ajoutés par le driver.'},
+ simucube:{name:'Simucube',soft:'Simucube Tuner',D:'Damping (%)',F:'Friction (%)',I:'Inertia (%)',sm:'Reconstruction Filter',def:{D:4,F:3,I:2,sm:1},
+  fx:'Static Force Reduction, Slew Rate Limit, Ultra Low Latency ou autres effets ajoutés par True Drive / Tuner.'},
+ asetek:{name:'Asetek',soft:'RaceHub',D:'Damping (%)',F:'Friction (%)',I:'Inertia',sm:'Lissage / filtre',def:{D:4,F:8,I:1,sm:0},
+  fx:'Anti-Oscillation, Torque Behavior Prediction ou autres effets ajoutés par RaceHub.'}
+};
+const KEY='ffbLabProfile';
+const ANALYZER='/lab/api/analyzer';
+const EQ=['game','brand','baseName','baseNm','wheel','wheelKg','wheelMm','car','track'];
+const CUR=['driver','strength','gain','stc','mult','D','F','I','sm','wrs'];
+
+function defaults(){return {equip:{game:'lmu',brand:'simagic',baseName:'',baseNm:10,wheel:'',wheelKg:1.1,wheelMm:300,car:'',track:''},
+ cur:{driver:100,strength:50,gain:70,stc:10,mult:100,D:7,F:2,I:4,sm:1,wrs:0,fx:false},measure:null,ts:0};}
+let P=get(KEY)||defaults();
+P.equip=Object.assign(defaults().equip,P.equip||{});P.cur=Object.assign(defaults().cur,P.cur||{});
+
+/* Première visite : reprise de ce que l'utilisateur avait déjà saisi dans la validation sur piste */
+if(!P.ts){const tr=get('ffbTrackAssistant');if(tr&&tr.cfg){const c=tr.cfg;
+ Object.assign(P.equip,{game:c.game||P.equip.game,brand:c.brand||P.equip.brand,car:c.car||''});
+ Object.assign(P.cur,{driver:c.driver,D:c.D,F:c.F,I:c.I,sm:c.sm,wrs:c.wrs===''||c.wrs==null?0:c.wrs});
+ if(c.game==='lmu')P.cur.strength=c.gain;else P.cur.gain=c.gain;}}
+
+$('brand').innerHTML=Object.keys(BRANDS).map(k=>`<option value="${k}">${BRANDS[k].name}</option>`).join('');
+
+function fill(){EQ.forEach(k=>{$(k).value=P.equip[k]==null?'':P.equip[k]});CUR.forEach(k=>{$(k).value=P.cur[k]==null?'':P.cur[k]});$('fx').checked=!!P.cur.fx;
+ const m=P.manual||{};$('mLevel').value=m.level==null?'':m.level;$('mClip').value=m.clip==null?'':m.clip;$('mCar').value=m.car==null?'':m.car;labels();}
+function read(){EQ.forEach(k=>{const el=$(k);P.equip[k]=el.type==='number'?num(el.value):el.value.trim()});CUR.forEach(k=>{P.cur[k]=num($(k).value)});P.cur.fx=$('fx').checked;
+ P.manual={level:num($('mLevel').value),clip:num($('mClip').value),car:num($('mCar').value)};}
+function labels(){const b=BRANDS[P.equip.brand]||BRANDS.simagic,lmu=P.equip.game==='lmu';
+ $('lDriver').textContent='Puissance driver, '+b.soft+' (%)';$('lD').textContent=b.D;$('lF').textContent=b.F;$('lI').textContent=b.I;$('lSm').textContent=b.sm+' ('+b.soft+')';
+ $('wrsBox').style.visibility=b.wrs?'visible':'hidden';$('fxHint').textContent=b.fx;
+ document.querySelectorAll('.lmuOnly').forEach(e=>e.classList.toggle('hidden',!lmu));document.querySelectorAll('.acOnly').forEach(e=>e.classList.toggle('hidden',lmu));}
+
+/* Réglages du jeu tels que l'Analyzer doit les connaître (LMU / rF2 uniquement) */
+function gameSettings(){return P.equip.game!=='lmu'||P.cur.stc==null||P.cur.strength==null?null:
+ {game:'lmu',stc:P.cur.stc,strength:P.cur.strength/100,mult:(P.cur.mult==null?100:P.cur.mult)/100};}
+
+/* Transmission aux autres outils : comparateur (ffbLabHandoff) et validation sur piste (ffbLabSetup) */
+function handoff(){
+ const e=P.equip,c=P.cur,meas=bestMeasure(),base=e.baseNm||10,ts=Date.now();
+ const label=[e.baseName||'base '+fmt(base,1)+' Nm',e.car,'mon réglage actuel'].filter(Boolean).join(' · ');
+ if(e.game==='lmu'){const st={A:base,T:base,B:(c.driver||100)/100,STC:c.stc||base,s:(c.strength||50)/100,m:(c.mult||100)/100};
+  if(meas&&meas.car)st.H=meas.car;put('ffbLabHandoff',{game:'lmu',st,label,ts,from:'fiche'});}
+ else if(e.game==='ac'){const st={A:base,T:base,B:(c.driver||100)/100,g:(c.gain||70)/100};if(meas&&meas.level)st.P=meas.level/100;put('ffbLabHandoff',{game:'ac',st,label,ts,from:'fiche'});}
+ put('ffbLabSetup',{game:e.game,brand:e.brand,base:[e.baseName,e.wheel].filter(Boolean).join(' · ')+(e.baseNm?' · '+fmt(e.baseNm,1)+' Nm':''),
+  driver:c.driver,gain:e.game==='lmu'?c.strength:c.gain,D:c.D,F:c.F,I:c.I,sm:c.sm,wrs:c.wrs,fx:c.fx,
+  p995:meas&&meas.level!=null?Math.round(meas.level):'',clip:meas&&meas.clip!=null?Math.round(meas.clip*100)/100:'',car:e.car,ts});
+}
+
+/* ---------------- FFB Analyzer (plugin Pure Racing FX) ---------------- */
+let ana=null,anaOk=false,sendTimer=null,sending=false;
+function sameSettings(a){const g=gameSettings();if(!g||!a||!a.settings)return true;const s=a.settings;
+ return s.confirmed&&Math.abs(s.stc-g.stc)<0.05&&Math.abs(s.strength-g.strength)<0.005&&Math.abs(s.mult-g.mult)<0.005;}
+function pushSettings(){const g=gameSettings();if(!anaOk||!g||sending)return;sending=true;
+ fetch(ANALYZER+'/settings',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(g)}).then(r=>r.json()).then(r=>{
+  if(r.ok){P.sentAt=Date.now();P.sentLap=ana&&ana.current_lap||0;P.sent=g;save(false);}}).catch(()=>{}).finally(()=>{sending=false;poll();});}
+function poll(){
+ fetch(ANALYZER,{cache:'no-store'}).then(r=>r.ok?r.json():null).then(a=>{ana=a;anaOk=!!(a&&a.available);render();}).catch(()=>{ana=null;anaOk=false;render();});
+}
+/* Mesure retenue : dernier tour valide de l'Analyzer, fait après la dernière transmission des réglages ; sinon la saisie manuelle */
+function analyzerMeasure(){
+ if(!anaOk||!ana.last)return null;const l=ana.last;
+ const fresh=!P.sentAt||l.lap>(P.sentLap||0);
+ return {src:'analyzer',lap:l.lap,level:l.ref_level*100,clip:l.clip_pct*100,car:l.car_nm,status:l.status,game:ana.game_name,fresh};
+}
+function bestMeasure(){const a=analyzerMeasure();if(a&&a.fresh)return a;
+ const m=P.manual||{};if(m.level!=null||m.clip!=null||m.car!=null)return {src:'manual',level:m.level,clip:m.clip,car:m.car};
+ return P.measure||null;}
+
+function render(){
+ const g=gameSettings();
+ if(anaOk){
+  $('anaDot').classList.toggle('on',!!ana.running);
+  $('anaState').textContent='FFB Analyzer connecté · '+(ana.running?(ana.game_name||'jeu')+' · tour '+ana.current_lap:'en attente d\'une session');
+  $('manual').classList.add('hidden');
+  $('measHelp').textContent='Roule 3 tours propres avec la même voiture. Les mesures arrivent toutes seules ici, à chaque tour valide (hors sortie de piste, tête-à-queue ou tour lent).';
+  let sync='';
+  if(g&&!sameSettings(ana)){const s=ana.settings;
+   if(!P.gEdit&&s.confirmed&&ana.game_key!=='other'){
+    // Fiche jamais modifiée sur ces champs : on reprend les réglages déjà saisis dans l'Analyzer (pas l'inverse)
+    P.cur.stc=Math.round(s.stc*10)/10;P.cur.strength=Math.round(s.strength*100);P.cur.mult=Math.round(s.mult*100);fill();
+    sync='<div class="note info">Force en jeu, STC et multiplicateur repris de l\'Analyzer. Corrige-les ici s\'ils diffèrent du jeu : l\'Analyzer sera mis à jour.</div>';
+   } else if(P.gEdit){
+    sync=`<div class="note warn">L'Analyzer utilise ${s.confirmed?'STC '+fmt(s.stc,1)+' Nm · force '+Math.round(s.strength*100)+' % · multiplicateur '+Math.round(s.mult*100)+' %':'ses valeurs par défaut'} alors que ta fiche indique STC ${fmt(g.stc,1)} Nm · force ${Math.round(g.strength*100)} % · multiplicateur ${Math.round(g.mult*100)} %. Envoi automatique en cours…</div>`;
+    clearTimeout(sendTimer);sendTimer=setTimeout(pushSettings,600);
+   } else sync='<div class="note warn">Renseigne la force en jeu, le STC et le multiplicateur tels qu\'ils sont réglés dans le jeu : ils seront transmis à l\'Analyzer.</div>';
+  }
+  else if(g)sync='<div class="note ok">L\'Analyzer utilise les réglages du jeu de ta fiche : le couple voiture mesuré est juste.</div>';
+  else if(P.equip.game!=='lmu')sync='<div class="note info">Assetto Corsa : l\'Analyzer mesure le niveau et l\'écrêtage ; le couple voiture n\'est disponible que sur LMU et rFactor 2.</div>';
+  $('syncNote').innerHTML=sync;
+ } else {
+  $('anaDot').classList.remove('on');
+  $('anaState').textContent='FFB Analyzer non connecté : saisis les mesures à la main (ou ouvre cette page depuis le plugin Pure Racing FX).';
+  $('manual').classList.remove('hidden');$('syncNote').innerHTML='';
+  $('measHelp').textContent='Roule 3 tours propres avec la même voiture, puis relève les mesures du dernier tour complet dans le FFB Analyzer.';
+ }
+ const a=analyzerMeasure(),m=bestMeasure();
+ if(a&&a.fresh)P.measure=Object.assign({at:Date.now(),car_name:P.equip.car},a);
+ const show=m;
+ $('kLevel').textContent=show&&show.level!=null?fmt(show.level,0)+' %':'—';
+ $('kClip').textContent=show&&show.clip!=null?fmt(show.clip,1)+' %':'—';
+ $('kCar').textContent=show&&show.car!=null&&P.equip.game==='lmu'?fmt(show.car,1)+' Nm':'—';
+ $('kLevel').className=show&&show.level!=null?(show.level>90?'warn':show.level<75?'warn':'ok'):'';
+ $('kClip').className=show&&show.clip!=null?(show.clip>0.5?'bad':show.clip>=0.2?'warn':'ok'):'';
+ let note='';
+ if(a&&!a.fresh)note='<div class="note info">Réglages transmis à l\'Analyzer : roule au moins un tour complet pour obtenir une mesure avec ces réglages (dernier tour mesuré : n° '+a.lap+').</div>';
+ else if(m&&m.src==='analyzer')note='<div class="note ok">Mesure du tour '+m.lap+' ('+(m.game||'')+') retenue pour la comparaison.</div>';
+ else if(!m)note='<div class="note info">Pas encore de mesure.</div>';
+ $('measNote').innerHTML=note;
+ const s1=P.equip.baseNm&&P.cur.D!=null,s2=!!m;
+ $('st1').className=s1?'done':'cur';$('st2').className=s2?'done':(s1?'cur':'');
+ save(false);
+}
+let lastSave='';
+function save(stamp=true){const sig=JSON.stringify([P.equip,P.cur,P.manual,P.measure&&[P.measure.lap,P.measure.level,P.measure.car]]);if(sig===lastSave&&!stamp)return;lastSave=sig;P.ts=Date.now();put(KEY,P);handoff();}
+
+EQ.concat(CUR,['fx','mLevel','mClip','mCar']).forEach(k=>{const el=$(k);const on=()=>{if(k==='strength'||k==='stc'||k==='mult')P.gEdit=Date.now();read();labels();render();};el.addEventListener('change',on);if(el.tagName==='INPUT')el.addEventListener('input',on);});
+/* Navigation : page entière (le site affiche les outils dans des cadres) */
+const go=u=>{save();try{window.top.location.href=u}catch(e){location.href=u}};
+$('next').onclick=()=>go('https://pureracing-fx.odoo.com/comparateur-ffb');
+$('toTrack').onclick=()=>go('https://pureracing-fx.odoo.com/test-piste-ffb');
+/* L'Analyzer n'existe que dans le plugin (pages servies sous /lab/) : pas d'appel inutile sur le site */
+const inPlugin=location.pathname.indexOf('/lab/')===0;
+fill();render();if(inPlugin){poll();setInterval(poll,3000);}
+})();
+</script></body></html>

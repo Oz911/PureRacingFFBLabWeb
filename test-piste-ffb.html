@@ -140,6 +140,11 @@ if(typeof S.cfg.wrs==='boolean')S.cfg.wrs=S.cfg.wrs?0:'';
 if(setup&&(!S.cfgTs||setup.ts>S.cfgTs)){
  Object.assign(S.cfg,{game:setup.game,brand:setup.brand,base:setup.base||S.cfg.base,driver:setup.driver,gain:setup.gain,D:setup.D,F:setup.F,I:setup.I});
  if(setup.sm!=null)S.cfg.sm=setup.sm;
+ // Fiche « Mon réglage » : WRS, voiture et mesures de l'Analyzer
+ if(setup.wrs!=null)S.cfg.wrs=setup.wrs;
+ if(setup.car)S.cfg.car=setup.car;
+ if(setup.p995!=null)S.cfg.p995=setup.p995;
+ if(setup.clip!=null)S.cfg.clip=setup.clip;
  S.cfgTs=setup.ts;S.fromCalc=setup.ts;
 }
 const save=()=>put(KEY,S);

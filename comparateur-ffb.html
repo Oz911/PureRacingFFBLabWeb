@@ -342,7 +342,7 @@ function showHandoff(){
   box.setAttribute('role','status');
   box.style.cssText='margin:14px auto 0;max-width:80ch;padding:12px 16px;border-radius:12px;border:1px solid rgba(76,201,255,.4);background:rgba(76,201,255,.08);font-size:14px;text-align:left';
   const extra=handoff.game==='ac'?' Mesure ensuite le pic de force en jeu (FFBClip ou Content Manager) et saisis-le.':'';
-  box.innerHTML='<b>Valeurs reprises du calculateur</b> : '+handoff.label.replace(/[<>&]/g,'')+'. Tu peux les modifier librement.'+extra+' ';
+  box.innerHTML='<b>Valeurs reprises '+(handoff.from==='fiche'?'de ta fiche « Mon réglage »':'du calculateur')+'</b> : '+handoff.label.replace(/[<>&]/g,'')+'. Tu peux les modifier librement.'+extra+' ';
   const undo=document.createElement('button');
   undo.type='button'; undo.textContent='Revenir à mes valeurs précédentes';
   undo.style.cssText='margin-left:6px;padding:4px 10px;border-radius:8px;border:1px solid currentColor;background:transparent;color:inherit;cursor:pointer;font:inherit';

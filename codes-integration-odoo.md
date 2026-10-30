@@ -4,6 +4,14 @@ Remplacer `VOTRE-COMPTE` et `VOTRE-DEPOT` par le compte et le dépôt GitHub Pag
 
 La hauteur est indicative et doit être adaptée selon les écrans.
 
+## 00 — Mon réglage (page Odoo : /mon-reglage-ffb)
+
+Point de départ du parcours : matériel, réglages actuels et mesures du FFB Analyzer.
+
+```html
+<iframe src="https://VOTRE-COMPTE.github.io/VOTRE-DEPOT/mon-reglage-ffb.html" title="Pure Racing FX — Mon réglage" loading="lazy" style="display:block;width:100%;height:1500px;border:0;background:#070e2a" referrerpolicy="strict-origin-when-cross-origin"></iframe>
+```
+
 ## 01 — Calculateur FFB
 
 ```html
