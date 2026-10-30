@@ -23,15 +23,10 @@ input:invalid{border-color:var(--bad)}button{cursor:pointer;border:0;background:
 @media(max-width:900px){.grid{grid-template-columns:1fr}.kpis{grid-template-columns:1fr 1fr}}
 @media(max-width:560px){.f3{grid-template-columns:1fr 1fr}.kpis{grid-template-columns:1fr}}
 </style></head><body><div class="wrap">
-<nav class="nav"><a class="active" href="https://pureracing-fx.odoo.com/mon-reglage-ffb" target="_top">Mon réglage</a><a href="https://pureracing-fx.odoo.com/ffb-calculateur" target="_top">Calculateur</a><a href="https://pureracing-fx.odoo.com/comparateur-ffb" target="_top">Comparer</a><a href="https://pureracing-fx.odoo.com/test-piste-ffb" target="_top">Test sur piste</a><a href="https://pureracing-fx.odoo.com/notice-ffb" target="_top">Notice</a></nav>
+<nav id="ffbnav" data-page="mon-reglage"></nav><script src="ffb-nav.js"></script>
 
 <header class="hero"><span class="tag">PURE RACING FX / FFB LAB</span><h1>Mon réglage</h1>
 <p class="lead">On part de ce que tu as vraiment. Renseigne ton matériel et tes réglages actuels, roule 3 tours avec le FFB Analyzer, puis compare avec ce que le FFB Lab propose.</p>
-<div class="steps" id="steps">
- <span class="cur" id="st1"><b>1</b>Mon matériel et mes réglages</span>
- <span id="st2"><b>2</b>3 tours avec l'Analyzer</span>
- <a href="https://pureracing-fx.odoo.com/comparateur-ffb" target="_top" id="st3"><b>3</b>Comparer avec la proposition</a>
- <a href="https://pureracing-fx.odoo.com/test-piste-ffb" target="_top" id="st4"><b>4</b>Valider sur piste</a>
 </div></header>
 
 <div class="grid">
@@ -54,7 +49,7 @@ input:invalid{border-color:var(--bad)}button{cursor:pointer;border:0;background:
  <label class="chk" for="fx"><input type="checkbox" id="fx"><span>Effets supplémentaires activés dans le gestionnaire<small id="fxHint"></small></span></label>
 </section>
 
-<section class="card full"><span class="tag">Étape 2</span><h2>3 tours avec le FFB Analyzer</h2>
+<section class="card full" id="mesure"><span class="tag">Étape 2</span><h2>3 tours avec le FFB Analyzer</h2>
  <div id="anaBox">
   <p class="live"><i class="dot" id="anaDot"></i><span id="anaState">Recherche du FFB Analyzer…</span></p>
   <div id="syncNote"></div>
@@ -201,7 +196,7 @@ function render(){
  else if(!m)note='<div class="note info">Pas encore de mesure.</div>';
  $('measNote').innerHTML=note;
  const s1=P.equip.baseNm&&P.cur.D!=null,s2=!!m;
- $('st1').className=s1?'done':'cur';$('st2').className=s2?'done':(s1?'cur':'');
+ 
  save(false);
 }
 let lastSave='';

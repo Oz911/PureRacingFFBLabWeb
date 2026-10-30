@@ -30,7 +30,7 @@ button{cursor:pointer;border:0;background:var(--red);color:#fff;padding:10px 16p
 @media(max-width:560px){.f3{grid-template-columns:1fr 1fr}.hero{padding:22px;background-image:linear-gradient(90deg,#070e2ae6,#070e2a66),url('img/raidillon-1000.jpg');background-position:62% 70%}}
 @media print{body{background:#fff;color:#000}.card,.fix{background:#fff;color:#000;box-shadow:none;border:1px solid #ccc}.nav,.actions,.ans button:not(.sel),.hero{display:none}.small,.lead{color:#444}}
 </style></head><body><div class="wrap">
-<nav class="nav"><a href="https://pureracing-fx.odoo.com/ffb-calculateur" target="_top">Calculateur</a><a href="https://pureracing-fx.odoo.com/comparateur-ffb" target="_top">Comparer</a><a class="active" href="https://pureracing-fx.odoo.com/test-piste-ffb" target="_top">Test sur piste</a><a href="https://pureracing-fx.odoo.com/pure-ffb-analyzer" target="_top">Analyzer</a><a href="https://pureracing-fx.odoo.com/notice-ffb" target="_top">Notice</a></nav>
+<nav id="ffbnav" data-page="piste"></nav><script src="ffb-nav.js"></script>
 <header class="hero"><span class="tag">PURE RACING FX / TRACK VALIDATION</span><h1>Assistant de diagnostic à Spa</h1><p class="lead">Huit tests ciblés, secteur par secteur. Tu indiques ton ressenti, l'assistant propose une seule correction chiffrée pour ta base, tu refais le passage, et il garde ou annule le changement.</p></header>
 
 <div class="grid">
@@ -42,6 +42,7 @@ button{cursor:pointer;border:0;background:var(--red);color:#fff;padding:10px 16p
  <div class="f3"><div><label for="D" id="lD">Damper</label><input id="D" type="number" step="1"></div><div><label for="F" id="lF">Friction</label><input id="F" type="number" step="0.5"></div><div><label for="I" id="lI">Inertie</label><input id="I" type="number" step="1"></div></div>
  <div class="f2"><div><label for="sm" id="lSm">Lissage</label><input id="sm" type="number" min="0" max="20" step="1"></div><div id="wrsBox"><label for="wrs">WRS (vitesse de rotation)</label><input id="wrs" type="number" min="0" max="10" step="1" placeholder="0 à 3"></div></div>
  <h3 style="margin-top:16px">Mesures FFB Analyzer <span class="small">(facultatif, dernier tour complet)</span></h3>
+ <p class="small" id="anaLine" style="margin:4px 0 0"></p>
  <div class="f2"><div><label for="p995">Niveau de référence, 99,5e centile (%)</label><input id="p995" type="number" min="1" max="300" placeholder="ex. 94"></div><div><label for="clip">Écrêtage du tour (%)</label><input id="clip" type="number" min="0" max="100" step="0.1" placeholder="ex. 0,4"></div></div>
  <p class="small" style="margin-top:10px">Avec ces deux mesures, l'assistant distingue une force « plate » due à l'écrêtage d'une force plate due aux filtres. Sans elles, il reste prudent.</p>
 </section>
@@ -147,7 +148,26 @@ if(setup&&(!S.cfgTs||setup.ts>S.cfgTs)){
  if(setup.clip!=null)S.cfg.clip=setup.clip;
  S.cfgTs=setup.ts;S.fromCalc=setup.ts;
 }
-const save=()=>put(KEY,S);
+/* ---------- Raccord avec la fiche « Mon réglage » et le FFB Analyzer ---------- */
+const inPlugin=location.pathname.indexOf('/lab/')===0;
+let anaLap=null;   // dernier numéro de tour vu dans l'Analyzer (plugin)
+function syncProfile(){
+ const P=get('ffbLabProfile');if(!P||!P.cur||!P.equip)return;const c=S.cfg,cur=P.cur;
+ if(P.equip.game!==c.game||P.equip.brand!==c.brand)return;      // autre configuration : on ne touche pas à la fiche
+ let ch=false,gch=false;
+ ['driver','D','F','I','sm','wrs'].forEach(k=>{const v=c[k]===''||c[k]==null?null:Number(c[k]);if(v!=null&&cur[k]!==v){cur[k]=v;ch=true;}});
+ const gk=c.game==='lmu'?'strength':'gain',gv=c.gain===''||c.gain==null?null:Number(c.gain);
+ if(gv!=null&&cur[gk]!==gv){cur[gk]=gv;ch=true;gch=c.game==='lmu';}
+ if(!ch)return;
+ P.ts=Date.now();P.trackEdit=Date.now();
+ if(gch){P.gEdit=Date.now();P.measure=null;P.sentAt=Date.now();if(anaLap!=null)P.sentLap=anaLap;}
+ put('ffbLabProfile',P);
+ // Réglage modifié : les mesures en place ne lui correspondent plus (plugin : la prochaine arrive seule)
+ if(inPlugin){S.measAfter=anaLap==null?0:anaLap;if(c.p995!==''||c.clip!==''){c.p995='';c.clip='';put(KEY,S);fillCfg();}}
+ if(gch&&inPlugin)fetch('/lab/api/analyzer/settings',{method:'POST',headers:{'Content-Type':'application/json'},
+  body:JSON.stringify({game:'lmu',stc:cur.stc||10,strength:gv/100,mult:(cur.mult||100)/100})}).catch(()=>{});
+}
+const save=()=>{put(KEY,S);syncProfile();};
 
 /* ---------- Configuration ---------- */
 $('brand').innerHTML=Object.keys(BRANDS).map(k=>`<option value="${k}">${BRANDS[k].name}</option>`).join('');
@@ -367,6 +387,19 @@ $('copy').onclick=()=>{const r=report();if(navigator.clipboard)navigator.clipboa
 $('print').onclick=()=>window.print();
 $('reset').onclick=()=>{if(!confirm('Effacer les réponses et l\'historique ? Les réglages actuels sont conservés.'))return;S.ans={};S.tried={};S.hist=[];S.rep={};delete S.pending;save();renderAll();};
 
+/* Plugin : mesures du FFB Analyzer reprises automatiquement (dernier tour valide fait avec le réglage en cours) */
+function pollAnalyzer(){
+ fetch('/lab/api/analyzer',{cache:'no-store'}).then(r=>r.ok?r.json():null).then(a=>{
+  if(!a||!a.available){$('anaLine').textContent='FFB Analyzer inactif dans Pit Box : saisis les mesures à la main.';return;}
+  anaLap=a.current_lap||0;if(S.measAfter==null){const P=get('ffbLabProfile');S.measAfter=P&&P.sentLap!=null?P.sentLap:-1;}
+  const l=a.last;
+  if(l&&l.lap>S.measAfter){const p=Math.round(l.ref_level*100),cl=Math.round(l.clip_pct*1000)/10;
+   if(Number(S.cfg.p995)!==p||Number(S.cfg.clip)!==cl){S.cfg.p995=p;S.cfg.clip=cl;put(KEY,S);fillCfg();renderFix();}
+   $('anaLine').innerHTML='<span class="ok">● FFB Analyzer</span> · mesures du tour '+l.lap+' reprises automatiquement.';}
+  else $('anaLine').innerHTML='<span class="ok">● FFB Analyzer</span> · '+(a.running?'en attente d\'un tour complet avec le réglage en cours (tour '+anaLap+').':'en attente d\'une session.');
+ }).catch(()=>{});
+}
 fillCfg();renderAll();
+if(inPlugin){pollAnalyzer();setInterval(pollAnalyzer,3000);}
 })();
 </script></body></html>

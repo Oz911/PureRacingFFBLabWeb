@@ -4,6 +4,14 @@ Remplacer `VOTRE-COMPTE` et `VOTRE-DEPOT` par le compte et le dépôt GitHub Pag
 
 La hauteur est indicative et doit être adaptée selon les écrans.
 
+## Menu conseillé
+
+Le FFB Lab est un parcours en 4 étapes ; toutes les pages ont la même barre d'étapes (`ffb-nav.js`).
+
+- Menu **FFB Lab** -> `/mon-reglage-ffb` (entrée du parcours)
+- Sous-menu « Outils » : Calculateur (`/ffb-calculateur`), Notice (`/notice-ffb`)
+- Comparateur (`/comparateur-ffb`) et Validation sur piste (`/test-piste-ffb`) : pages du parcours, accessibles par la barre d'étapes (inutile de les mettre au menu).
+
 ## 00 — Mon réglage (page Odoo : /mon-reglage-ffb)
 
 Point de départ du parcours : matériel, réglages actuels et mesures du FFB Analyzer.

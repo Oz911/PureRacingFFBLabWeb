@@ -155,7 +155,7 @@ details>div{margin-inline:auto;text-align:center}
 @media (max-width:700px){.mtbl .hide-s{display:none}}
 </style></head>
 <body>
-<div class="wrap"><nav class="nav"><a href="https://pureracing-fx.odoo.com/ffb-calculateur" target="_top">Calculateur</a><a class="active" href="https://pureracing-fx.odoo.com/comparateur-ffb" target="_top">Comparateur</a><a href="https://pureracing-fx.odoo.com/test-piste-ffb" target="_top">Test sur piste</a><a href="https://pureracing-fx.odoo.com/pure-ffb-analyzer" target="_top">Analyzer</a><a href="https://pureracing-fx.odoo.com/notice-ffb" target="_top">Notice</a></nav>
+<div class="wrap"><nav id="ffbnav" data-page="comparer"></nav><script src="ffb-nav.js"></script>
   <header>
     <span class="eyebrow">Sim racing · base Direct Drive · force feedback</span>
     <h1>Comparateur FFB · Pure Racing FX</h1>
@@ -170,12 +170,6 @@ details>div{margin-inline:auto;text-align:center}
 
   <!-- Étape 3 du parcours : Mon réglage face à la proposition -->
   <section id="mine" aria-labelledby="t-mine">
-    <div class="steps">
-      <a href="https://pureracing-fx.odoo.com/mon-reglage-ffb" target="_top" class="done" id="ms1"><b>1</b>Mon matériel et mes réglages</a>
-      <a href="https://pureracing-fx.odoo.com/mon-reglage-ffb" target="_top" id="ms2"><b>2</b>3 tours avec l'Analyzer</a>
-      <span class="cur"><b>3</b>Comparer avec la proposition</span>
-      <a href="https://pureracing-fx.odoo.com/test-piste-ffb" target="_top"><b>4</b>Valider sur piste</a>
-    </div>
     <div class="panel" style="display:grid;gap:14px">
       <div class="mtop"><div><h2 id="t-mine">Mon réglage face à la proposition</h2><p class="lead" id="mSub" style="font-size:14px"></p></div>
         <div class="mseg" role="group" aria-label="Force souhaitée"><button type="button" data-pref="light">Légère</button><button type="button" data-pref="normal">Normale</button><button type="button" data-pref="strong">Forte</button></div></div>
@@ -691,7 +685,6 @@ function render(){
     return;
   }
   const pr=proposal(P,pref()),L=rows(P,pr),m=measureOf(P);
-  $('ms2').className=m?'done':'cur';
   const e=P.equip;
   $('mSub').textContent=[e.baseName||'Base '+fr(e.baseNm,1)+' Nm',e.wheel,e.car,e.track].filter(Boolean).join(' · ');
   const pv=predicted(P,L);
