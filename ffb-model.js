@@ -137,8 +137,12 @@
     const TAU = 11.8;                                // constante de la courbe (Nm)
 
     // Référence validée sur piste (AC, Spa, WRS 0, oct. 2026) : Alpha Mini 10 Nm, GT Neo 1,1 kg / 300 mm -> Damper 7, Friction 2, Inertie 4.
-    // Les filtres suivent le couple ressenti visé (Tfeel), égal au plafond de référence de 8 Nm pour ce montage.
-    const REF_DEFAULT = {base:10, T:8, m:1.1, dia:300, D:7, F:2, I:4, k:0.70, v:2};
+    // Les filtres suivent le couple ressenti visé (Tfeel), égal au plafond de référence de ce montage.
+    // Plafond « Normale » recalé à 9,4 Nm (oct. 2026) sur deux essais LMU à Spa, driver 100 %, en attaque :
+    // GT3 à 14 Nm -> 54 %, LMP2 à 12,3 Nm -> 56 % validés, soit ≈ 7,5 Nm au pic avec 20 % de marge.
+    // (8 Nm auparavant : 48 % proposés pour la LMP2, niveau ≈ 70 % sous la fenêtre 75-90 % de l'Analyzer.)
+    // v : changer la version écarte les références enregistrées par les navigateurs.
+    const REF_DEFAULT = {base:10, T:9.4, m:1.1, dia:300, D:7, F:2, I:4, k:0.70, v:3};
 
     function inertia(m, diaMm, k){ const r = diaMm/2000; return k*m*r*r; } // kg·m²
     function curveT(B, Tmax){ return Tmax*(1-Math.exp(-B/TAU)); }

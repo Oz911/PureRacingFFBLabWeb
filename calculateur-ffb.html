@@ -370,7 +370,7 @@ function loadRef(){
   $('rD').value=r.D; $('rF').value=r.F; $('rI').value=r.I;
 }
 function readRef(){
-  const r = {base:num('rBase',10), T:num('rT',8), m:num('rM',1.1), dia:num('rDia',300), D:num('rD',REF_DEFAULT.D), F:num('rF',REF_DEFAULT.F), I:num('rI',REF_DEFAULT.I), k:0.70, v:REF_DEFAULT.v};
+  const r = {base:num('rBase',10), T:num('rT',REF_DEFAULT.T), m:num('rM',1.1), dia:num('rDia',300), D:num('rD',REF_DEFAULT.D), F:num('rF',REF_DEFAULT.F), I:num('rI',REF_DEFAULT.I), k:0.70, v:REF_DEFAULT.v};
   if(r.base<=0||r.T<=0||r.m<=0||r.dia<=0) return Object.assign({},REF_DEFAULT);
   return r;
 }
