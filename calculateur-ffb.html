@@ -318,58 +318,10 @@ label.chk input{width:18px;height:18px;accent-color:#fd1424;flex:none}
 /* =====================================================================
    DONNÉES
    ===================================================================== */
-const BRANDS = {
-  simagic:{name:'Simagic', soft:'SimPro Manager', strength:'Force Feedback (puissance globale)', strengthUnit:'pct',
-    models:[['Alpha EVO Sport',9],['Alpha Mini',10],['Alpha EVO',12],['Alpha',15],['Alpha EVO Pro',18],['Alpha U',23]],
-    params:[
-      {k:'D', name:'Mechanical Damper (amortissement)', f:x=>x, max:50, typ:[4,20]},
-      {k:'F', name:'Mechanical Friction', f:x=>x, max:20, typ:[0,6]},
-      {k:'I', name:'Mechanical Inertia (inertie)', f:x=>x, max:40, typ:[0,20]}],
-    extras:[['Vitesse de rotation de la roue (WRS)','0 au départ · 3 max, Damper au-dessus'],['Smoothing (lissage)','1 (2 à 3 si le FFB grésille)'],['FFB Detail','0'],['Other Effects · Mechanical Spring, Center Damper','0 %'],['Other Effects · Game Spring, Damper, Friction, Inertia','100 (neutre)']]},
-  moza:{name:'Moza', soft:'Pit House', strength:'Maximum Output Torque Limit', strengthUnit:'pct',
-    models:[['R3',3.9],['R5',5.5],['R9',9],['R12',12],['R16',16],['R21',21],['R25 Ultra',25]],
-    params:[
-      {k:'D', name:'Wheel Damper', f:x=>x, max:60, typ:[5,35]},
-      {k:'F', name:'Wheel Friction', f:x=>10+4*x, max:60, typ:[10,25]},
-      {k:'I', name:'Natural Inertia', f:x=>100+5*x, max:250, typ:[100,170], unit:'%', note:'100 % = neutre'}],
-    extras:[['Game Force Feedback Intensity','100 %'],['Road Sensitivity','3 à 5'],['Hands-Off Protection','Off sur LMU'],['Maximum Wheel Speed','par défaut']]},
-  fanatec:{name:'Fanatec', soft:'Fanatec App / menu tuning', strength:'FFB (mode Peak)', strengthUnit:'pct',
-    models:[['CSL DD (5 Nm)',5],['CSL DD Boost (8 Nm)',8],['ClubSport DD',15],['ClubSport DD+',18],['Podium DD1',20],['Podium DD2',25]],
-    params:[
-      {k:'D', name:'NDP (Natural Damper)', f:x=>x, max:100, typ:[5,25], unit:''},
-      {k:'F', name:'NFR (Natural Friction)', f:x=>2.5*x, max:100, typ:[0,10], unit:''},
-      {k:'I', name:'NIN (Natural Inertia)', f:x=>0.8*x, max:100, typ:[0,20], unit:''}],
-    extras:[['INT (interpolation)','2 (DD1/DD2) · 0 à 1 (ClubSport DD)'],['FEI','100'],['FOR / SPR / DPR','100'],['SEN','Auto']]},
-  simucube:{name:'Simucube', soft:'Simucube Tuner', strength:'Overall Strength', strengthUnit:'pct',
-    models:[['Simucube 2 Sport',17],['Simucube 2 Pro',25],['Simucube 2 Ultimate',32]],
-    params:[
-      {k:'D', name:'Damping', f:x=>0.6*x, max:40, typ:[3,15]},
-      {k:'F', name:'Friction', f:x=>1.5*x, max:20, typ:[0,5]},
-      {k:'I', name:'Inertia', f:x=>0.4*x, max:20, typ:[0,6]}],
-    extras:[['Reconstruction Filter','1 à 3'],['Static Force Reduction','Off'],['Slew Rate Limit','Off']]},
-  asetek:{name:'Asetek', soft:'RaceHub', strength:'Overall Force', strengthUnit:'nm',
-    models:[['Initium',5.5],['La Prima',12],['La Prima+',16],['Forte',18],['Invicta',27]],
-    params:[
-      {k:'D', name:'Damping', f:x=>0.6*x, max:40, typ:[0,15]},
-      {k:'F', name:'Friction', f:x=>4*x, max:40, typ:[0,15]},
-      {k:'I', name:'Inertia', f:x=>0.3*x, max:10, typ:[0,5], unit:'', note:'échelle 0 à 10'}],
-    extras:[['Anti-Oscillation','0 % (monter si oscillation)'],['Torque Behavior Prediction','0 à 1'],['High Frequency Limit','No Limit']]}
-};
-
-const GAMES = {
-  lmu:{name:'Le Mans Ultimate / rFactor 2', kD:1.0, kI:1.0, kF:1.0},
-  ac:{name:'Assetto Corsa', kD:1.0, kI:1.0, kF:1.0},
-  ace:{name:'Assetto Corsa EVO', kD:0.4, kI:0.7, kF:1.0}
-};
-
-const PREFS = {light:10, normal:14, strong:18}; // couple de saturation (Nm)
+/* Données et modèle du calculateur : ffb-model.js (FFBModel.Calc), partagés avec le comparateur. */
+const {BRANDS, GAMES, PREFS, TAU, REF_DEFAULT, inertia, curveT, compute} = FFBModel.Calc;
 const SMALL_BASE = 12;                            // base « petite » : driver à 100 % proposé par défaut (Nm)
 let drvUser = null;                               // choix explicite de l'utilisateur (true/false), sinon automatique
-const TAU = 11.8;                                // constante de la courbe (Nm)
-
-// Référence validée sur piste (AC, Spa, WRS 0, oct. 2026) : Alpha Mini 10 Nm, GT Neo 1,1 kg / 300 mm -> Damper 7, Friction 2, Inertie 4.
-// Les filtres suivent le couple ressenti visé (Tfeel), égal au plafond de référence de 8 Nm pour ce montage.
-const REF_DEFAULT = {base:10, T:8, m:1.1, dia:300, D:7, F:2, I:4, k:0.70, v:2};
 
 /* =====================================================================
    OUTILS
@@ -382,57 +334,11 @@ const store = {
   get(k){ try{ return JSON.parse(localStorage.getItem(k)); }catch(e){ return null; } },
   set(k,v){ try{ localStorage.setItem(k, JSON.stringify(v)); }catch(e){} }
 };
-function inertia(m, diaMm, k){ const r = diaMm/2000; return k*m*r*r; } // kg·m²
 
 /* =====================================================================
    MODÈLE
    ===================================================================== */
-function curveT(B, Tmax){ return Tmax*(1-Math.exp(-B/TAU)); }
 
-function compute(s){
-  const ref = s.ref;
-  // Plafond de couple indicatif : courbe saturée, recalée pour que la référence tombe juste en "Normale"
-  const scale = ref.T / curveT(ref.base, PREFS.normal);
-  const Tmax = PREFS[s.pref]*scale;
-  let T = curveT(s.B, Tmax);
-  const limited = !s.full && T >= s.B;
-  const Tpref = Math.min(T, s.B);          // plafond correspondant à la « Force souhaitée »
-  T = s.full ? s.B : Tpref;               // driver à 100 % : toute la base, la force souhaitée se règle en jeu
-  const pct = Math.round(T/s.B*100);
-  const Tfeel = s.full ? Tpref : T;       // couple ressenti visé : sert aussi aux filtres (même ressenti, mêmes filtres)
-
-  const Iw = inertia(s.m, s.dia, s.k);
-  const Iref = inertia(ref.m, ref.dia, ref.k);
-  const tq = Tfeel/ref.T, iq = Iw/Iref;
-  const g = GAMES[s.game];
-
-  // Équivalents à l'échelle Simagic
-  const D = clamp(ref.D*Math.sqrt(tq*iq)*g.kD, 0, 45);
-  const I = clamp(ref.I*Math.sqrt(tq/iq)*g.kI, 0, 35);
-  const F = clamp(ref.F*g.kF, 0, 15);
-
-  // Indice de réactivité : couple / inertie du volant seul, relatif à la référence (avant compensation driver)
-  const osc = (T/Iw)/(ref.T/Iref); // indicateur de réactivité, PAS un risque mesuré
-
-  // LMU / rF2 : hypothèses et recommandation reprises du comparateur (ffb-model.js), source unique.
-  const C = s.B*pct/100;                      // couple délivré au % driver arrondi
-  const STC = Math.round(C*2)/2;              // hypothèse : STC = couple disponible
-  let lmu = FFBModel.lmuRecommend(C, STC, 1, s.H);
-  let prefApplied = false, prefClamped = false;
-  if(s.full){
-    // Driver à 100 % : la « Force souhaitée » s'applique à la force en jeu. On vise le même pic au volant
-    // que le réglage driver réduit (même ressenti), en gardant toute la base comme réserve pour les chocs.
-    const pPref = Math.round(Tpref/s.B*100), Cp = s.B*pPref/100, STCp = Math.round(Cp*2)/2;
-    const want = FFBModel.lmuRecommend(Cp, STCp, 1, s.H).J / s.H;   // force en jeu (m = 1) donnant ce pic
-    let pick = want;
-    if(lmu.feasible){ pick = clamp(want, lmu.sMin, lmu.sMax); prefClamped = Math.abs(pick-want) > 0.005; }
-    pick = Math.min(1, pick);
-    lmu = Object.assign({}, lmu, FFBModel.evaluate(C, FFBModel.lmuEq(STC, pick, 1), s.H), {pick, prefTarget: want});
-    prefApplied = true;
-  }
-  const strength = lmu.pick, peak = lmu.J;
-  return {T, Tmax, Tpref, Tfeel, pct, limited, Iw, Iref, D, F, I, osc, C, STC, lmu, strength, peak, prefApplied, prefClamped};
-}
 
 /* =====================================================================
    ÉTATS COULEUR

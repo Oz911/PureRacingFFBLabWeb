@@ -138,7 +138,22 @@ details>div{margin-inline:auto;text-align:center}
 .sbtn span{white-space:nowrap}
 @media (prefers-reduced-motion:no-preference){.chart rect{transition:width .25s ease}}
 </style>
-<style>:root{--bg:#070e2a;--surface:#101e3d;--sunken:#0b1630;--accent:#fd1424;--accent-soft:#273452;--line:#34415f;--base:#fd1424}body{background:radial-gradient(ellipse at 90% 0,#1c315d,transparent 45%),#070e2a}.panel,.verdict{box-shadow:0 14px 34px #0005;border-radius:14px}.games button[aria-pressed=true]{color:#fff}.nav{display:flex;justify-content:center;gap:12px;flex-wrap:wrap}.nav a{background:#15274b;padding:10px 16px;border-radius:9px;color:#fff;text-decoration:none}.nav a.active{background:#fd1424}</style></head>
+<style>:root{--bg:#070e2a;--surface:#101e3d;--sunken:#0b1630;--accent:#fd1424;--accent-soft:#273452;--line:#34415f;--base:#fd1424}body{background:radial-gradient(ellipse at 90% 0,#1c315d,transparent 45%),#070e2a}.panel,.verdict{box-shadow:0 14px 34px #0005;border-radius:14px}.games button[aria-pressed=true]{color:#fff}.nav{display:flex;justify-content:center;gap:12px;flex-wrap:wrap}.nav a{background:#15274b;padding:10px 16px;border-radius:9px;color:#fff;text-decoration:none}.nav a.active{background:#fd1424}</style>
+<style>
+/* Étape 3 : Mon réglage face à la proposition */
+#mine .steps{display:flex;flex-wrap:wrap;gap:8px;justify-content:center}
+#mine .steps a,#mine .steps span{display:flex;align-items:center;gap:8px;padding:7px 13px;border-radius:9px;background:var(--surface);border:1px solid var(--line);color:var(--fg);text-decoration:none;font-weight:600;font-size:14px}
+#mine .steps b{display:inline-grid;place-items:center;width:22px;height:22px;border-radius:50%;background:var(--accent-soft);font-size:12px}#mine .steps .cur{border-color:#fd1424}#mine .steps .cur b{background:#fd1424}#mine .steps .done b{background:var(--ok);color:#06210f}
+.mtop{display:flex;flex-wrap:wrap;gap:12px 24px;align-items:center;justify-content:space-between}
+.mseg{display:flex;gap:4px;background:var(--sunken);border:1px solid var(--line);border-radius:9px;padding:4px}.mseg button{font:inherit;font-weight:600;border:0;border-radius:6px;padding:5px 12px;background:transparent;color:var(--muted);cursor:pointer}.mseg button[aria-pressed="true"]{background:#fd1424;color:#fff}
+.mtbl{width:100%;border-collapse:collapse;font-size:14px}.mtbl th{font-family:var(--f-mono);font-size:11px;text-transform:uppercase;letter-spacing:.07em;color:var(--muted);text-align:left;padding:6px 8px;border-bottom:1px solid var(--line)}
+.mtbl td{padding:9px 8px;border-bottom:1px solid var(--line);vertical-align:top}.mtbl td.v{font-family:var(--f-mono);white-space:nowrap}.mtbl .why{display:block;color:var(--muted);font-size:12.5px;margin-top:2px}
+.mtbl tr.same td{opacity:.62}.mtbl .d{font-family:var(--f-mono);font-weight:600}.mtbl .up{color:var(--ok)}.mtbl .dn{color:var(--risk)}
+.mtbl tr.pred td{background:var(--sunken)}.pick{display:inline-flex;border:1px solid var(--line);border-radius:7px;overflow:hidden}.pick button{font:inherit;font-size:12.5px;border:0;padding:4px 9px;background:transparent;color:var(--muted);cursor:pointer}.pick button[aria-pressed="true"]{background:var(--accent-soft);color:var(--fg);font-weight:600}
+.mnote{border-radius:9px;padding:9px 12px;font-size:14px}.mnote.info{background:var(--accent-soft)}.mnote.warn{background:var(--warn-soft);color:#fde68a}.mnote.ok{background:var(--ok-soft);color:#bbf7d0}
+.mact{display:flex;flex-wrap:wrap;gap:10px}.mact button{font:inherit;font-weight:700;border:0;border-radius:9px;padding:10px 16px;cursor:pointer;background:#fd1424;color:#fff}.mact button.sec{background:#243d66}
+@media (max-width:700px){.mtbl .hide-s{display:none}}
+</style></head>
 <body>
 <div class="wrap"><nav class="nav"><a href="https://pureracing-fx.odoo.com/ffb-calculateur" target="_top">Calculateur</a><a class="active" href="https://pureracing-fx.odoo.com/comparateur-ffb" target="_top">Comparateur</a><a href="https://pureracing-fx.odoo.com/test-piste-ffb" target="_top">Test sur piste</a><a href="https://pureracing-fx.odoo.com/pure-ffb-analyzer" target="_top">Analyzer</a><a href="https://pureracing-fx.odoo.com/notice-ffb" target="_top">Notice</a></nav>
   <header>
@@ -152,6 +167,21 @@ details>div{margin-inline:auto;text-align:center}
     <p class="gamenote" id="gamenote"></p>
   </header>
 
+
+  <!-- Étape 3 du parcours : Mon réglage face à la proposition -->
+  <section id="mine" aria-labelledby="t-mine">
+    <div class="steps">
+      <a href="https://pureracing-fx.odoo.com/mon-reglage-ffb" target="_top" class="done" id="ms1"><b>1</b>Mon matériel et mes réglages</a>
+      <a href="https://pureracing-fx.odoo.com/mon-reglage-ffb" target="_top" id="ms2"><b>2</b>3 tours avec l'Analyzer</a>
+      <span class="cur"><b>3</b>Comparer avec la proposition</span>
+      <a href="https://pureracing-fx.odoo.com/test-piste-ffb" target="_top"><b>4</b>Valider sur piste</a>
+    </div>
+    <div class="panel" style="display:grid;gap:14px">
+      <div class="mtop"><div><h2 id="t-mine">Mon réglage face à la proposition</h2><p class="lead" id="mSub" style="font-size:14px"></p></div>
+        <div class="mseg" role="group" aria-label="Force souhaitée"><button type="button" data-pref="light">Légère</button><button type="button" data-pref="normal">Normale</button><button type="button" data-pref="strong">Forte</button></div></div>
+      <div id="mBody"></div>
+    </div>
+  </section>
   <!-- 1. Calculateur -->
   <section aria-labelledby="t-calc">
     <h2 id="t-calc">Votre réglage</h2>
@@ -570,6 +600,151 @@ function renderCmp(){
 }
 
 buildGameInputs(); buildCmp(); fill(); render(); showHandoff();
+})();
+</script>
+<script>
+/* =====================================================================
+   Étape 3 : « Mon réglage » (fiche ffbLabProfile) face à la proposition
+   du calculateur (FFBModel.Calc), recalée sur la mesure de l'Analyzer.
+   ===================================================================== */
+(function(){
+'use strict';
+const $=id=>document.getElementById(id);
+const get=k=>{try{return JSON.parse(localStorage.getItem(k)||'null')}catch(e){return null}};
+const put=(k,v)=>{try{localStorage.setItem(k,JSON.stringify(v))}catch(e){}};
+const fr=(v,d=0)=>v==null||!isFinite(v)?'—':Number(v).toLocaleString('fr-FR',{minimumFractionDigits:d,maximumFractionDigits:d});
+const esc=t=>String(t==null?'':t).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const C=FFBModel.Calc, LIM=FFBModel.LIMITS;
+const SMALL_BASE=12;
+const go=u=>{try{window.top.location.href=u}catch(e){location.href=u}};
+let CS=get('ffbLabCompare')||{pref:null,pick:{}};
+CS.pick=CS.pick||{};
+
+function measureOf(P){
+  const m=P.measure;if(m&&(m.level!=null||m.car!=null))return m;
+  const x=P.manual||{};if(x.level!=null||x.clip!=null||x.car!=null)return {src:'manual',level:x.level,clip:x.clip,car:x.car};
+  return null;
+}
+function proposal(P,pref){
+  const e=P.equip,c=P.cur,meas=measureOf(P);
+  const inp=get('ffbInput')||{}, refSv=get('ffbRef');
+  const ref=Object.assign({},C.REF_DEFAULT,refSv&&refSv.v===C.REF_DEFAULT.v?refSv:{});
+  const B=Math.min(40,Math.max(1,e.baseNm||10));
+  const carMeasured=meas&&meas.car!=null&&e.game==='lmu';
+  const H=Math.min(60,Math.max(5,carMeasured?meas.car:(Number(inp.carNm)||15)));
+  const full=c.driver!=null?c.driver>=100||B<=SMALL_BASE:B<=SMALL_BASE;
+  const s={B,m:e.wheelKg||1.1,dia:e.wheelMm||300,k:parseFloat(inp.dist)||0.70,game:e.game==='ace'?'ace':e.game,pref,ref,H,full};
+  const r=C.compute(s);
+  const vals=C.brandValues(e.brand,r);
+  return {s,r,vals,carMeasured,H,meas};
+}
+function rows(P,pr){
+  const e=P.equip,c=P.cur,b=C.BRANDS[e.brand]||C.BRANDS.simagic,r=pr.r,L=[];
+  const nm=b.strengthUnit==='nm';
+  const drvMine=c.driver, drvProp=r.pct;
+  L.push({k:'driver',name:b.strength+' ('+b.soft+')',mine:nm?drvMine*e.baseNm/100:drvMine,prop:nm?r.T:drvProp,u:nm?' Nm':' %',d:nm?1:0,
+    why:pr.s.full?'Driver à 100 % : toute la base disponible, la force se règle en jeu (plus de marge pour les chocs).':'Plafond de sécurité réglé dans le driver pour la force souhaitée.'});
+  if(e.game==='lmu'){
+    L.push({k:'strength',name:'Force Feedback Strength (jeu)',mine:c.strength,prop:Math.round(r.strength*100),u:' %',d:0,
+      why:(pr.carMeasured?'Calculée avec ta voiture mesurée à '+fr(pr.H,1)+' Nm':'Couple voiture estimé à '+fr(pr.H,1)+' Nm (pas encore mesuré)')+' · « '+({light:'Légère',normal:'Normale',strong:'Forte'})[pr.s.pref]+' » · marge visée '+Math.round(LIM.marginTarget*100)+' % hors vibreurs.'});
+    L.push({k:'stc',name:'Steering Torque Capability',mine:c.stc,prop:r.STC,u:' Nm',d:1,why:'Égal au couple réellement délivré par la base.'});
+    L.push({k:'mult',name:'Multiplicateur FFB de la voiture',mine:c.mult,prop:100,u:' %',d:0,why:'Neutre : la force se règle avec la Force Feedback Strength.'});
+  } else {
+    let gp=null,why='Point de départ : Assetto Corsa ne travaille pas en Nm.';
+    const lv=pr.meas&&pr.meas.level;
+    if(lv&&c.gain){const w=FFBModel.acGainWindow(c.gain/100,lv/100);gp=Math.round((w.lo+w.hi)/2*100);why='Fenêtre '+Math.round(w.lo*100)+' à '+Math.round(w.hi*100)+' % calculée avec ton niveau mesuré ('+fr(lv)+' %) : pic visé 75 à 90 %.';}
+    L.push({k:'gain',name:'Gain FFB (jeu)',mine:c.gain,prop:gp==null?(e.game==='ace'?80:70):gp,u:' %',d:0,why});
+  }
+  // Simagic : une WRS conservée (≤ 3, sous le Damper) est compensée sur le Damper, pour garder l'amortissement
+  // net de la référence (validé sur piste : Damper 7 / WRS 0 ≈ Damper 4 / WRS 3).
+  const isSim=b===C.BRANDS.simagic, w=isSim?Number(c.wrs)||0:0;
+  const Dref=(pr.vals.find(o=>o.p.k==='D')||{}).v;
+  const keep=isSim&&w>0&&w<=3&&Dref!=null&&w<Dref;
+  pr.vals.forEach(o=>{const k=o.p.k,u=o.p.unit===undefined?' %':(o.p.unit?' '+o.p.unit:'');
+    let prop=o.v,why=k==='D'?'Recalé sur ta base ('+fr(e.baseNm,1)+' Nm), ton volant ('+fr(e.wheelKg,2)+' kg, '+fr(e.wheelMm)+' mm) et la force visée.':k==='I'?'Inertie simulée : retrouve le poids d\'une colonne de direction pour ton volant.':'Friction fixe de la référence validée sur piste.';
+    if(k==='D'&&keep){prop=Math.max(w+1,o.v-w);why='Équivaut à '+o.v+' % sans WRS (base '+fr(e.baseNm,1)+' Nm, volant '+fr(e.wheelKg,2)+' kg) : réduit de ta WRS '+w+' pour garder le même amortissement net.';}
+    L.push({k,name:o.p.name,mine:c[k],prop,u,d:0,why});});
+  if(isSim){
+    L.push({k:'sm',name:'Smoothing (SimPro Manager)',mine:c.sm,prop:1,u:'',d:0,why:'1 par défaut ; 2 à 3 seulement si le FFB grésille.'});
+    L.push({k:'wrs',name:'Vitesse de rotation de la roue (WRS)',mine:w,prop:keep?w:0,u:'',d:0,
+      why:keep?'Variante plus vive conservée (3 max, toujours sous le Mechanical Damper).':w>0?'WRS au niveau du Damper proposé ou au-dessus : amortissement net nul ou négatif, risque d\'oscillation.':'Point de départ sûr. Jusqu\'à 3 possible, sous le Damper, si le volant paraît pâteux.'});
+  }
+  L.push({k:'fx',name:'Effets supplémentaires du gestionnaire',mine:c.fx?'activés':'désactivés',prop:'désactivés',u:'',txt:true,
+    why:c.fx?'Ils modifient le signal du jeu : les désactiver avant de régler, puis les réintroduire un par un si besoin.':'Rien à changer.'});
+  return L;
+}
+/* Niveau de référence prévu : le signal (part de la pleine échelle) varie comme force × multiplicateur ÷ STC */
+function predicted(P,L){
+  const m=measureOf(P);if(!m||m.level==null)return null;
+  const v=k=>{const x=L.find(r=>r.k===k);if(!x)return null;return (CS.pick[k]||'prop')==='mine'?x.mine:x.prop;};
+  if(P.equip.game==='lmu'){const c=P.cur;const now=c.strength*(c.mult||100)/(c.stc||10),nx=v('strength')*v('mult')/v('stc');return m.level*nx/now;}
+  const g=v('gain');return P.cur.gain?m.level*g/P.cur.gain:null;
+}
+function chosen(L){const o={};L.forEach(x=>{o[x.k]=(CS.pick[x.k]||'prop')==='mine'?x.mine:x.prop;});return o;}
+
+function render(){
+  const P=get('ffbLabProfile');
+  document.querySelectorAll('#mine .mseg button').forEach(b=>b.setAttribute('aria-pressed',b.dataset.pref===pref()));
+  if(!P||!P.equip||!P.equip.baseNm){
+    $('mSub').textContent='Commence par remplir ta fiche : matériel et réglages actuels.';
+    $('mBody').innerHTML='<div class="mnote info">Pas encore de fiche « Mon réglage ». <a href="https://pureracing-fx.odoo.com/mon-reglage-ffb" target="_top">Étape 1 : renseigner mon matériel et mes réglages →</a></div>';
+    return;
+  }
+  const pr=proposal(P,pref()),L=rows(P,pr),m=measureOf(P);
+  $('ms2').className=m?'done':'cur';
+  const e=P.equip;
+  $('mSub').textContent=[e.baseName||'Base '+fr(e.baseNm,1)+' Nm',e.wheel,e.car,e.track].filter(Boolean).join(' · ');
+  const pv=predicted(P,L);
+  let h='';
+  if(!m)h+='<div class="mnote warn">Pas encore de mesure : la proposition utilise un couple voiture estimé. <a href="https://pureracing-fx.odoo.com/mon-reglage-ffb" target="_top">Étape 2 : 3 tours avec l\'Analyzer →</a></div>';
+  else if(e.game==='lmu'&&!pr.carMeasured)h+='<div class="mnote warn">Couple voiture non mesuré : la force en jeu proposée repose sur une estimation ('+fr(pr.H,1)+' Nm).</div>';
+  h+='<div style="overflow-x:auto"><table class="mtbl"><thead><tr><th>Réglage</th><th>Mon réglage</th><th>Proposé</th><th>Écart</th><th>Je retiens</th></tr></thead><tbody>';
+  L.forEach(x=>{
+    const same=x.txt?x.mine===x.prop:(x.mine!=null&&Math.abs(x.prop-x.mine)<(x.d?0.05:0.5));
+    const diff=x.txt||x.mine==null?'':(same?'=':(x.prop>x.mine?'<span class="d up">+':'<span class="d dn">−')+fr(Math.abs(x.prop-x.mine),x.d)+x.u+'</span>');
+    const pick=CS.pick[x.k]||'prop';
+    h+=`<tr class="${same?'same':''}"><td>${esc(x.name)}<span class="why">${esc(x.why)}</span></td>`+
+       `<td class="v">${x.txt?esc(x.mine):fr(x.mine,x.d)+x.u}</td><td class="v"><b>${x.txt?esc(x.prop):fr(x.prop,x.d)+x.u}</b></td><td class="v">${diff}</td>`+
+       `<td>${same?'<span class="why">identique</span>':`<span class="pick"><button type="button" data-k="${x.k}" data-v="mine" aria-pressed="${pick==='mine'}">le mien</button><button type="button" data-k="${x.k}" data-v="prop" aria-pressed="${pick==='prop'}">proposé</button></span>`}</td></tr>`;
+  });
+  if(m&&m.level!=null){
+    const lvCls=v=>v>90?'dn':v<75?'dn':'up';
+    h+=`<tr class="pred"><td>Niveau de référence<span class="why">99,5e centile du signal, visé 75 à 90 % · écrêtage mesuré ${m.clip!=null?fr(m.clip,1)+' %':'—'}</span></td>`+
+       `<td class="v"><span class="d ${lvCls(m.level)}">${fr(m.level)} %</span><span class="why">mesuré</span></td><td class="v">${pv==null?'—':'<span class="d '+lvCls(pv)+'">≈ '+fr(pv)+' %</span><span class="why">prévu avec le réglage retenu</span>'}</td><td></td><td></td></tr>`;
+  }
+  h+='</tbody></table></div>';
+  if(pv!=null&&pv>90)h+='<div class="mnote warn">Avec le réglage retenu, le niveau prévu dépasse 90 % : risque d\'écrêtage en appui et sur les vibreurs. Garde ta force en jeu ou choisis une force souhaitée plus légère.</div>';
+  else if(pv!=null&&pv<70)h+='<div class="mnote info">Niveau prévu sous 75 % : marge confortable, mais moins de détails transmis. Normal si tu as choisi une force « Légère ».</div>';
+  if(P.applied&&P.applied.at)h+=`<div class="mnote ok">Réglage appliqué le ${new Date(P.applied.at).toLocaleString('fr-FR',{dateStyle:'short',timeStyle:'short'})}. Prochaine étape : quelques tours, puis la validation sur piste.</div>`;
+  h+='<div class="mact"><button type="button" id="mApply">J\'applique le réglage retenu</button><button type="button" class="sec" id="mTrack">Étape 4 : valider sur piste →</button>'+(P.prev?'<button type="button" class="sec" id="mUndo">Revenir à mon réglage précédent</button>':'')+'</div>';
+  h+='<p class="why" style="color:var(--muted);font-size:13px">« J\'applique » met à jour ta fiche « Mon réglage » (et l\'Analyzer, dans le plugin) : règle aussi ces valeurs dans le jeu et dans '+esc((C.BRANDS[e.brand]||{}).soft||'le logiciel de ta base')+'.</p>';
+  $('mBody').innerHTML=h;
+  $('mBody').querySelectorAll('.pick button').forEach(b=>b.onclick=()=>{CS.pick[b.dataset.k]=b.dataset.v;put('ffbLabCompare',CS);render();});
+  $('mApply').onclick=()=>apply(P,L);
+  $('mTrack').onclick=()=>go('https://pureracing-fx.odoo.com/test-piste-ffb');
+  if($('mUndo'))$('mUndo').onclick=()=>{const Q=get('ffbLabProfile');if(!Q||!Q.prev)return;Q.cur=Q.prev;delete Q.prev;delete Q.applied;Q.gEdit=Date.now();Q.ts=Date.now();put('ffbLabProfile',Q);pushAnalyzer(Q);setup(Q);render();};
+}
+function pref(){return CS.pref||((get('ffbInput')||{}).pref)||'normal';}
+function pushAnalyzer(P){
+  if(location.pathname.indexOf('/lab/')!==0||P.equip.game!=='lmu')return;
+  const c=P.cur;fetch('/lab/api/analyzer/settings',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({game:'lmu',stc:c.stc,strength:c.strength/100,mult:(c.mult||100)/100})}).catch(()=>{});
+}
+function setup(P){const e=P.equip,c=P.cur;
+  put('ffbLabSetup',{game:e.game,brand:e.brand,base:[e.baseName,e.wheel].filter(Boolean).join(' · ')+(e.baseNm?' · '+fr(e.baseNm,1)+' Nm':''),driver:c.driver,gain:e.game==='lmu'?c.strength:c.gain,D:c.D,F:c.F,I:c.I,sm:c.sm,wrs:c.wrs,fx:c.fx,p995:'',clip:'',car:e.car,ts:Date.now()});}
+function apply(P,L){
+  const v=chosen(L),c=Object.assign({},P.cur);
+  ['driver','strength','stc','mult','gain','D','F','I','sm','wrs'].forEach(k=>{if(v[k]!=null)c[k]=k==='driver'&&(C.BRANDS[P.equip.brand]||{}).strengthUnit==='nm'?Math.round(v[k]/P.equip.baseNm*100):v[k];});
+  if(v.fx!=null)c.fx=v.fx==='activés';
+  P.prev=P.cur;P.cur=c;P.applied={at:Date.now(),from:'comparateur'};P.gEdit=Date.now();P.ts=Date.now();
+  // Les mesures précédentes ne correspondent plus au nouveau réglage : la fiche attendra un nouveau tour
+  P.sentAt=Date.now();P.measure=null;P.manual={};
+  put('ffbLabProfile',P);pushAnalyzer(P);setup(P);render();
+  // Plugin : les tours déjà faits ne comptent plus, la fiche attend le prochain tour complet
+  if(location.pathname.indexOf('/lab/')===0)fetch('/lab/api/analyzer',{cache:'no-store'}).then(r=>r.json()).then(a=>{if(a&&a.available){const Q=get('ffbLabProfile');Q.sentLap=a.current_lap||0;put('ffbLabProfile',Q);}}).catch(()=>{});
+}
+document.querySelectorAll('#mine .mseg button').forEach(b=>b.onclick=()=>{CS.pref=b.dataset.pref;put('ffbLabCompare',CS);render();});
+window.addEventListener('storage',e=>{if(e.key==='ffbLabProfile')render();});
+render();
 })();
 </script>
 </body>
