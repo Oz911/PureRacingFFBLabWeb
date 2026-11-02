@@ -1,0 +1,1170 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Pure Racing Engineer · Démo</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@600;700&display=swap">
+<meta name="theme-color" content="#070e2a">
+<style>html,body{margin:0}
+[hidden]{display:none!important}
+img{max-width:100%}
+
+/* Pure Racing Engineer — page servie par Pit Box. Rail de navigation Pit Box à gauche, bandeau photo, puis
+   accueil à cartes ou poste d'analyse (courbes empilées + grande carte). */
+:root{
+  --bg:#070E2A; --nav:#050729; --panel:#101A3C; --panel-2:#0C1534; --border:#33405F;
+  --text:#FCFDFD; --muted:#B7C0D8; --dim:#98A4C2; --info:#4CC9FF; --accent:#FD1424;
+  --on:#22C55E; --warn:#F5A524; --lapA:#4CC9FF; --lapB:#FD1424;
+  --c-blue:#2F7BFF; --c-yellow:#F5C518; --c-cyan:#19D3E6; --c-mag:#C04BF2;
+  --title:"Bahnschrift SemiBold Condensed","Bahnschrift","Barlow Condensed","Arial Narrow",sans-serif;
+  --body:"Segoe UI",system-ui,sans-serif;
+  --photo:url(photo.jpg);
+  color-scheme:dark;
+}
+html,body{height:100%}
+body{background:var(--bg);color:var(--text);font-family:var(--body);font-size:14px}
+*{box-sizing:border-box}
+.app{display:grid;grid-template-columns:64px 1fr;min-height:100%;background:linear-gradient(90deg,var(--nav) 0 63px,#1A2448 63px 64px,var(--bg) 64px)}
+.rail{background:var(--nav);border-right:1px solid #1A2448;display:flex;flex-direction:column;align-items:center;gap:10px;padding-block:18px;position:sticky;top:0;height:100vh}
+.rail button{width:42px;height:42px;border-radius:10px;border:0;background:transparent;color:var(--muted);display:grid;place-items:center;cursor:pointer}
+.rail button.on{background:var(--accent);color:#fff}
+.rail button:hover:not(.on){background:#16224A;color:var(--text)}
+.rail svg{width:22px;height:22px}
+.rail .sep{flex:1}
+main{min-width:0;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-block:0 32px}
+button:focus-visible,[tabindex]:focus-visible{outline:2px solid var(--info);outline-offset:2px}
+
+/* ---------- Bandeau ---------- */
+.hero{position:relative;margin-inline:calc(-1 * max(16px,env(safe-area-inset-left,0px)));overflow:hidden;border-bottom:1px solid #1A2448}
+.hero .photo{position:absolute;inset:0;background:var(--photo) right 32% / cover no-repeat}
+.hero .veil{position:absolute;inset:0;background:linear-gradient(90deg,var(--bg) 0%,var(--bg) 30%,rgba(7,14,42,.78) 44%,rgba(7,14,42,0) 68%),linear-gradient(180deg,rgba(7,14,42,.55) 0%,rgba(7,14,42,0) 30%,rgba(7,14,42,0) 70%,var(--bg) 100%)}
+.hero .inner{position:relative;padding:22px 32px 26px;display:flex;flex-direction:column;gap:6px}
+.topline{display:flex;align-items:center;gap:18px;flex-wrap:wrap}
+.topline img{height:22px;width:auto}
+.crumb{font-family:var(--title);font-size:21px;letter-spacing:.04em;color:var(--text);border-left:1px solid var(--border);padding-left:18px;font-style:italic}
+.crumb b{color:var(--accent);font-weight:inherit;margin-inline:6px}
+.slogan{color:var(--accent);font-weight:700;font-size:13px;letter-spacing:.14em;margin-top:22px}
+.big{font-family:var(--title);font-size:clamp(46px,7vw,84px);line-height:.92;margin:2px 0 0 -2px;font-weight:700;text-transform:uppercase;font-style:italic}
+.big span{color:var(--accent)}
+.tag{color:var(--muted);font-size:15px;max-width:46ch}
+.hero.compact .inner{padding-block:16px 18px}
+.hero.compact .big{font-size:clamp(34px,4.6vw,52px)}
+.hero.compact .slogan{margin-top:12px}
+
+/* ---------- Bandeau de session ---------- */
+.sessbar{display:flex;flex-wrap:wrap;gap:10px;margin:18px 0 0}
+.chip{display:flex;align-items:center;gap:10px;background:var(--panel);border:1px solid var(--border);border-radius:8px;padding:9px 14px;min-width:0}
+.chip .k{font-family:var(--title);font-size:18px;width:26px;height:26px;border-radius:6px;display:grid;place-items:center;color:#06102E;font-weight:700}
+.chip .k.a{background:var(--lapA)} .chip .k.b{background:var(--lapB);color:#fff}
+.chip .meta{display:flex;flex-direction:column;line-height:1.2;min-width:0}
+.chip .meta small{color:var(--dim);font-size:12px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.chip .meta strong{font-size:14px;font-weight:600}
+.chip .lt{font-family:var(--title);font-size:24px;font-variant-numeric:tabular-nums;margin-left:6px}
+.chip.delta .lt{color:var(--accent)}
+.chip.delta small{color:var(--dim)}
+
+/* ---------- Accueil ---------- */
+.section-h{display:flex;align-items:baseline;justify-content:space-between;gap:12px;margin:26px 0 12px;flex-wrap:wrap}
+.section-h h2{font-family:var(--title);font-size:22px;margin:0;letter-spacing:.03em;text-transform:uppercase;font-weight:600}
+.section-h p{margin:0;color:var(--dim);font-size:13px}
+.cards{display:grid;grid-template-columns:repeat(auto-fill,minmax(210px,1fr));gap:14px}
+.card{position:relative;background:linear-gradient(180deg,#14204A 0%,var(--panel) 60%);border:1px solid var(--border);border-radius:12px;padding:22px 18px 18px;display:flex;flex-direction:column;align-items:center;text-align:center;gap:8px;cursor:pointer;color:inherit;font:inherit;overflow:hidden;transition:transform .15s ease,border-color .15s ease}
+.card::before{content:"";position:absolute;inset:0 0 auto;height:5px;background:var(--c)}
+.card:hover{transform:translateY(-2px);border-color:var(--c)}
+.card svg{width:46px;height:46px;color:var(--text);margin-bottom:4px}
+.card h3{font-family:var(--title);font-size:21px;margin:0;font-weight:600;letter-spacing:.02em;text-transform:uppercase}
+.card p{margin:0;color:var(--muted);font-size:13.5px;line-height:1.35;max-width:24ch}
+.card .state{margin-top:auto;padding-top:10px;font-size:11px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--dim)}
+.card .state.ready{color:var(--on)}
+.card .num{position:absolute;top:12px;left:14px;font-family:var(--title);color:var(--dim);font-size:13px}
+.note{margin-top:18px;background:var(--panel-2);border:1px solid var(--border);border-radius:10px;padding:12px 16px;color:var(--muted);display:flex;gap:12px;align-items:flex-start;font-size:13.5px;line-height:1.45}
+.note svg{flex:none;width:18px;height:18px;color:var(--info);margin-top:1px}
+.note b{color:var(--text);font-weight:600}
+
+/* ---------- Analyse ---------- */
+.kpis{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px;margin-top:16px}
+.kpi{background:var(--panel);border:1px solid var(--border);border-radius:10px;padding:10px 14px}
+.kpi small{display:block;color:var(--dim);font-size:11px;letter-spacing:.12em;text-transform:uppercase;font-weight:600}
+.kpi .v{font-family:var(--title);font-size:28px;font-variant-numeric:tabular-nums;line-height:1.15}
+.kpi .v em{font-style:normal;font-size:15px;color:var(--muted);margin-left:3px}
+.kpi .d{font-size:12.5px;font-variant-numeric:tabular-nums}
+.up{color:var(--on)} .down{color:var(--accent)}
+.workspace{display:grid;grid-template-columns:minmax(0,1fr) minmax(320px,38%);gap:14px;margin-top:14px;align-items:start}
+.panel{background:var(--panel);border:1px solid var(--border);border-radius:12px;min-width:0}
+.panel-h{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:10px 14px;border-bottom:1px solid #22305A;flex-wrap:wrap}
+.panel-h h3{margin:0;font-family:var(--title);font-size:17px;letter-spacing:.04em;text-transform:uppercase;font-weight:600;display:flex;align-items:center;gap:8px}
+.panel-h h3::before{content:"";width:4px;height:16px;background:var(--accent);transform:skewX(-14deg)}
+.legend{display:flex;gap:14px;font-size:12.5px;color:var(--muted);align-items:center;flex-wrap:wrap}
+.legend i{display:inline-block;width:14px;height:3px;border-radius:2px;margin-right:6px;vertical-align:middle}
+.tools{display:flex;gap:6px;align-items:center}
+.btn{background:#16224A;border:1px solid var(--border);color:var(--text);border-radius:7px;padding:5px 10px;font:600 12.5px var(--body);cursor:pointer}
+.btn:hover{border-color:var(--info)}
+.btn.on{background:var(--info);color:#06102E;border-color:var(--info)}
+.charts{position:relative;padding:4px 0 6px}
+.chart{position:relative;display:grid;grid-template-columns:118px 1fr;border-bottom:1px solid #1B2850}
+.chart:last-of-type{border-bottom:0}
+.chart .lbl{padding:8px 4px 6px 14px;display:flex;flex-direction:column;gap:2px;justify-content:center}
+.chart .lbl b{font-size:12px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);font-weight:600}
+.chart .lbl span{font-variant-numeric:tabular-nums;font-size:13.5px;font-weight:600;white-space:nowrap}
+.chart .lbl .va{color:var(--lapA)} .chart .lbl .vb{color:var(--lapB)}
+.chart canvas{display:block;width:100%;cursor:crosshair;touch-action:none}
+.xaxis{display:grid;grid-template-columns:118px 1fr}
+.xaxis canvas{display:block;width:100%;height:24px}
+.hint{padding:8px 14px 12px;color:var(--dim);font-size:12.5px;border-top:1px solid #1B2850;display:flex;gap:16px;flex-wrap:wrap}
+.hint kbd{font:600 11px var(--body);background:#16224A;border:1px solid var(--border);border-radius:4px;padding:1px 5px;color:var(--muted)}
+.mapwrap{position:sticky;top:12px}
+.map{position:relative}
+.map canvas{display:block;width:100%;height:min(78vh,780px);cursor:grab;touch-action:none}
+.map canvas.drag{cursor:grabbing}
+.readout{position:absolute;left:12px;top:12px;background:rgba(5,7,41,.86);border:1px solid var(--border);border-radius:9px;padding:9px 12px;font-size:12.5px;font-variant-numeric:tabular-nums;pointer-events:none;min-width:180px}
+.readout .row{display:flex;justify-content:space-between;gap:14px}
+.readout .row b{font-weight:600}
+.readout .ttl{font-family:var(--title);font-size:16px;letter-spacing:.04em;margin-bottom:2px}
+.maplegend{position:absolute;right:12px;bottom:12px;background:rgba(5,7,41,.86);border:1px solid var(--border);border-radius:9px;padding:8px 12px;font-size:12px;color:var(--muted);display:flex;flex-direction:column;gap:4px;pointer-events:none}
+.maplegend i{display:inline-block;width:16px;height:4px;border-radius:2px;margin-right:7px;vertical-align:middle}
+.grid2{display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:14px;margin-top:14px}
+.gears{padding:14px 16px 16px;display:flex;flex-direction:column;gap:9px}
+.gear{display:grid;grid-template-columns:34px 1fr;gap:10px;align-items:center}
+.gear>b{font-family:var(--title);font-size:18px;color:var(--muted)}
+.bars{display:flex;flex-direction:column;gap:3px}
+.bar{height:11px;border-radius:3px;position:relative;min-width:2px}
+.bar span{position:absolute;left:calc(100% + 8px);top:-3px;font-size:12px;font-variant-numeric:tabular-nums;white-space:nowrap;color:var(--muted)}
+.setup{padding:14px 16px 16px;display:flex;flex-direction:column;gap:12px;color:var(--muted);line-height:1.45}
+.setup .badge{align-self:flex-start;background:rgba(34,197,94,.14);color:var(--on);border:1px solid rgba(34,197,94,.4);border-radius:999px;padding:3px 12px;font-weight:700;font-size:12px;letter-spacing:.08em;text-transform:uppercase}
+.setup table{width:100%;border-collapse:collapse;font-size:13px;font-variant-numeric:tabular-nums}
+.setup td,.setup th{padding:5px 6px;border-bottom:1px solid #1B2850;text-align:left}
+.setup th{color:var(--dim);font-weight:600;font-size:11px;letter-spacing:.1em;text-transform:uppercase}
+.setup td:first-child{color:var(--text)}
+.mockflag{display:inline-flex;align-items:center;gap:8px;font-size:12px;color:var(--warn);font-weight:600;letter-spacing:.06em;text-transform:uppercase}
+.mockflag::before{content:"";width:7px;height:7px;border-radius:50%;background:var(--warn)}
+
+/* Dans Pit Box : en-tête compact (le bandeau photo de Pit Box est juste au-dessus). */
+body.embedded .hero .photo,body.embedded .hero .veil,body.embedded .topline,body.embedded .slogan,body.embedded .tag{display:none}
+body.embedded .hero{border-bottom:0}
+body.embedded .hero .inner{padding:12px 0 2px}
+body.embedded .big,body.embedded .hero.compact .big{font-size:30px;line-height:1}
+body.embedded .sessbar{margin-top:10px}
+/* Écran étroit (Pit Box dans SimHub) : courbes et carte restent côte à côte. */
+@media (max-width:1050px){
+  .workspace{grid-template-columns:minmax(0,1fr) minmax(190px,36%);gap:10px}
+  .chart,.xaxis{grid-template-columns:86px 1fr}
+  .chart .lbl{padding-left:10px}.chart .lbl b{font-size:10.5px}.chart .lbl span{font-size:12px}
+  .readout{left:6px;top:6px;padding:6px 8px;font-size:11px;min-width:0}
+  .readout .ttl{font-size:13px}
+  .maplegend{left:6px;right:6px;bottom:6px;font-size:11px}
+  .mapwrap .panel-h{padding:8px 10px}
+  .mapwrap .panel-h .btn{padding:4px 7px;font-size:11.5px}
+  .chrono-grid{grid-template-columns:1fr!important}
+  .map{display:flex;flex-direction:column}
+  .readout{order:-1;position:static;margin:8px 8px 0}
+  .readout .row{gap:6px}
+  .kpis{grid-template-columns:repeat(auto-fit,minmax(125px,1fr));gap:8px}
+  .kpi{padding:8px 10px}.kpi .v{font-size:22px}.kpi small{font-size:10px}.kpi .d{font-size:11.5px}
+  .chip{padding:6px 10px;gap:8px}.chip .lt{font-size:19px}.chip .k{width:22px;height:22px;font-size:15px}
+  .chip .meta small{font-size:11px}.chip .meta strong{font-size:12.5px}
+  .sessbar{gap:6px}
+}
+@media (max-width:640px){
+  .app{grid-template-columns:1fr}.rail{display:none}
+  .hero .inner{padding:16px}.crumb{font-size:17px;padding-left:12px}
+  .chart{grid-template-columns:84px 1fr}.xaxis{grid-template-columns:84px 1fr}.chart .lbl{padding-left:10px}
+  .chart .lbl span{font-size:12px}
+}
+@media (prefers-reduced-motion:reduce){.card{transition:none}}
+
+/* ---------- Sessions ---------- */
+.picked{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:10px;margin-top:16px}
+.slot{background:var(--panel);border:1px solid var(--border);border-radius:10px;padding:12px 14px;display:flex;gap:12px;align-items:center;min-width:0}
+.slot .k{font-family:var(--title);font-size:20px;width:30px;height:30px;border-radius:7px;display:grid;place-items:center;font-weight:700;flex:none}
+.slot .k.a{background:var(--lapA);color:#06102E}.slot .k.b{background:var(--lapB);color:#fff}
+.slot .meta{min-width:0;display:flex;flex-direction:column;gap:2px}
+.slot .meta strong{font-size:14px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.slot .meta small{color:var(--dim);font-size:12.5px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.slot.empty .meta strong{color:var(--dim);font-weight:500}
+.slot .x{margin-left:auto;flex:none}
+.actions{display:flex;gap:10px;align-items:center;flex-wrap:wrap;margin-top:12px}
+.btn.big{padding:10px 20px;font-size:14px;background:var(--accent);border-color:var(--accent);color:#fff;font-family:var(--title);letter-spacing:.08em;text-transform:uppercase;font-size:16px}
+.btn.big:disabled{background:#2A3456;border-color:#2A3456;color:var(--dim);cursor:not-allowed}
+.btn.ghost{background:transparent}
+.filters{display:flex;gap:10px;align-items:center;flex-wrap:wrap}
+select.btn{appearance:auto;padding-right:6px}
+.list{overflow-x:auto}
+table.sess{width:100%;border-collapse:collapse;font-size:13.5px;font-variant-numeric:tabular-nums}
+table.sess th{color:var(--dim);font-weight:600;font-size:11px;letter-spacing:.1em;text-transform:uppercase;text-align:left;padding:8px 10px;border-bottom:1px solid var(--border);white-space:nowrap}
+table.sess td{padding:8px 10px;border-bottom:1px solid #1B2850;white-space:nowrap}
+table.sess td.file{color:var(--dim);max-width:260px;overflow:hidden;text-overflow:ellipsis}
+table.sess tr.row{cursor:pointer}
+@media (max-width:1250px){table.sess .file{display:none}}
+table.sess tr.isA td:first-child{box-shadow:inset 4px 0 0 var(--lapA)}
+table.sess tr.isB td:first-child{box-shadow:inset 4px 0 0 var(--lapB)}
+table.sess tr:hover td{background:#13204A}
+.pick{display:flex;gap:6px}
+.pick .btn{min-width:34px}
+.pick .btn.selA{background:var(--lapA);border-color:var(--lapA);color:#06102E}
+.pick .btn.selB{background:var(--lapB);border-color:var(--lapB);color:#fff}
+.folders{padding:12px 14px;display:flex;flex-direction:column;gap:8px}
+.folder{display:flex;align-items:center;gap:10px;font-size:13px;min-width:0}
+.folder code{color:var(--text);font:500 12.5px ui-monospace,Consolas,monospace;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;min-width:0;flex:1}
+.folder .n{color:var(--dim);white-space:nowrap}
+.folder .miss{color:var(--warn)}
+.empty-state{padding:26px 18px;color:var(--muted);line-height:1.5;max-width:70ch}
+.empty-state b{color:var(--text)}
+.msg{margin-top:12px;padding:10px 14px;border-radius:8px;border:1px solid rgba(253,20,36,.45);background:rgba(253,20,36,.1);color:#FFD5D8;font-size:13.5px}
+.loading{color:var(--dim);padding:20px 16px}
+.modal-back{position:fixed;inset:0;background:rgba(3,6,20,.72);display:grid;place-items:center;z-index:20;padding:16px}
+.modal{background:var(--panel);border:1px solid var(--border);border-radius:12px;width:min(640px,100%);max-height:80vh;display:flex;flex-direction:column}
+.modal .cur{padding:10px 14px;font:500 12.5px ui-monospace,Consolas,monospace;color:var(--muted);border-bottom:1px solid #22305A;word-break:break-all}
+.modal ul{list-style:none;margin:0;padding:6px;overflow:auto;flex:1}
+.modal li button{width:100%;text-align:left;background:transparent;border:0;color:var(--text);padding:7px 10px;border-radius:6px;font:14px var(--body);cursor:pointer}
+.modal li button:hover{background:#16224A}
+.modal .foot{display:flex;gap:8px;align-items:center;justify-content:space-between;padding:10px 14px;border-top:1px solid #22305A;flex-wrap:wrap}
+.modal .foot span{color:var(--dim);font-size:13px}
+.card:disabled{cursor:default;opacity:.92}
+.card:disabled:hover{transform:none;border-color:var(--border)}
+
+/* ---------- Modules d'analyse ---------- */
+.wsel{display:flex;gap:6px;align-items:center;flex-wrap:wrap;color:var(--dim);font-size:12.5px}
+.mod-loading{padding:24px 4px;color:var(--dim)}
+.tbl-wrap{overflow:auto;max-height:640px}
+table.data{width:100%;border-collapse:collapse;font-size:13px;font-variant-numeric:tabular-nums}
+table.data th{position:sticky;top:0;background:var(--panel);color:var(--dim);font-weight:600;font-size:11px;letter-spacing:.08em;text-transform:uppercase;text-align:right;padding:8px 10px;border-bottom:1px solid var(--border);white-space:nowrap;z-index:1}
+table.data th:first-child,table.data td:first-child{text-align:left}
+table.data td{padding:6px 10px;border-bottom:1px solid #1B2850;text-align:right;white-space:nowrap}
+table.data tr.click{cursor:pointer}
+table.data tr.click:hover td{background:#13204A}
+table.data tr.sel td{background:#182A5E}
+table.data td.best{background:rgba(34,197,94,.22);color:#D6FBE3;font-weight:600}
+table.data th.bestlap{color:var(--on)}
+table.data tr.total td{font-weight:700;border-top:2px solid var(--border);background:var(--panel-2)}
+table.data td.corner{color:var(--text)}
+table.data td.straight{color:var(--muted)}
+.pos{color:var(--accent)} .neg{color:var(--on)} .muted{color:var(--dim)}
+.gainbars{padding:10px 14px 14px;display:flex;flex-direction:column;gap:3px;font-size:12px;font-variant-numeric:tabular-nums}
+.gb{display:grid;grid-template-columns:96px 1fr 58px;align-items:center;gap:8px;cursor:pointer}
+.gb:hover .gbn{color:var(--text)}
+.gbn{color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.gbt{position:relative;height:12px}
+.gbt::before{content:"";position:absolute;left:50%;top:-2px;bottom:-2px;width:1px;background:var(--border)}
+.gbt i{position:absolute;top:1px;height:10px;border-radius:2px}
+.gbv{text-align:right}
+.tyres{display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:12px;padding:14px}
+.tyre dd{white-space:nowrap}
+.tyre{background:var(--panel-2);border:1px solid #22305A;border-radius:10px;padding:12px 14px;display:flex;flex-direction:column;gap:8px;min-width:0}
+.tyre h4{margin:0;font-family:var(--title);font-size:18px;letter-spacing:.04em;font-weight:600;display:flex;justify-content:space-between;align-items:baseline}
+.tyre h4 small{font-family:var(--body);font-size:12px;color:var(--dim);font-weight:500}
+.zones3{display:grid;grid-template-columns:repeat(3,1fr);gap:4px}
+.zones3 div{border-radius:6px;padding:8px 4px;text-align:center;font-variant-numeric:tabular-nums;font-weight:700;font-size:15px;color:#06102E}
+.zones3 div small{display:block;font-size:10px;font-weight:600;letter-spacing:.06em;opacity:.8}
+.tyre dl{display:grid;grid-template-columns:auto 1fr;gap:3px 12px;margin:0;font-size:12.5px;font-variant-numeric:tabular-nums}
+.tyre dt{color:var(--dim)} .tyre dd{margin:0;text-align:right}
+.car-axis{grid-column:1/-1;text-align:center;color:var(--dim);font-size:11px;letter-spacing:.14em;text-transform:uppercase}
+.hists{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px;padding:14px}
+.hist{background:var(--panel-2);border:1px solid #22305A;border-radius:10px;padding:10px 12px}
+.hist h4{margin:0 0 4px;font-family:var(--title);font-size:16px;font-weight:600;letter-spacing:.04em;display:flex;justify-content:space-between}
+.hist h4 small{font-family:var(--body);font-size:11.5px;color:var(--dim);font-weight:500}
+.hist canvas{display:block;width:100%;height:120px}
+.gg{padding:12px;display:flex;justify-content:center}
+.gg canvas{width:min(100%,420px);aspect-ratio:1/1;height:auto}
+.bigmap .map canvas{height:min(80vh,900px)}
+.ws-mapfirst{display:flex;flex-direction:column;gap:14px;margin-top:14px}
+@media (max-width:700px){.tyres,.hists{grid-template-columns:1fr}}
+
+/* Démo du site : badge et bandeau d'explication. */
+.demo-badge{position:fixed;top:10px;right:12px;z-index:30;background:var(--accent);color:#fff;font:700 11px var(--body);letter-spacing:.14em;padding:5px 10px;border-radius:999px;pointer-events:none}
+.demo-note{margin-top:14px;background:var(--panel-2);border:1px solid var(--border);border-radius:10px;padding:12px 16px;color:var(--muted);font-size:13.5px;line-height:1.5}
+.demo-note b{color:var(--text)}
+</style>
+</head>
+<body>
+<div class="demo-badge">DÉMO</div>
+<div class="app">
+  <nav class="rail" aria-label="Navigation Engineer" id="rail"></nav>
+
+  <main id="main">
+    <!-- ================= ACCUEIL ================= -->
+    <section id="view-accueil" hidden>
+      <header class="hero">
+        <div class="photo"></div><div class="veil"></div>
+        <div class="inner">
+          <div class="topline"><img class="logo" src="logo.png" alt="Pure Racing FX"><span class="crumb">PIT BOX<b>/</b>ENGINEER</span></div>
+          <div class="slogan">PURE DATA. PURE FEELING.</div>
+          <div class="big">Pure Racing <span>Engineer</span></div>
+          <div class="tag">Analyse de session à partir des fichiers MoTeC : moteur, châssis, pneus, freinage, chronos et recommandations.</div>
+          <div class="sessbar" data-sessbar></div>
+        </div>
+      </header>
+<div class="demo-note"><b>Démo interactive.</b> Deux sessions réelles enregistrées dans Le Mans Ultimate à Spa-Francorchamps (même GT3, même setup). Ouvrez un module, zoomez à la molette, glissez et survolez la carte : tout est calculé par Engineer à partir des fichiers MoTeC. Dans Pit Box, vous choisissez vos propres sessions.</div>
+      <div class="section-h"><h2>Modules d'analyse</h2><p id="home-sub">Meilleur tour de la session A comparé au meilleur tour de la session B</p></div>
+      <div class="cards" id="cards"></div>
+    </section>
+
+    <!-- ================= SESSIONS ================= -->
+    <section id="view-sessions" hidden>
+      <header class="hero compact">
+        <div class="photo"></div><div class="veil"></div>
+        <div class="inner">
+          <div class="topline"><img class="logo" src="logo.png" alt="Pure Racing FX"><span class="crumb">PIT BOX<b>/</b>ENGINEER</span></div>
+          <div class="slogan">ANALYSE DE SESSION · 00</div>
+          <div class="big">Sessions</div>
+        </div>
+      </header>
+      <div class="picked">
+        <div class="slot empty" id="slot-A"></div>
+        <div class="slot empty" id="slot-B"></div>
+      </div>
+      <div class="actions">
+        <button class="btn big" id="analyse" disabled>Analyser</button>
+        <span style="color:var(--dim);font-size:13px" id="analyse-hint">Cliquez une session dans la liste : la première devient A, la suivante B (pour comparer).</span>
+      </div>
+      <div id="sess-msg"></div>
+      <div class="panel" style="margin-top:16px">
+        <div class="panel-h"><h3>Enregistrements MoTeC</h3>
+          <div class="filters"><label for="venue" style="color:var(--dim);font-size:12.5px">Circuit</label><select class="btn" id="venue"></select><button class="btn" id="refresh">Actualiser</button></div>
+        </div>
+        <div class="list" id="list"><div class="loading">Recherche des fichiers…</div></div>
+      </div>
+      <div class="panel" style="margin-top:14px">
+        <div class="panel-h"><h3>Dossiers de télémétrie</h3><div class="tools"><button class="btn" id="add-folder">Ajouter un dossier</button></div></div>
+        <div class="folders" id="folders"></div>
+      </div>
+    </section>
+    <!-- Les pages des modules d'analyse sont créées par le script (MODULES). -->
+  </main>
+</div>
+
+<div class="modal-back" id="browser" hidden>
+  <div class="modal" role="dialog" aria-modal="true" aria-labelledby="browser-title">
+    <div class="panel-h"><h3 id="browser-title">Choisir un dossier</h3><button class="btn" id="browser-close">Fermer</button></div>
+    <div class="cur" id="browser-path"></div>
+    <ul id="browser-list"></ul>
+    <div class="foot"><span id="browser-count"></span><div class="tools"><button class="btn" id="browser-up">Dossier parent</button><button class="btn on" id="browser-pick">Choisir ce dossier</button></div></div>
+  </div>
+</div>
+
+<script>
+/* =========================================================
+   Démo publique de Pure Racing Engineer (site pureracing-fx).
+   Même page que dans Pit Box ; les réponses du module ont été
+   calculées à l'avance sur deux sessions réelles (LMU, Spa) et
+   sont lues dans demo-data.json au lieu du serveur local.
+   ========================================================= */
+(function(){
+  const real = window.fetch.bind(window);
+  let DEMO = null;
+  const load = () => DEMO || (DEMO = real('demo-data.json').then(r => r.json()));
+  const reply = (status, body) => new Response(JSON.stringify(body), {status, headers:{'Content-Type':'application/json'}});
+  window.fetch = async function(url, opts){
+    const u = String(url);
+    if(!u.startsWith('api/')) return real(url, opts);
+    const d = await load(), p = u.slice(4);
+    if(p==='sessions') return reply(200, d.catalog);
+    const qi = p.indexOf('?'), name = p.slice(0, qi), q = new URLSearchParams(p.slice(qi+1));
+    const a = q.get('a'), b = q.get('b'), pair = 'a='+a+(b && b!==a ? '&b='+b : '');
+    const key = name==='module' ? 'module?m='+q.get('m')+'&'+pair : 'compare?'+pair;
+    if(d.responses[key]){ d.catalog.lastA = a; d.catalog.lastB = b; return reply(200, d.responses[key]); }
+    return reply(403, {error:'Fonction disponible dans Pit Box uniquement.'});
+  };
+})();
+</script>
+<script>
+'use strict';
+// Dans Pit Box (?pitbox=1) : le bandeau photo est déjà affiché par Pit Box,
+// la page n'en garde qu'un titre compact et le rappel des sessions.
+if(/[?&]pitbox\b/.test(location.search)) document.body.classList.add('embedded');
+/* =========================================================
+   Pure Racing Engineer — page servie par Pit Box (port 8894).
+   API : sessions, compare (base commune A/B), module (données d'un
+   module), browse et folders (depuis le PC seulement).
+   ========================================================= */
+const $ = id => document.getElementById(id);
+const css = n => getComputedStyle(document.documentElement).getPropertyValue(n).trim();
+const C = {a:css('--lapA'), b:css('--lapB'), grid:'#1E2B55', dim:css('--dim'), on:css('--on'), warn:css('--warn'), accent:css('--accent')};
+const WHEEL_COL = ['#4CC9FF','#F5C518','#22C55E','#C04BF2'];
+const WHEEL = ['AVG','AVD','ARG','ARD'];
+const nf = (v,d=0) => (v==null||isNaN(v)) ? '—' : Number(v).toLocaleString('fr-FR',{minimumFractionDigits:d,maximumFractionDigits:d});
+const sg = (v,d=0) => (v==null||isNaN(v)) ? '—' : (v>0?'+':'')+nf(v,d);
+const fmtLap = s => s==null||isNaN(s) ? '—' : `${Math.floor(s/60)}:${(s%60).toFixed(3).padStart(6,'0')}`;
+const fmtDist = m => m>=1000 ? (m/1000).toFixed(2).replace('.',',')+' km' : Math.round(m)+' m';
+const esc = s => String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const fmtDate = iso => { if(!iso) return '—'; const d=new Date(iso); return isNaN(d)? iso : d.toLocaleDateString('fr-FR',{day:'2-digit',month:'2-digit',year:'numeric'})+' · '+d.toLocaleTimeString('fr-FR',{hour:'2-digit',minute:'2-digit'}); };
+
+async function api(path, opts){
+  const r = await fetch('api/'+path, opts);
+  let j = null; try { j = await r.json(); } catch(e) {}
+  if(!r.ok) throw new Error((j&&j.error) || ('Erreur '+r.status));
+  return j;
+}
+
+/* ---------- état ---------- */
+let CAT = null, PICK = {A:null, B:null}, PAIR = null;   // PAIR : paire analysée {a,b}
+let DATA = null, single = false;                        // base commune de l'analyse
+let MOD = {};                                           // données des modules (paire en cours)
+let WS = {};                                            // espaces courbes + carte, par module
+let ACTIVE = null;                                      // espace affiché
+let loadingAnalysis = false, venueFilter = null;
+
+/* ---------- icônes et modules ---------- */
+const I = {
+ sessions:'<path d="M4 7a2 2 0 0 1 2-2h4l2 2h6a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V7Z"/><path d="M12 11v5M9.5 13.5 12 16l2.5-2.5"/>',
+ moteur:'<path d="M5 17a8 8 0 1 1 14 0"/><path d="m12 13 4-5"/><circle cx="12" cy="13" r="1.4"/><path d="M7.5 9.5 8.3 10M12 6.5v1M16.5 9.5l-.8.5"/>',
+ susp:'<path d="M12 2v3M12 19v3"/><rect x="9" y="5" width="6" height="4" rx="1"/><path d="M9 11.5l6 1.5-6 1.5 6 1.5-6 1.5"/>',
+ chassis:'<path d="M3 15v-2l2-4h9l3 4h3a1 1 0 0 1 1 1v1"/><circle cx="7" cy="16" r="1.8"/><circle cx="17" cy="16" r="1.8"/><path d="M9 16h6"/><path d="M21 4v5M19.5 5.5 21 4l1.5 1.5"/>',
+ pneus:'<circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="3.5"/><path d="M12 3v5.5M12 15.5V21M3 12h5.5M15.5 12H21M5.6 5.6l4 4M14.4 14.4l4 4M18.4 5.6l-4 4M9.6 14.4l-4 4"/>',
+ frein:'<circle cx="11" cy="13" r="8"/><circle cx="11" cy="13" r="2.5"/><path d="M15.5 4.5A9 9 0 0 1 21 10.5"/><path d="M17.5 3l3 4"/>',
+ chrono:'<circle cx="12" cy="13.5" r="7.5"/><path d="M12 13.5V9.5M10 2.5h4M12 2.5V6M18 7l1.5-1.5"/>',
+ carte:'<path d="M5 18c-2 0-2-3 0-4l4-2c2-1 2-4 4-5s4 0 5 2-1 3-3 4l-3 2c-2 1-2 3 0 3h4"/><circle cx="19" cy="18" r="1.5"/>',
+ inge:'<path d="M4 14v-2a8 8 0 0 1 16 0v2"/><rect x="3" y="13" width="4" height="6" rx="1.5"/><rect x="17" y="13" width="4" height="6" rx="1.5"/><path d="M19 19c0 2-2 3-5 3h-1"/>',
+ home:'<path d="M3 11.5 12 4l9 7.5"/><path d="M5.5 10v10h13V10"/><path d="M10 20v-5h4v5"/>'
+};
+// id, n°, titre (partie rouge après « / »), icône, couleur de carte, description
+const MODULES = [
+ ['pilotage','01','Pilotage / Moteur','moteur','var(--c-blue)','Vitesse, régime, rapports, accélérateur, frein, direction'],
+ ['suspensions','02','Suspensions','susp','var(--c-yellow)','Débattements, vitesses d’amortisseur et histogrammes'],
+ ['chassis','03','Châssis / Dynamique','chassis','var(--c-cyan)','Hauteurs de caisse, roulis, tangage et forces G'],
+ ['pneus','04','Pneumatiques','pneus','var(--c-mag)','Températures intérieur / centre / extérieur, pressions'],
+ ['freinage','05','Freinage / Adhérence','frein','var(--c-blue)','Points de freinage, relâché, blocages et patinages'],
+ ['chronos','06','Chronos / Comparaison','chrono','var(--c-yellow)','Portions, tour idéal, delta, gains et pertes'],
+ ['carte','07','Carte / Trajectoires','carte','var(--c-cyan)','Grand format, vitesses, rapports et freinages A / B'],
+];
+const svg = k => `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">${I[k]}</svg>`;
+const titleHtml = t => { const p = t.split(' / '); return p.length>1 ? `${esc(p[0])} <span>/ ${esc(p.slice(1).join(' / '))}</span>` : esc(t); };
+
+// Rail de navigation et pages des modules.
+$('rail').innerHTML = [['accueil','Accueil Engineer','home'],['sessions','Sessions','sessions'],...MODULES.map(m=>[m[0],m[2],m[3]])]
+  .map(([id,t,ic]) => `<button id="nav-${id}" title="${esc(t)}" data-go="${id}">${svg(ic)}</button>`).join('');
+$('main').insertAdjacentHTML('beforeend', MODULES.map(([id,num,title]) => `
+  <section id="view-${id}" hidden>
+    <header class="hero compact"><div class="photo"></div><div class="veil"></div>
+      <div class="inner">
+        <div class="topline"><img class="logo" src="logo.png" alt="Pure Racing FX"><span class="crumb">PIT BOX<b>/</b>ENGINEER</span></div>
+        <div class="slogan">ANALYSE DE SESSION · ${num}</div>
+        <div class="big">${titleHtml(title)}</div>
+        <div class="sessbar" data-sessbar></div>
+      </div></header>
+    <div class="note mod-empty" hidden><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="9"/><path d="M12 11v6M12 7.5v.5"/></svg>
+      <div><b>Aucune session ouverte.</b> Choisissez une session dans <a href="#sessions" style="color:var(--info)">Sessions</a>.</div></div>
+    <div class="mod-body"></div>
+  </section>`).join(''));
+// La photo et le logo de l'en-tête sont ceux des pages statiques.
+document.querySelectorAll('img.logo').forEach(i => { const src = document.querySelector('#view-accueil img.logo').getAttribute('src'); i.setAttribute('src', src); });
+
+/* ---------- navigation ---------- */
+const VIEWS = ['accueil','sessions',...MODULES.map(m=>m[0])];
+function show(name){
+  if(!VIEWS.includes(name)) name = 'accueil';
+  VIEWS.forEach(v => { $('view-'+v).hidden = v!==name; $('nav-'+v).classList.toggle('on', v===name); });
+  ACTIVE = null;
+  if(name==='sessions'){ if(CAT) renderCatalog(); else loadCatalog(); }
+  if(MODULES.some(m=>m[0]===name)) openModule(name);
+  window.scrollTo(0,0);
+}
+document.addEventListener('click', e => { const g = e.target.closest('[data-go]'); if(g && !g.disabled) location.hash = g.dataset.go; });
+window.addEventListener('hashchange', () => show(location.hash.slice(1)));
+
+/* ---------- bandeau de session et cartes ---------- */
+function renderSessbar(){
+  document.querySelectorAll('[data-sessbar]').forEach(el => {
+    if(!DATA){ el.innerHTML = `<div class="chip"><span class="meta"><small>Aucune session ouverte</small><strong><a href="#sessions" style="color:var(--info)">Choisir les sessions →</a></strong></span></div>`; return; }
+    const S = DATA.sessions, keys = S.B ? ['A','B'] : ['A'];
+    let h = keys.map(k => `<div class="chip"><span class="k ${k.toLowerCase()}">${k}</span>
+      <span class="meta"><small>${esc(S[k].venue)} · ${esc(S[k].label)}</small><strong>Meilleur tour · tour ${S[k].bestIndex} sur ${S[k].laps.length}</strong></span>
+      <span class="lt">${fmtLap(S[k].best)}</span></div>`).join('');
+    if(S.B){ const d = S.B.best - S.A.best;
+      h += `<div class="chip delta"><span class="meta"><small>Écart B − A</small><strong>${d>0?'A plus rapide':'B plus rapide'}</strong></span><span class="lt">${d>0?'+':''}${nf(d,3)} s</span></div>`; }
+    el.innerHTML = h;
+  });
+}
+function renderCards(){
+  const cards = [['sessions','00','Sessions','sessions','var(--accent)','Ouvrir et associer les fichiers MoTeC'], ...MODULES,
+                 ['inge','08','Race Engineer','inge','var(--accent)','Recommandations de setup et validation pilote']];
+  $('cards').innerHTML = cards.map(([id,num,t,ic,c,p]) => {
+    const isModule = MODULES.some(m=>m[0]===id), ready = id==='sessions' || (isModule && DATA);
+    const state = id==='sessions' ? (DATA ? 'Changer de sessions →' : 'Choisir les sessions →')
+                : isModule ? (DATA ? 'Ouvrir →' : 'Choisissez d’abord une session') : 'Bientôt';
+    return `<button class="card" style="--c:${c}" ${ready?`data-go="${id}"`:'disabled'} id="card-${id}">
+      <span class="num">${num}</span>${svg(ic)}<h3>${esc(t)}</h3><p>${esc(p)}</p><span class="state ${ready?'ready':''}">${state}</span></button>`;
+  }).join('');
+}
+
+/* =========================================================
+   Sessions
+   ========================================================= */
+async function loadCatalog(){
+  $('list').innerHTML = '<div class="loading">Recherche des fichiers…</div>';
+  try { CAT = await api('sessions'); }
+  catch(e){ $('list').innerHTML = `<div class="empty-state">Impossible de lire la liste des sessions : ${esc(e.message)}</div>`; return; }
+  if(!PICK.A && CAT.lastA && byId(CAT.lastA)) PICK = {A:CAT.lastA, B:CAT.lastB && byId(CAT.lastB) ? CAT.lastB : null};
+  renderCatalog();
+}
+const byId = id => CAT && CAT.sessions.find(s => s.id===id);
+function renderCatalog(){
+  const venues = [...new Set(CAT.sessions.map(s => s.venue))].sort();
+  const sel = $('venue'), aVenue = PICK.A && byId(PICK.A) ? byId(PICK.A).venue : '';
+  sel.innerHTML = '<option value="">Tous les circuits</option>' + venues.map(v => `<option>${esc(v)}</option>`).join('');
+  // Filtre choisi par le pilote ; à défaut, le circuit de la session A.
+  sel.value = venueFilter!==null && (venueFilter==='' || venues.includes(venueFilter)) ? venueFilter : (aVenue || '');
+  const rows = CAT.sessions.filter(s => !sel.value || s.venue===sel.value);
+  if(!CAT.sessions.length){
+    $('list').innerHTML = `<div class="empty-state"><b>Aucun fichier MoTeC (.ld) trouvé.</b><br>
+      Activez l'export de télémétrie MoTeC dans le jeu, roulez quelques tours, puis ajoutez ci-dessous le dossier où le jeu enregistre ses fichiers <code>.ld</code>.
+      Chaque <code>.ld</code> doit garder à côté de lui son <code>.ldx</code> (setup et résumé de la session).</div>`;
+  } else {
+    $('list').innerHTML = `<table class="sess"><thead><tr><th>Choisir</th><th>Date</th><th>Circuit</th><th>Meilleur tour</th><th>Tours</th><th>Pilote</th><th class="file">Fichier</th></tr></thead><tbody>${
+      rows.map(s => `<tr class="row ${PICK.A===s.id?'isA':''} ${PICK.B===s.id?'isB':''}" data-row="${s.id}" title="Cliquez pour choisir cette session">
+        <td><div class="pick"><button class="btn ${PICK.A===s.id?'selA':''}" data-pick="A" data-id="${s.id}" title="Session A (référence)">A</button><button class="btn ${PICK.B===s.id?'selB':''}" data-pick="B" data-id="${s.id}" title="Session B (comparaison)">B</button></div></td>
+        <td>${fmtDate(s.date)}</td><td>${esc(s.venue)}</td><td>${fmtLap(s.fastest)}</td><td>${s.laps||'—'}</td><td>${esc(s.driver)}</td>
+        <td class="file" title="${esc(s.file)}">${esc(s.file)}</td></tr>`).join('')
+    }</tbody></table>`;
+  }
+  $('folders').innerHTML = CAT.folders.length ? CAT.folders.map(f => `<div class="folder"><code title="${esc(f.path)}">${esc(f.path)}</code>
+      <span class="n ${f.exists?'':'miss'}">${f.exists ? f.count+' fichier'+(f.count>1?'s':'') : 'introuvable'}</span>
+      ${CAT.canEdit?`<button class="btn ghost" data-remove="${esc(f.path)}">Retirer</button>`:''}</div>`).join('')
+    : '<div style="color:var(--dim);font-size:13.5px">Aucun dossier pour l’instant.</div>';
+  $('add-folder').hidden = !CAT.canEdit;
+  renderSlots();
+}
+function renderSlots(){
+  for(const k of ['A','B']){
+    const s = PICK[k] && byId(PICK[k]), el = $('slot-'+k);
+    el.classList.toggle('empty', !s);
+    el.innerHTML = `<span class="k ${k.toLowerCase()}">${k}</span><span class="meta">${s
+      ? `<strong>${esc(s.venue)} · ${fmtLap(s.fastest)}</strong><small>${fmtDate(s.date)}</small>`
+      : `<strong>${k==='A'?'Session A à choisir':'Session B (facultative)'}</strong><small>${k==='A'?'Référence de l’analyse':'Pour comparer deux meilleurs tours'}</small>`}</span>
+      ${s?`<button class="btn ghost x" data-clear="${k}">Retirer</button>`:''}`;
+  }
+  const a = PICK.A && byId(PICK.A), b = PICK.B && byId(PICK.B);
+  $('analyse').disabled = !a;
+  $('analyse-hint').textContent = !a ? 'Cliquez une session dans la liste : la première devient A, la suivante B (pour comparer).'
+    : b && b.venue!==a.venue ? 'Attention : A et B ne sont pas sur le même circuit.'
+    : b ? 'Le meilleur tour de A sera comparé au meilleur tour de B.' : 'Analyse du meilleur tour de A seul.';
+}
+$('venue').addEventListener('change', () => { venueFilter = $('venue').value; renderCatalog(); });
+$('refresh').addEventListener('click', loadCatalog);
+$('list').addEventListener('click', e => {
+  const b = e.target.closest('[data-pick]');
+  let k, id;
+  if(b){ k = b.dataset.pick; id = b.dataset.id; }
+  else {
+    // Clic ailleurs sur la ligne : A d'abord, puis B ; un second clic retire la session.
+    const r = e.target.closest('[data-row]'); if(!r) return;
+    id = r.dataset.row;
+    k = PICK.A===id ? 'A' : PICK.B===id ? 'B' : !PICK.A ? 'A' : 'B';
+  }
+  const other = k==='A'?'B':'A';
+  PICK[k] = PICK[k]===id ? null : id;
+  if(PICK[other]===id) PICK[other] = null;
+  renderCatalog();
+});
+document.querySelector('.picked').addEventListener('click', e => { const b = e.target.closest('[data-clear]'); if(b){ PICK[b.dataset.clear] = null; renderCatalog(); } });
+$('folders').addEventListener('click', async e => {
+  const b = e.target.closest('[data-remove]'); if(!b) return;
+  try { CAT = await api('folders?remove='+encodeURIComponent(b.dataset.remove), {method:'POST'}); renderCatalog(); } catch(err){ showMsg(err.message); }
+});
+$('analyse').addEventListener('click', () => openAnalysis(PICK.A, PICK.B, true));
+function showMsg(t){ $('sess-msg').innerHTML = t ? `<div class="msg">${esc(t)}</div>` : ''; }
+
+async function openAnalysis(a, b, go){
+  if(!a || loadingAnalysis) return;
+  loadingAnalysis = true; showMsg('');
+  const btn = $('analyse'); btn.disabled = true; btn.textContent = 'Analyse en cours…';
+  try {
+    const data = await api('compare?a='+encodeURIComponent(a)+(b?'&b='+encodeURIComponent(b):''));
+    PAIR = {a, b}; setData(data);
+    if(go) location.hash = 'pilotage';
+  } catch(e){ showMsg(e.message); if(!go) location.hash = 'sessions'; }
+  finally { loadingAnalysis = false; btn.textContent = 'Analyser'; renderSlots(); }
+}
+
+/* ---------- choix d'un dossier ---------- */
+let browsePath = '';
+async function browse(path){
+  try {
+    const r = await api('browse?path='+encodeURIComponent(path||''));
+    browsePath = r.path || '';
+    $('browser-path').textContent = browsePath || 'Ce PC';
+    $('browser-list').innerHTML = r.dirs.length ? r.dirs.map(d => `<li><button data-dir="${esc(d.path)}">${esc(d.name)}</button></li>`).join('')
+      : '<li style="color:var(--dim);padding:8px 10px">Aucun sous-dossier</li>';
+    $('browser-count').textContent = browsePath ? (r.ldCount ? r.ldCount+' fichier(s) .ld ici' : 'Aucun fichier .ld directement ici (les sous-dossiers sont aussi parcourus)') : 'Choisissez un lecteur';
+    $('browser-up').disabled = !browsePath; $('browser-up').dataset.parent = r.parent || '';
+    $('browser-pick').disabled = !browsePath;
+  } catch(e){ $('browser-count').textContent = e.message; }
+}
+$('add-folder').addEventListener('click', () => { $('browser').hidden = false; browse(browsePath); });
+$('browser-close').addEventListener('click', () => $('browser').hidden = true);
+$('browser-list').addEventListener('click', e => { const b = e.target.closest('[data-dir]'); if(b) browse(b.dataset.dir); });
+$('browser-up').addEventListener('click', e => browse(e.currentTarget.dataset.parent));
+$('browser-pick').addEventListener('click', async () => {
+  try { CAT = await api('folders?add='+encodeURIComponent(browsePath), {method:'POST'}); $('browser').hidden = true; renderCatalog(); }
+  catch(e){ $('browser-count').textContent = e.message; }
+});
+
+/* =========================================================
+   Analyse : base commune et ouverture des modules
+   ========================================================= */
+function setData(data){
+  DATA = data; single = !data.sessions.B; MOD = {}; WS = {};
+  document.querySelectorAll('.mod-body').forEach(b => { b.innerHTML = ''; delete b.dataset.ready; });
+  renderSessbar(); renderCards();
+  $('home-sub').textContent = single ? 'Meilleur tour de la session A' : 'Meilleur tour de la session A comparé au meilleur tour de la session B';
+  const cur = location.hash.slice(1);
+  if(MODULES.some(m=>m[0]===cur)) openModule(cur);
+}
+
+async function openModule(id){
+  const view = $('view-'+id), body = view.querySelector('.mod-body');
+  view.querySelector('.mod-empty').hidden = !!DATA;
+  body.hidden = !DATA;
+  if(!DATA) return;
+  if(!body.dataset.ready){
+    body.dataset.ready = '1';
+    if(id==='pilotage'){ RENDER.pilotage(body); }
+    else {
+      body.innerHTML = '<div class="mod-loading">Calcul en cours…</div>';
+      try {
+        const q = 'module?m='+id+'&a='+encodeURIComponent(PAIR.a)+(PAIR.b?'&b='+encodeURIComponent(PAIR.b):'');
+        MOD[id] = await api(q);
+        if(!DATA) return;
+        body.innerHTML = ''; RENDER[id](body, MOD[id]);
+      } catch(e){ body.dataset.ready = ''; body.innerHTML = `<div class="msg">${esc(e.message)}</div>`; return; }
+    }
+  }
+  if(view.hidden) return;
+  ACTIVE = WS[id] || null;
+  if(ACTIVE) requestAnimationFrame(() => { ACTIVE.resize(); ACTIVE.draw(); });
+}
+
+/* =========================================================
+   Espace d'analyse : courbes synchronisées + carte du circuit
+   ========================================================= */
+function niceTicks(lo, hi, count){
+  const span = hi-lo; if(!(span>0)) return [lo];
+  const raw = span/count, mag = Math.pow(10, Math.floor(Math.log10(raw))), f = raw/mag;
+  const step = (f<1.5?1:f<3?2:f<7?5:10)*mag, out = [];
+  for(let t = Math.ceil(lo/step)*step; t <= hi+1e-9; t += step) out.push(Math.round(t*1e6)/1e6);
+  return out;
+}
+const lerp = (a,b,t) => a+(b-a)*t;
+function ramp(stops, t){ t = Math.max(0,Math.min(1,t)); const p = t*(stops.length-1), i = Math.min(stops.length-2,Math.floor(p)), f = p-i, a = stops[i], b = stops[i+1];
+  return `rgb(${lerp(a[0],b[0],f)|0},${lerp(a[1],b[1],f)|0},${lerp(a[2],b[2],f)|0})`; }
+const speedCol = v => ramp([[47,123,255],[25,211,230],[245,197,24],[253,20,36]], (v-60)/200);
+const tempCol = t => ramp([[47,123,255],[25,211,230],[34,197,94],[245,197,24],[253,20,36]], (t-50)/65);
+
+// Séries A et B d'une voie de la base commune (B omis en session seule).
+const AB = (k) => single ? [{a:DATA.lap[k+'A'], c:C.a, n:'A'}] : [{a:DATA.lap[k+'A'], c:C.a, n:'A'}, {a:DATA.lap[k+'B'], c:C.b, n:'B'}];
+const pairS = (a, b) => single || !b ? [{a, c:C.a, n:'A'}] : [{a, c:C.a, n:'A'}, {a:b, c:C.b, n:'B'}];
+const wheelS = arrs => arrs ? arrs.map((a,w) => ({a, c:WHEEL_COL[w], n:WHEEL[w]})) : null;
+
+class Workspace {
+  // o : { charts, modes (liste de clés), extraModes {clé:{label,col,legend}}, mode, markers, labels,
+  //       readout(i) -> [[libellé, valeur, couleur]], mapFirst, title }
+  constructor(host, o){
+    this.o = o; this.L = DATA.lap; this.N = this.L.d.length; this.D = this.L.d; this.total = this.L.length;
+    this.dt = this.L.tB.map((t,i) => t - this.L.tA[i]);
+    this.slope = this.dt.map((v,i) => i ? v - this.dt[Math.max(0,i-15)] : 0);
+    this.view = {d0:0, d1:this.total}; this.cur = Math.floor(this.N*0.06); this.M = {s:1,ox:0,oy:0}; this.ctx = {};
+    this.modes = Object.assign({}, Workspace.baseModes(this), o.extraModes || {});
+    this.modeKeys = (o.modes || ['phase','speed','delta']).filter(k => this.modes[k] && !(single && this.modes[k].needsB));
+    this.mode = o.mode && this.modeKeys.includes(o.mode) ? o.mode : this.modeKeys[0];
+    const chartsPanel = `<div class="panel"><div class="panel-h"><h3>${esc(o.title||'Courbes')}</h3><div class="legend">${o.legend || (single?`<span><i style="background:var(--lapA)"></i>Tour A</span>`:`<span><i style="background:var(--lapA)"></i>Tour A</span><span><i style="background:var(--lapB)"></i>Tour B</span>`)}</div>
+        <div class="tools"><button class="btn" data-z="in" title="Zoomer">+</button><button class="btn" data-z="out" title="Dézoomer">−</button><button class="btn" data-z="all">Tour entier</button></div></div>
+        <div class="charts"></div><div class="xaxis"><span></span><canvas height="24"></canvas></div>
+        <div class="hint"><span><kbd>Molette</kbd> zoom</span><span><kbd>Glisser</kbd> déplacer</span><span><kbd>Double-clic</kbd> tour entier</span><span><kbd>←</kbd> <kbd>→</kbd> avancer le curseur</span></div></div>`;
+    const mapPanel = `<div class="${o.mapFirst?'bigmap':'mapwrap'}"><div class="panel"><div class="panel-h"><h3>Circuit</h3><div class="tools" role="group" aria-label="Couleur du tracé">
+        ${this.modeKeys.map(k => `<button class="btn ${k===this.mode?'on':''}" data-mode="${k}">${esc(this.modes[k].label)}</button>`).join('')}${o.mapTools||''}<button class="btn" data-z="map" title="Recentrer la carte">⟲</button></div></div>
+        <div class="map"><canvas tabindex="0" aria-label="Carte du circuit, curseur synchronisé avec les courbes"></canvas><div class="readout"></div><div class="maplegend"></div></div></div></div>`;
+    host.innerHTML = o.mapFirst ? `<div class="ws-mapfirst">${mapPanel}${chartsPanel}</div>` : `<div class="workspace">${chartsPanel}${mapPanel}</div>`;
+    this.host = host; this.chartsEl = host.querySelector('.charts'); this.xcv = host.querySelector('.xaxis canvas'); this.mcv = host.querySelector('.map canvas');
+    this.readoutEl = host.querySelector('.readout'); this.legendEl = host.querySelector('.maplegend');
+    host.querySelectorAll('[data-mode]').forEach(b => b.onclick = () => { this.mode = b.dataset.mode; host.querySelectorAll('[data-mode]').forEach(x => x.classList.toggle('on', x===b)); this.draw(); });
+    host.querySelectorAll('[data-z]').forEach(b => b.onclick = () => {
+      const z = b.dataset.z;
+      if(z==='in'){ const f = (this.D[this.cur]-this.view.d0)/(this.view.d1-this.view.d0); this.zoomAt(Math.max(0,Math.min(1,f)), 0.6); }
+      else if(z==='out') this.zoomAt(0.5, 1.6);
+      else if(z==='all'){ this.view = {d0:0, d1:this.total}; this.draw(); }
+      else { this.mapFit(); this.draw(); }
+    });
+    this.bindMap();
+    this.setCharts(o.charts);
+  }
+
+  static baseModes(ws){
+    const L = ws.L;
+    return {
+      phase:{label:'Phases', col:i => (L.brkA&&L.brkA[i]>5) ? C.accent : (L.thrA&&L.thrA[i]>=98) ? C.on : C.warn,
+             legend:[['var(--on)','Plein gaz'],['var(--warn)','Accélérateur partiel / roue libre'],['var(--accent)','Freinage']]},
+      speed:{label:'Vitesse', col:i => speedCol(L.speedA[i]), legend:[['#2F7BFF','Lent'],['#F5C518','Moyen'],['#FD1424','Rapide']]},
+      delta:{label:'Gain / perte', needsB:true, col:i => { const s = ws.slope[i]; return s>0.004 ? C.accent : s<-0.004 ? C.on : '#5B6A93'; },
+             legend:[['var(--on)','B reprend du temps'],['var(--accent)','B perd du temps'],['#5B6A93','Stable']]},
+    };
+  }
+
+  setCharts(defs){
+    this.CH = (defs||[]).filter(c => c && c.series && c.series.some(s => s.a));
+    for(const c of this.CH){
+      c.series = c.series.filter(s => s.a);
+      if(c.delta){ const m = Math.max(0.5, ...c.series[0].a.map(Math.abs))*1.1; c.min = -Math.max(m*.25,.5); c.max = m; c.ticks = [0, Math.round(m/2*10)/10]; continue; }
+      if(c.max==null || c.min==null){
+        let lo = Infinity, hi = -Infinity;
+        for(const s of c.series) for(const v of s.a){ if(v<lo) lo=v; if(v>hi) hi=v; }
+        if(!isFinite(lo)){ lo = 0; hi = 1; }
+        const p = (hi-lo)*(c.pad??.05) || 1;
+        if(c.sym){ const m = Math.max(Math.abs(lo),Math.abs(hi))+p; lo = -m; hi = m; } else { lo -= p; hi += p; }
+        if(c.min==null) c.min = c.floor0 ? Math.min(0,lo) : lo; if(c.max==null) c.max = hi;
+      }
+      if(!c.ticks) c.ticks = niceTicks(c.min, c.max, c.h<=100?2:4).filter(t => t>c.min && t<c.max);
+    }
+    this.chartsEl.innerHTML = '';
+    if(!this.CH.length){ this.chartsEl.innerHTML = '<div class="empty-state">Ces voies sont absentes de ce fichier.</div>'; }
+    this.CH.forEach((c,ci) => {
+      const row = document.createElement('div'); row.className = 'chart';
+      row.innerHTML = `<div class="lbl"><b>${esc(c.t)}</b>${c.series.slice(0,4).map((s,si) => `<span data-v="${si}" style="color:${s.c}"></span>`).join('')}</div><canvas height="${c.h}"></canvas>`;
+      this.chartsEl.appendChild(row); c.cv = row.querySelector('canvas'); c.cv.style.height = c.h+'px'; c.vals = row.querySelectorAll('[data-v]');
+      this.bindChart(c);
+    });
+    if(!this.host.offsetParent) return;
+    this.resize(); this.draw();
+  }
+
+  fit(cv){ const r = cv.getBoundingClientRect(), dpr = Math.max(1, window.devicePixelRatio||1); cv.width = Math.max(1,Math.round(r.width*dpr)); cv.height = Math.max(1,Math.round(r.height*dpr)); const g = cv.getContext('2d'); g.setTransform(dpr,0,0,dpr,0,0); return {g, w:r.width, h:r.height}; }
+  resize(){ this.CH.forEach((c,i) => this.ctx['c'+i] = this.fit(c.cv)); this.ctx.x = this.fit(this.xcv); this.ctx.map = this.fit(this.mcv); this.mapFit(); }
+  idx(d){ return Math.max(0, Math.min(this.N-1, Math.round(d/this.L.step))); }
+  xOf(d,w){ return (d-this.view.d0)/(this.view.d1-this.view.d0)*w; }
+  mx(i){ return this.L.x[i]*this.M.s+this.M.ox; }
+  my(i){ return -this.L.y[i]*this.M.s+this.M.oy; }
+
+  drawChart(c, k){
+    const ctx = this.ctx['c'+k]; if(!ctx) return; const {g,w,h} = ctx; g.clearRect(0,0,w,h);
+    const pad = 6, y = v => h-pad-(v-c.min)/(c.max-c.min)*(h-2*pad);
+    g.strokeStyle = C.grid; g.lineWidth = 1; g.fillStyle = C.dim; g.font = '11px Bahnschrift, Segoe UI, sans-serif'; g.textBaseline = 'middle';
+    let lastY = -99;
+    for(const t of c.ticks){ const yy = Math.round(y(t))+.5; g.beginPath(); g.moveTo(0,yy); g.lineTo(w,yy); g.stroke();
+      if(yy>12 && Math.abs(yy-lastY)>=15){ g.fillText(c.delta ? sg(t,1) : nf(t, c.td||0), 4, yy-7); lastY = yy; } }
+    const i0 = Math.max(0, this.idx(this.view.d0)-1), i1 = Math.min(this.N-1, this.idx(this.view.d1)+1);
+    const stride = Math.max(1, Math.floor((i1-i0)/(w*1.5)));
+    const line = (arr,col,width) => { g.strokeStyle = col; g.lineWidth = width; g.lineJoin = 'round'; g.beginPath();
+      let prev = null; for(let i=i0;i<=i1;i+=stride){ const X = this.xOf(this.D[i],w), Y = y(arr[i]); if(i===i0) g.moveTo(X,Y); else if(c.step&&prev!==null){ g.lineTo(X,prev); g.lineTo(X,Y); } else g.lineTo(X,Y); prev = Y; } g.stroke(); };
+    if(c.delta){
+      const a = c.series[0].a, y0 = y(0); g.beginPath(); g.moveTo(this.xOf(this.D[i0],w), y0);
+      for(let i=i0;i<=i1;i+=stride) g.lineTo(this.xOf(this.D[i],w), y(a[i])); g.lineTo(this.xOf(this.D[i1],w), y0); g.closePath();
+      const gr = g.createLinearGradient(0,y(c.max),0,y(c.min)); gr.addColorStop(0,'rgba(253,20,36,.35)');
+      gr.addColorStop(Math.max(0,Math.min(1,(y0-y(c.max))/(y(c.min)-y(c.max)))),'rgba(253,20,36,.04)'); gr.addColorStop(1,'rgba(34,197,94,.3)');
+      g.fillStyle = gr; g.fill(); line(a,'#F4F6FB',1.6);
+    } else for(let s = c.series.length-1; s>=0; s--) line(c.series[s].a, c.series[s].c, s===0?1.7:1.4);
+    if(c.marks) for(const m of c.marks){ const X = this.xOf(m.d,w); if(X<0||X>w) continue; g.fillStyle = m.c; g.fillRect(X-1, 0, 2, 7); }
+    const cx = Math.round(this.xOf(this.D[this.cur],w))+.5;
+    if(cx>=0 && cx<=w){ g.strokeStyle = 'rgba(252,253,253,.75)'; g.lineWidth = 1; g.beginPath(); g.moveTo(cx,0); g.lineTo(cx,h); g.stroke();
+      for(const s of c.series){ g.fillStyle = c.delta ? '#fff' : s.c; g.beginPath(); g.arc(cx,y(s.a[this.cur]),3.2,0,7); g.fill(); } }
+  }
+  drawX(){
+    const {g,w,h} = this.ctx.x; g.clearRect(0,0,w,h); g.fillStyle = C.dim; g.font = '11px Bahnschrift, Segoe UI, sans-serif'; g.textBaseline = 'top';
+    const span = this.view.d1-this.view.d0, most = Math.max(2, Math.min(9, Math.floor(w/75))), step = [20,50,100,200,250,500,1000,2000].find(s => span/s<=most) || 2000;
+    for(let d = Math.ceil(this.view.d0/step)*step; d <= this.view.d1; d += step){ const X = this.xOf(d,w); g.fillRect(X,0,1,4); const t = fmtDist(d), tw = g.measureText(t).width; g.fillText(t, Math.min(Math.max(X-tw/2,0), w-tw), 7); }
+  }
+  mapFit(){
+    const {w,h} = this.ctx.map; let minx=Infinity,maxx=-Infinity,miny=Infinity,maxy=-Infinity;
+    for(let i=0;i<this.N;i++){ const x=this.L.x[i], y=this.L.y[i]; if(x<minx)minx=x; if(x>maxx)maxx=x; if(y<miny)miny=y; if(y>maxy)maxy=y; }
+    const m = this.o.labels ? 130 : 60, s = Math.min((w-m)/Math.max(1,maxx-minx), (h-m)/Math.max(1,maxy-miny));
+    this.M = {s, ox:w/2-(minx+maxx)/2*s, oy:h/2+(miny+maxy)/2*s};
+  }
+  drawMap(){
+    const {g,w,h} = this.ctx.map, N = this.N; g.clearRect(0,0,w,h); g.lineCap = 'round'; g.lineJoin = 'round';
+    g.strokeStyle = '#1C2A57'; g.lineWidth = Math.max(9, this.M.s*14); g.beginPath(); for(let i=0;i<N;i++) i ? g.lineTo(this.mx(i),this.my(i)) : g.moveTo(this.mx(i),this.my(i)); g.closePath(); g.stroke();
+    const i0 = this.idx(this.view.d0), i1 = this.idx(this.view.d1), zoomed = (this.view.d1-this.view.d0) < this.total*0.98, col = this.modes[this.mode].col;
+    g.lineWidth = Math.max(3.5, this.M.s*5);
+    for(let i=1;i<N;i++){ g.globalAlpha = zoomed && (i<i0||i>i1) ? 0.22 : 1; g.strokeStyle = col(i); g.beginPath(); g.moveTo(this.mx(i-1),this.my(i-1)); g.lineTo(this.mx(i),this.my(i)); g.stroke(); }
+    g.globalAlpha = 1;
+    const a0 = Math.atan2(-(this.L.y[3]-this.L.y[0]), this.L.x[3]-this.L.x[0]) + Math.PI/2, sx = this.mx(0), sy = this.my(0), r = Math.max(10, this.M.s*16);
+    g.strokeStyle = '#fff'; g.lineWidth = 3; g.beginPath(); g.moveTo(sx-Math.cos(a0)*r, sy-Math.sin(a0)*r); g.lineTo(sx+Math.cos(a0)*r, sy+Math.sin(a0)*r); g.stroke();
+    const markers = typeof this.o.markers === 'function' ? this.o.markers() : this.o.markers;
+    if(markers) for(const m of markers){ const i = this.idx(m.d), ox = (m.off||0); const nx = this.normal(i);
+      g.fillStyle = m.c; g.strokeStyle = '#070E2A'; g.lineWidth = 2; g.beginPath(); g.arc(this.mx(i)+nx[0]*ox, this.my(i)+nx[1]*ox, m.r||5, 0, 7); g.fill(); g.stroke(); }
+    const labels = typeof this.o.labels === 'function' ? this.o.labels() : this.o.labels;
+    if(labels) this.drawLabels(g, labels);
+    const cx = this.mx(this.cur), cy = this.my(this.cur);
+    g.fillStyle = 'rgba(253,20,36,.25)'; g.beginPath(); g.arc(cx,cy,14,0,7); g.fill();
+    g.fillStyle = C.accent; g.strokeStyle = '#fff'; g.lineWidth = 2.5; g.beginPath(); g.arc(cx,cy,7,0,7); g.fill(); g.stroke();
+  }
+  // Normale au tracé, orientée vers l'extérieur (à l'opposé du centre du circuit).
+  normal(i){
+    const a = Math.max(0,i-4), b = Math.min(this.N-1,i+4), dx = this.mx(b)-this.mx(a), dy = this.my(b)-this.my(a), l = Math.hypot(dx,dy)||1;
+    let nx = -dy/l, ny = dx/l;
+    if(this._cx==null){ let sx=0, sy=0; for(let k=0;k<this.N;k+=10){ sx+=this.L.x[k]; sy+=this.L.y[k]; } this._cx = sx/Math.ceil(this.N/10); this._cy = sy/Math.ceil(this.N/10); }
+    const ccx = this._cx*this.M.s+this.M.ox, ccy = -this._cy*this.M.s+this.M.oy;
+    if((this.mx(i)-ccx)*nx + (this.my(i)-ccy)*ny < 0){ nx = -nx; ny = -ny; }
+    return [nx, ny];
+  }
+  drawLabels(g, labels){
+    g.font = '600 11.5px Bahnschrift, Segoe UI, sans-serif'; g.textBaseline = 'top';
+    const placed = [];
+    for(const lb of labels){
+      const i = this.idx(lb.d), [nx,ny] = this.normal(i), px = this.mx(i), py = this.my(i);
+      const lines = lb.lines, lh = 14, bw = Math.max(...lines.map(l => g.measureText(l.t).width)) + 12, bh = lines.length*lh + 6;
+      let dist = 26, bx, by, tries = 0;
+      do { bx = px + nx*dist - (nx<0 ? bw : 0) - (Math.abs(nx)<0.4 ? bw/2*(nx<0?-1:1) : 0); by = py + ny*dist - (ny<0 ? bh : 0); dist += 14; tries++; }
+      while(tries<10 && placed.some(p => bx < p[0]+p[2]+2 && bx+bw+2 > p[0] && by < p[1]+p[3]+2 && by+bh+2 > p[1]));
+      placed.push([bx,by,bw,bh]);
+      g.strokeStyle = 'rgba(152,164,194,.55)'; g.lineWidth = 1; g.beginPath(); g.moveTo(px,py); g.lineTo(bx + (nx<0?bw:0), by + (ny<0?bh:0)); g.stroke();
+      g.fillStyle = 'rgba(5,7,41,.9)'; g.strokeStyle = '#33405F'; g.beginPath(); g.rect(bx,by,bw,bh); g.fill(); g.stroke();
+      lines.forEach((l,k) => { g.fillStyle = l.c || '#FCFDFD'; g.fillText(l.t, bx+6, by+4+k*lh); });
+    }
+  }
+  updateReadout(){
+    const i = this.cur, d = this.dt[i], L = this.L, row = (t,v,st='') => `<div class="row"><span>${t}</span><b${st}>${v}</b></div>`;
+    let h = `<div class="ttl">${fmtDist(this.D[i])} · ${nf(this.D[i]/this.total*100,1)} %</div>` + row(single?'Temps':'Temps A', fmtLap(L.tA[i]), ' style="color:var(--lapA)"');
+    if(!single) h += row('Temps B', fmtLap(L.tB[i]), ' style="color:var(--lapB)"') + `<div class="row"><span>Écart</span><b class="${d>0?'down':'up'}">${sg(d,3)} s</b></div>`;
+    h += row(single?'Vitesse':'Vitesse A / B', single ? nf(L.speedA[i])+' km/h' : nf(L.speedA[i])+' / '+nf(L.speedB[i]));
+    if(this.o.readout) for(const [t,v,c] of this.o.readout(i)) h += row(t, v, c?` style="color:${c}"`:'');
+    this.readoutEl.innerHTML = h;
+    this.CH.forEach(c => c.series.slice(0,4).forEach((s,si) => {
+      const v = s.a[this.cur], txt = c.delta ? sg(v,3)+' s' : nf(v, c.d||0)+(c.u?' '+c.u:'');
+      c.vals[si].textContent = (c.series.length>1 ? s.n+' ' : '') + txt; }));
+    this.legendEl.innerHTML = this.modes[this.mode].legend.map(([c,t]) => `<span><i style="background:${c}"></i>${esc(t)}</span>`).join('');
+    if(this.o.onCursor) this.o.onCursor(i);
+  }
+  draw(){ if(ACTIVE!==this) return; cancelAnimationFrame(this.raf); this.raf = requestAnimationFrame(() => { this.CH.forEach((c,k) => this.drawChart(c,k)); this.drawX(); this.drawMap(); this.updateReadout(); }); }
+  clampView(){ const span = Math.max(60, Math.min(this.total, this.view.d1-this.view.d0)); const d0 = Math.max(0, Math.min(this.view.d0, this.total-span)); this.view = {d0, d1:d0+span}; }
+  zoomAt(frac,f){ const span = this.view.d1-this.view.d0, at = this.view.d0+span*frac, ns = span*f; this.view = {d0:at-ns*frac, d1:at-ns*frac+ns}; this.clampView(); this.draw(); }
+  zoomTo(d0, d1, at){ const m = Math.max(40,(d1-d0)*0.35); this.view = {d0:d0-m, d1:d1+m}; this.clampView(); if(at!=null) this.cur = this.idx(at); this.draw(); }
+  keepCursorVisible(){ const span = this.view.d1-this.view.d0, d = this.D[this.cur]; if(d<this.view.d0 || d>this.view.d1){ this.view = {d0:d-span/2, d1:d+span/2}; this.clampView(); } }
+  step(n){ this.cur = (this.cur+n+this.N)%this.N; this.keepCursorVisible(); this.draw(); }
+  bindChart(c){
+    const cv = c.cv; let drag = null;
+    const at = e => { const r = cv.getBoundingClientRect(); return this.idx(this.view.d0+(e.clientX-r.left)/r.width*(this.view.d1-this.view.d0)); };
+    cv.addEventListener('wheel', e => { e.preventDefault(); const r = cv.getBoundingClientRect(); this.zoomAt((e.clientX-r.left)/r.width, e.deltaY>0?1.25:0.8); }, {passive:false});
+    cv.addEventListener('pointerdown', e => { drag = {x:e.clientX, d0:this.view.d0, d1:this.view.d1, moved:false}; cv.setPointerCapture(e.pointerId); });
+    cv.addEventListener('pointermove', e => {
+      if(drag){ const r = cv.getBoundingClientRect(), dx = e.clientX-drag.x; if(Math.abs(dx)>3) drag.moved = true; const k = (drag.d1-drag.d0)/r.width; this.view = {d0:drag.d0-dx*k, d1:drag.d1-dx*k}; this.clampView(); }
+      if(!drag || !drag.moved) this.cur = at(e);
+      this.draw(); });
+    cv.addEventListener('pointerup', e => { if(drag && !drag.moved) this.cur = at(e); drag = null; this.draw(); });
+    cv.addEventListener('pointercancel', () => { drag = null; });
+    cv.addEventListener('dblclick', () => { this.view = {d0:0, d1:this.total}; this.draw(); });
+  }
+  bindMap(){
+    const cv = this.mcv; let drag = null;
+    cv.addEventListener('wheel', e => { e.preventDefault(); const r = cv.getBoundingClientRect(), px = e.clientX-r.left, py = e.clientY-r.top, f = e.deltaY>0 ? 0.85 : 1.18;
+      this.M.ox = px-(px-this.M.ox)*f; this.M.oy = py-(py-this.M.oy)*f; this.M.s *= f; this.draw(); }, {passive:false});
+    cv.addEventListener('pointerdown', e => { drag = {x:e.clientX, y:e.clientY, ox:this.M.ox, oy:this.M.oy}; cv.setPointerCapture(e.pointerId); cv.classList.add('drag'); });
+    cv.addEventListener('pointermove', e => {
+      const r = cv.getBoundingClientRect(), px = e.clientX-r.left, py = e.clientY-r.top;
+      if(drag){ this.M.ox = drag.ox+e.clientX-drag.x; this.M.oy = drag.oy+e.clientY-drag.y; this.draw(); return; }
+      let best = -1, bd = 24*24; for(let i=0;i<this.N;i++){ const q = (this.mx(i)-px)**2+(this.my(i)-py)**2; if(q<bd){ bd = q; best = i; } }
+      if(best>=0){ this.cur = best; this.keepCursorVisible(); this.draw(); }
+    });
+    const end = () => { drag = null; cv.classList.remove('drag'); };
+    cv.addEventListener('pointerup', end); cv.addEventListener('pointercancel', end);
+    cv.addEventListener('dblclick', () => { this.mapFit(); this.draw(); });
+  }
+}
+document.addEventListener('keydown', e => {
+  if(e.key==='Escape') $('browser').hidden = true;
+  if(!ACTIVE || !$('browser').hidden) return;
+  if(e.target && /INPUT|SELECT|TEXTAREA/.test(e.target.tagName)) return;
+  if(e.key==='ArrowRight' || e.key==='ArrowLeft'){ e.preventDefault(); ACTIVE.step((e.shiftKey?25:3)*(e.key==='ArrowRight'?1:-1)); }
+});
+window.addEventListener('resize', () => { if(ACTIVE){ ACTIVE.resize(); ACTIVE.draw(); } });
+
+/* ---------- petits blocs communs ---------- */
+const kpi = (t,v,u,d,cls='') => `<div class="kpi"><small>${t}</small><div class="v">${v}<em>${u}</em></div><div class="d ${cls}">${d}</div></div>`;
+const panel = (title, inner, tools='') => `<div class="panel"><div class="panel-h"><h3>${esc(title)}</h3>${tools}</div>${inner}</div>`;
+const abSel = (name, cur) => single ? '' : `<div class="wsel">Roues : <button class="btn ${cur==='A'?'on':''}" data-${name}="A">Session A</button><button class="btn ${cur==='B'?'on':''}" data-${name}="B">Session B</button></div>`;
+const absent = t => `<div class="empty-state">${esc(t)}</div>`;
+function mount(body, html){ body.insertAdjacentHTML('beforeend', html); return body.lastElementChild; }
+function makeWS(id, host, o){ const w = new Workspace(host, o); WS[id] = w; if(!$('view-'+id).hidden){ ACTIVE = w; requestAnimationFrame(() => { w.resize(); w.draw(); }); } return w; }
+const segName = (segs, d) => { const s = segs && segs.find(s => d>=s.start && d<=s.end); return s ? s.name : ''; };
+
+/* =========================================================
+   Pages des modules
+   ========================================================= */
+const RENDER = {};
+
+/* ---------- 01 Pilotage / Moteur ---------- */
+RENDER.pilotage = body => {
+  const S = DATA.sessions, A = S.A, B = S.B, L = DATA.lap;
+  let k;
+  if(single) k = kpi('Meilleur tour',fmtLap(A.best),'',`Tour ${A.bestIndex} sur ${A.laps.length} · ${esc(A.label)}`) +
+      kpi('Vitesse max',nf(A.vmax,1),' km/h',esc(A.venue)) + kpi('Régime max',nf(A.rpmMax),' tr/min','') +
+      kpi('Montées de rapport',A.shifts,'','sur le tour') + kpi('Longueur mesurée',nf(A.length/1000,2),' km','vitesse intégrée');
+  else { const d = B.best-A.best, dv = B.vmax-A.vmax, dr = B.rpmMax-A.rpmMax;
+    k = kpi('Tour A',fmtLap(A.best),'',`Tour ${A.bestIndex} · ${esc(A.label)}`) + kpi('Tour B',fmtLap(B.best),'',`Tour ${B.bestIndex} · ${esc(B.label)}`) +
+      kpi('Écart B − A',sg(d,3),' s', d>0?'B perd du temps sur A':'B gagne du temps sur A', d>0?'down':'up') +
+      kpi('Vitesse max A',nf(A.vmax,1),' km/h',`B : ${nf(B.vmax,1)} (${sg(dv,1)})`) + kpi('Régime max A',nf(A.rpmMax),' tr/min',`B : ${nf(B.rpmMax)} (${sg(dr)})`) +
+      kpi('Montées de rapport',A.shifts,'',`B : ${B.shifts}`); }
+  mount(body, `<div class="kpis">${k}</div>`);
+  const host = mount(body, '<div></div>');
+  const dt = L.tB.map((t,i) => t-L.tA[i]);
+  makeWS('pilotage', host, {title:'Comparaison des tours', charts:[
+    {t:'Vitesse', u:'km/h', h:120, series:AB('speed'), min:0},
+    single ? null : {t:'Écart B − A', u:'s', h:90, delta:true, series:[{a:dt, c:'#fff', n:''}]},
+    {t:'Accélérateur', u:'%', h:70, series:AB('thr'), min:0, max:105, ticks:[50]},
+    {t:'Frein', u:'%', h:70, series:AB('brk'), min:0, max:105, ticks:[50]},
+    {t:'Régime', u:'tr/min', h:96, series:AB('rpm'), pad:.04},
+    {t:'Rapport', u:'', h:70, series:AB('gear'), step:true, min:0, max:Math.max(...L.gearA, ...(single?[0]:L.gearB))+1},
+    {t:'Direction', u:L.steerUnit||'%', h:80, series:AB('steer'), sym:true},
+  ], readout:i => L.gearA ? [[single?'Rapport':'Rapport A / B', single ? L.gearA[i] : L.gearA[i]+' / '+L.gearB[i]]] : []});
+  // Temps par rapport et setup.
+  const ga = A.gearTime, gb = single ? {} : B.gearTime;
+  const gears = [...new Set([...Object.keys(ga),...Object.keys(gb)])].map(Number).sort((a,b)=>a-b);
+  const max = Math.max(1, ...gears.flatMap(g => [ga[g]||0, gb[g]||0]));
+  const gearsHtml = gears.length ? `<div class="gears">${gears.map(g => `<div class="gear"><b>R${g}</b><div class="bars">
+      <div class="bar" style="width:calc(${(ga[g]||0)/max} * (100% - 64px));background:var(--lapA)"><span>${nf(ga[g]||0,1)} s</span></div>
+      ${single?'':`<div class="bar" style="width:calc(${(gb[g]||0)/max} * (100% - 64px));background:var(--lapB)"><span>${nf(gb[g]||0,1)} s</span></div>`}</div></div>`).join('')}</div>`
+    : absent('Rapport engagé absent de ce fichier.');
+  mount(body, `<div class="grid2">${panel('Temps passé par rapport', gearsHtml)}${panel(single?'Setup de la session A':'Setup A / B', `<div class="setup">${setupHtml()}</div>`)}</div>`);
+};
+const SETUP_MAIN = ['RW','FW','FrontAntiSway','RearAntiSway','FLRideHeight','RLRideHeight','FLCamber','RLCamber','FLPressure','RLPressure','RearBrake','DiffPreload','TractionControlMap'];
+function setupHtml(){
+  const st = DATA.setup, rows = st.rows || [], S = DATA.sessions;
+  if(!rows.length) return '<div>Aucun setup dans le fichier <code>.ldx</code> associé (ou fichier <code>.ldx</code> absent).</div>';
+  const diff = rows.filter(r => !r.same), main = rows.filter(r => SETUP_MAIN.includes(r.key) && r.same);
+  const tr = r => `<tr><td>${esc(r.label)}</td><td>${esc(r.a)}</td>${single?'':`<td${r.same?'':' style="color:var(--warn);font-weight:600"'}>${esc(r.b)}</td>`}</tr>`;
+  const head = single ? `<div>Réglages principaux lus dans le fichier <code>.ldx</code> (${rows.length} au total).</div>`
+    : st.identical ? `<span class="badge">Setups identiques</span><div>Les ${st.compared} réglages lus dans les deux fichiers <code>.ldx</code> sont les mêmes. L'écart de ${nf(Math.abs(S.B.best-S.A.best),3)} s vient donc du pilotage ou des conditions, pas de la voiture.</div>`
+    : `<span class="badge" style="color:var(--warn);background:rgba(245,165,36,.14);border-color:rgba(245,165,36,.4)">${st.differences} réglage${st.differences>1?'s':''} différent${st.differences>1?'s':''}</span><div>Sur ${st.compared} réglages comparés. Les différences apparaissent en premier, en orange.</div>`;
+  return head + `<table><thead><tr><th>Réglage</th><th>A</th>${single?'':'<th>B</th>'}</tr></thead><tbody>${[...diff, ...main].map(tr).join('')}</tbody></table>`;
+}
+
+/* ---------- 06 Chronos / Comparaison ---------- */
+RENDER.chronos = (body, M) => {
+  const segs = M.segments, LA = M.lapsA, LB = M.lapsB, S = DATA.sessions, L = DATA.lap;
+  const bestA = S.A.best, gainA = bestA - LA.ideal;
+  let k = kpi('Meilleur tour A', fmtLap(bestA), '', `Tour ${S.A.bestIndex} sur ${LA.laps.length}`) +
+          kpi('Tour idéal A', fmtLap(LA.ideal), '', `${nf(gainA,3)} s à aller chercher`, gainA>0.05?'down':'') +
+          kpi('Minimum de roulement A', fmtLap(LA.rolling), '', 'meilleur enchaînement d’un tour');
+  if(!single){ const d = S.B.best-bestA;
+    k += kpi('Meilleur tour B', fmtLap(S.B.best), '', `Tour ${S.B.bestIndex} sur ${LB.laps.length}`) + kpi('Tour idéal B', fmtLap(LB.ideal), '', `${nf(S.B.best-LB.ideal,3)} s à aller chercher`) +
+         kpi('Écart B − A', sg(d,3), ' s', d>0?'B perd du temps sur A':'B gagne du temps sur A', d>0?'down':'up'); }
+  mount(body, `<div class="kpis">${k}</div>`);
+
+  // Tableau des portions (tous les tours de A, idéal, et meilleur tour de B).
+  const lapsA = LA.laps, bestIdx = lapsA.reduce((b,l,i) => l.time < lapsA[b].time ? i : b, 0);
+  const head = `<tr><th>Portion</th>${lapsA.map((l,i) => `<th class="${i===bestIdx?'bestlap':''}">A · tour ${l.index}${i===bestIdx?' ★':''}</th>`).join('')}<th>Idéal A</th>${single?'':'<th>B · meilleur</th><th>Écart B − A</th>'}</tr>`;
+  const rows = segs.map((s,k) => {
+    const cells = lapsA.map(l => `<td class="${lapsA.length>1 && Math.abs(l.seg[k]-LA.best[k])<0.0005?'best':''}">${nf(l.seg[k],3)}</td>`).join('');
+    const d = s.tB - s.tA;
+    return `<tr class="click" data-seg="${k}"><td class="${s.corner?'corner':'straight'}">${esc(s.name)}</td>${cells}<td>${nf(LA.best[k],3)}</td>${single?'':`<td>${nf(s.tB,3)}</td><td class="${d>0.005?'pos':d<-0.005?'neg':'muted'}">${sg(d,3)}</td>`}</tr>`;
+  }).join('');
+  const tot = `<tr class="total"><td>Total</td>${lapsA.map(l => `<td>${fmtLap(l.time)}</td>`).join('')}<td>${fmtLap(LA.ideal)}</td>${single?'':`<td>${fmtLap(S.B.best)}</td><td class="${S.B.best>bestA?'pos':'neg'}">${sg(S.B.best-bestA,3)}</td>`}</tr>`;
+  const table = `<div class="tbl-wrap"><table class="data" id="chrono-table"><thead>${head}</thead><tbody>${rows}${tot}</tbody></table></div>`;
+  let side = '';
+  if(!single){
+    const mx = Math.max(0.05, ...segs.map(s => Math.abs(s.tB-s.tA)));
+    side = panel('Gains et pertes de B', `<div class="gainbars">${segs.map((s,k) => { const d = s.tB-s.tA, w = Math.abs(d)/mx*50;
+      return `<div class="gb" data-seg="${k}"><span class="gbn">${esc(s.name)}</span><span class="gbt"><i style="${d>=0?`left:50%;width:${w}%;background:var(--accent)`:`right:50%;width:${w}%;background:var(--on)`}"></i></span><span class="gbv ${d>0.005?'pos':d<-0.005?'neg':'muted'}">${sg(d,3)}</span></div>`; }).join('')}</div>
+      <div class="hint" style="border-top:0">Rouge : B perd du temps. Vert : B en gagne. Cliquez une portion pour la zoomer.</div>`);
+  }
+  mount(body, `<div class="grid2 chrono-grid" style="grid-template-columns:${single?'1fr':'minmax(0,1.6fr) minmax(280px,1fr)'}">${panel('Temps par portion', table, `<span class="muted" style="font-size:12.5px">Vert : meilleure portion · ★ meilleur tour · cliquez une ligne pour la zoomer</span>`)}${side}</div>`);
+  const host = mount(body, '<div></div>');
+  const segCol = i => { const s = segs.find(s => L.d[i]>=s.start && L.d[i]<=s.end) || segs[segs.length-1]; const d = s.tB-s.tA; return d>0.02 ? C.accent : d<-0.02 ? C.on : '#5B6A93'; };
+  const segCache = L.d.map((d,i) => segCol(i));
+  const ws = makeWS('chronos', host, {title:'Écart et vitesse', modes:['segments','phase','speed'], mode: single?'phase':'segments',
+    extraModes:{segments:{label:'Portions', needsB:true, col:i => segCache[i], legend:[['var(--on)','B gagne sur la portion'],['var(--accent)','B perd sur la portion'],['#5B6A93','Moins de 0,02 s']]}},
+    charts:[ single ? null : {t:'Écart B − A', u:'s', h:110, delta:true, series:[{a:L.tB.map((t,i)=>t-L.tA[i]), c:'#fff', n:''}]},
+             {t:'Vitesse', u:'km/h', h:130, series:AB('speed'), min:0, marks:segs.filter(s=>s.corner).map(s => ({d:s.apex, c:'#98A4C2'}))} ],
+    labels:() => segs.filter(s => s.corner).map(s => ({d:s.apex, lines:[{t:'V'+s.name.replace('Virage ','')}]})),
+    readout:i => [['Portion', segName(segs, L.d[i])]] });
+  const pick = k => { const s = segs[k]; ws.zoomTo(s.start, s.end, s.apex);
+    body.querySelectorAll('#chrono-table tr[data-seg]').forEach(r => r.classList.toggle('sel', +r.dataset.seg===k)); host.scrollIntoView({behavior:'smooth', block:'start'}); };
+  body.querySelectorAll('[data-seg]').forEach(r => r.addEventListener('click', () => pick(+r.dataset.seg)));
+};
+
+/* ---------- 05 Freinage / Adhérence ---------- */
+RENDER.freinage = (body, M) => {
+  const Z = M.zones, L = DATA.lap, st = M.stats;
+  // Deux freinages avant le même virage : « Virage 6 », puis « Virage 6 · 2 ».
+  const seen = {}; Z.forEach(z => { const n = z.corner || 'Zone'; seen[n] = (seen[n]||0)+1; z.label = seen[n]>1 ? n+' · '+seen[n] : n; });
+  const locksA = Z.filter(z => z.a.locks.length).length, locksB = Z.filter(z => z.b && z.b.locks.length).length;
+  const tmax = s => s ? Math.max(...s.map(w => w.tempMax||0)) : NaN;
+  mount(body, `<div class="kpis">${
+    kpi('Zones de freinage', Z.length, '', single?'sur le meilleur tour':`B : ${Z.filter(z=>z.b).length} retrouvées`) +
+    kpi('Freinages avec blocage', locksA, '', single?'glissement < −12 %':`B : ${locksB}`, locksA?'down':'') +
+    kpi('Patinage maxi A', nf(Math.max(...st.A.map(w=>w.spin)),1), ' %', 'part du tour, roue > +12 %') +
+    kpi('Température freins maxi A', nf(tmax(st.A)), ' °C', single?'':`B : ${nf(tmax(st.B))} °C`)}</div>`);
+  const rows = Z.map((z,k) => { const a = z.a, b = z.b, dd = b ? b.start - a.start : null;
+    const lk = x => x && x.locks.length ? `<span class="pos">${x.locks.join(', ')}</span>` : '<span class="muted">—</span>';
+    return `<tr class="click" data-zone="${k}"><td class="corner">${esc(z.label)}</td><td>${fmtDist(a.start)}</td>${single?'':`<td class="muted">${dd==null?'non trouvé':dd<-3?`${nf(-dd)} m plus tôt`:dd>3?`${nf(dd)} m plus tard`:'même point'}</td>`}
+      <td>${nf(a.entry)}${single||!b?'':` / ${nf(b.entry)}`}</td><td>${nf(a.min)}${single||!b?'':` / ${nf(b.min)}`}</td><td>${nf(a.length)}${single||!b?'':` / ${nf(b.length)}`} m</td>
+      <td>${nf(a.peak)}${single||!b?'':` / ${nf(b.peak)}`} %</td><td>${nf(a.trail)}${single||!b?'':` / ${nf(b.trail)}`} m</td><td>${lk(a)}${single?'':` · ${lk(b)}`}</td></tr>`; }).join('');
+  const ab = single ? '' : ' A / B';
+  const table = `<div class="tbl-wrap"><table class="data" id="brake-table"><thead><tr><th>Virage</th><th>Point de freinage A</th>${single?'':'<th>B par rapport à A</th>'}<th>Vitesse d’entrée${ab}</th><th>Vitesse mini${ab}</th><th>Distance${ab}</th><th>Pression maxi${ab}</th><th>Relâché${ab}</th><th>Blocages${ab}</th></tr></thead><tbody>${rows}</tbody></table></div>`;
+  mount(body, `<div style="margin-top:14px">${panel('Zones de freinage', table, `<span class="muted" style="font-size:12.5px">Relâché : distance entre le pic de pression et la fin du freinage · cliquez une ligne pour la zoomer</span>`)}</div>`);
+  const wr = (s,w) => `<td>${nf(s[w].lock,1)} %</td><td>${nf(s[w].spin,1)} %</td><td>${nf(s[w].tempAvg)} / ${nf(s[w].tempMax)} °C</td>`;
+  mount(body, `<div style="margin-top:14px">${panel('Adhérence et freins par roue', `<div class="tbl-wrap"><table class="data"><thead><tr><th>Roue</th><th>Blocage A</th><th>Patinage A</th><th>Freins A moy. / maxi</th>${single?'':'<th>Blocage B</th><th>Patinage B</th><th>Freins B moy. / maxi</th>'}</tr></thead><tbody>${
+    WHEEL.map((n,w) => `<tr><td style="color:${WHEEL_COL[w]}">${n}</td>${wr(st.A,w)}${single?'':wr(st.B,w)}</tr>`).join('')}</tbody></table></div>
+    <div class="hint" style="border-top:0">Glissement estimé avec la vitesse des roues et un rayon calculé sur les lignes droites. Blocage : en dessous de −12 % au freinage. Patinage : au-dessus de +12 % à l’accélération.</div>`)}</div>`);
+  const host = mount(body, '<div></div>');
+  let side = 'A';
+  const charts = () => { const slip = side==='A' ? M.slipA : M.slipB, temp = side==='A' ? M.brakeTempA : M.brakeTempB;
+    return [ {t:'Vitesse', u:'km/h', h:110, series:AB('speed'), min:0},
+      {t:'Frein', u:'%', h:80, series:AB('brk'), min:0, max:105, ticks:[50]},
+      {t:'G longitudinal', u:'G', h:80, d:2, series:AB('long'), td:1},
+      slip ? {t:'Glissement '+side, u:'%', h:120, d:0, series:wheelS(slip.map(a => a.map(v => v*100))), min:-30, max:30, ticks:[-12,0,12]} : null,
+      temp ? {t:'Température freins '+side, u:'°C', h:100, series:wheelS(temp)} : null ]; };
+  const ws = makeWS('freinage', host, {title:'Freinage', mapTools: abSel('side', side), charts:charts(),
+    markers:() => Z.flatMap(z => [{d:z.a.start, c:C.a, r:5, off:-9}, ...(z.b?[{d:z.b.start, c:C.b, r:5, off:9}]:[])]),
+    legend: single ? '<span><i style="background:var(--lapA)"></i>Tour A</span>' : undefined,
+    readout:i => [['Frein', single ? nf(L.brkA[i])+' %' : nf(L.brkA[i])+' / '+nf(L.brkB[i])+' %']] });
+  host.querySelectorAll('[data-side]').forEach(b => b.onclick = () => { side = b.dataset.side; host.querySelectorAll('[data-side]').forEach(x => x.classList.toggle('on', x===b)); ws.setCharts(charts()); });
+  body.querySelectorAll('[data-zone]').forEach(r => r.addEventListener('click', () => { const z = Z[+r.dataset.zone]; ws.zoomTo(z.a.start-60, z.a.minAt+40, z.a.peakAt);
+    body.querySelectorAll('#brake-table tr').forEach(x => x.classList.toggle('sel', x===r)); host.scrollIntoView({behavior:'smooth', block:'start'}); }));
+};
+
+/* ---------- 04 Pneumatiques ---------- */
+RENDER.pneus = (body, M) => {
+  const SA = M.sessions.A, SB = M.sessions.B;
+  let side = 'A';
+  const wrap = mount(body, '<div></div>');
+  const cards = () => {
+    const S = side==='A' ? SA : SB;
+    const card = (w,i) => { const spread = w.inner - w.outer;
+      return `<div class="tyre"><h4><span style="color:${WHEEL_COL[i]}">${w.wheel}</span><small>${esc(w.compound||'')}${w.camber?` · carrossage ${esc(w.camber)}`:''}</small></h4>
+        <div class="zones3">${(i%2===0 ? [['Ext.',w.outer],['Centre',w.centre],['Int.',w.inner]] : [['Int.',w.inner],['Centre',w.centre],['Ext.',w.outer]])
+          .map(([n,t]) => `<div style="background:${isNaN(t)||t==null?'#2A3456':tempCol(t)}"><small>${n}</small>${nf(t,1)}°</div>`).join('')}</div>
+        <dl><dt>Écart intérieur − extérieur</dt><dd>${sg(spread,1)} °C</dd>
+        <dt>Centre / moyenne des bords</dt><dd>${sg(w.centre-(w.inner+w.outer)/2,1)} °C</dd>
+        <dt>Pression en roulant</dt><dd>${nf(w.pressure,1)} kPa</dd><dt>Plage de pression</dt><dd>${nf(w.pressureMin,1)} – ${nf(w.pressureMax,1)} kPa</dd>
+        <dt>Pression à froid (setup)</dt><dd>${esc(w.coldPressure||'—')}</dd>
+        <dt>Carcasse</dt><dd>${nf(w.carcass,1)} °C</dd><dt>Usure sur le tour</dt><dd>${nf(w.wear,2)} %</dd></dl></div>`; };
+    const evo = (S2, k) => `<table class="data"><thead><tr><th>Tour ${k}</th>${WHEEL.map(n => `<th>${n} centre</th>`).join('')}${WHEEL.map(n => `<th>${n} pression</th>`).join('')}</tr></thead><tbody>${
+      S2.laps.map(l => `<tr><td>${l.index} · ${fmtLap(l.time)}</td>${l.centre.map(t => `<td>${nf(t,1)}°</td>`).join('')}${l.pressure.map(p => `<td>${nf(p,1)}</td>`).join('')}</tr>`).join('')}</tbody></table>`;
+    let cmp = '';
+    if(!single){ cmp = panel('Écarts B − A sur le meilleur tour', `<div class="tbl-wrap"><table class="data"><thead><tr><th>Roue</th><th>Intérieur</th><th>Centre</th><th>Extérieur</th><th>Pression</th><th>Carcasse</th></tr></thead><tbody>${
+      SA.wheels.map((a,i) => { const b = SB.wheels[i], f = (x,y,d=1) => { const v = y-x; return `<td class="${Math.abs(v)<0.05?'muted':''}">${sg(v,d)}</td>`; };
+        return `<tr><td style="color:${WHEEL_COL[i]}">${a.wheel}</td>${f(a.inner,b.inner)}${f(a.centre,b.centre)}${f(a.outer,b.outer)}${f(a.pressure,b.pressure)}${f(a.carcass,b.carcass)}</tr>`; }).join('')}</tbody></table></div>`); }
+    wrap.innerHTML = `<div class="grid2">${panel('Températures et pressions · session '+side, `<div class="tyres"><div class="car-axis">Avant</div>${S.wheels.map(card).join('')}<div class="car-axis">Arrière</div></div>
+        <div class="hint" style="border-top:0">Moyennes sur le meilleur tour. Intérieur = côté châssis. Couleurs : bleu froid, vert, jaune puis rouge au-delà de 105 °C.</div>`, abSel('tyreside', side))}
+      <div style="display:flex;flex-direction:column;gap:14px">${cmp}${panel('Évolution sur la session A', `<div class="tbl-wrap">${evo(SA,'A')}</div>`)}${single?'':panel('Évolution sur la session B', `<div class="tbl-wrap">${evo(SB,'B')}</div>`)}</div></div>`;
+    wrap.querySelectorAll('[data-tyreside]').forEach(b => b.onclick = () => { side = b.dataset.tyreside; cards(); ws.setCharts(charts()); });
+  };
+  cards();
+  const host = mount(body, '<div></div>');
+  const charts = () => { const c = side==='A' ? M.centreA : M.centreB, p = side==='A' ? M.pressureA : M.pressureB;
+    return [ c ? {t:'Température centre '+side, u:'°C', h:130, d:1, series:wheelS(c)} : null,
+             p ? {t:'Pression '+side, u:'kPa', h:110, d:1, series:wheelS(p)} : null,
+             {t:'Vitesse', u:'km/h', h:90, series:AB('speed'), min:0} ]; };
+  const ws = makeWS('pneus', host, {title:'Pneumatiques sur le tour', charts:charts(), legend:WHEEL.map((n,i) => `<span><i style="background:${WHEEL_COL[i]}"></i>${n}</span>`).join('')});
+};
+
+/* ---------- 02 Suspensions ---------- */
+RENDER.suspensions = (body, M) => {
+  const SA = M.sessions.A, SB = M.sessions.B, labels = SA.map(s => s.label);
+  const hists = mount(body, `<div style="margin-top:14px">${panel('Vitesses d’amortisseur', `<div class="hists">${labels.map((l,k) => `<div class="hist"><h4><span>${esc(l)}</span><small id="hs-${k}"></small></h4><canvas id="hc-${k}"></canvas></div>`).join('')}</div>
+    <div class="hint" style="border-top:0">Part du tour par tranche de 10 mm/s. À gauche : détente. À droite : compression. Limite lente / rapide : ±${M.slow} mm/s. ${single?'':'Barres : A · trait rouge : B.'}</div>`,
+    single?'':'<div class="legend"><span><i style="background:var(--lapA)"></i>A</span><span><i style="background:var(--lapB)"></i>B</span></div>')}</div>`);
+  const drawHist = () => labels.forEach((l,k) => {
+    const cv = $('hc-'+k), a = SA[k], b = SB && SB[k]; if(!cv) return;
+    if(!a.available){ cv.replaceWith(Object.assign(document.createElement('div'), {className:'muted', textContent:'Voie absente de ce fichier'})); return; }
+    const r = cv.getBoundingClientRect(), dpr = Math.max(1, window.devicePixelRatio||1); cv.width = r.width*dpr; cv.height = r.height*dpr;
+    const g = cv.getContext('2d'); g.setTransform(dpr,0,0,dpr,0,0); const w = r.width, h = r.height, n = a.hist.length;
+    const mx = Math.max(...a.hist, ...(b&&b.available?b.hist:[0]))*1.1, bw = w/n, y = v => h-16-v/mx*(h-22);
+    g.fillStyle = 'rgba(253,20,36,.07)'; const slowL = (M.histLimit-M.slow)/(2*M.histLimit)*w, slowR = (M.histLimit+M.slow)/(2*M.histLimit)*w; g.fillRect(slowL,0,slowR-slowL,h-16);
+    for(let i=0;i<n;i++){ g.fillStyle = C.a; g.fillRect(i*bw+1, y(a.hist[i]), bw-2, h-16-y(a.hist[i])); }
+    if(b && b.available){ g.strokeStyle = C.b; g.lineWidth = 1.6; g.beginPath(); for(let i=0;i<n;i++){ const X = i*bw+bw/2; i?g.lineTo(X,y(b.hist[i])):g.moveTo(X,y(b.hist[i])); } g.stroke(); }
+    g.fillStyle = C.dim; g.font = '10.5px Bahnschrift, Segoe UI, sans-serif'; g.textBaseline = 'top';
+    [-M.histLimit, -100, 0, 100, M.histLimit].forEach(v => { const X = (v+M.histLimit)/(2*M.histLimit)*w, t = String(v); g.fillText(t, Math.min(Math.max(X-g.measureText(t).width/2,0), w-g.measureText(t).width), h-13); });
+    $('hs-'+k).textContent = `comp. ${nf(a.bumpSlow+a.bumpFast)} % · dét. ${nf(a.rebSlow+a.rebFast)} %`;
+  });
+  const row = (s, tag) => s.available ? `<td style="text-align:center">${tag}</td><td>${nf(s.min,1)} – ${nf(s.max,1)}</td><td>${nf(s.max-s.min,1)}</td><td>${nf(s.bumpSlow,1)} %</td><td>${nf(s.bumpFast,1)} %</td><td>${nf(s.rebSlow,1)} %</td><td>${nf(s.rebFast,1)} %</td><td>${nf(s.velP95)}</td>` : `<td style="text-align:center">${tag}</td><td colspan="7" class="muted">absent</td>`;
+  mount(body, `<div style="margin-top:14px">${panel('Débattements et répartition', `<div class="tbl-wrap"><table class="data"><thead><tr><th>Élément</th><th style="text-align:center">Session</th><th>Débattement (mm)</th><th>Plage</th><th>Compression lente</th><th>Compression rapide</th><th>Détente lente</th><th>Détente rapide</th><th>Vitesse 95 % (mm/s)</th></tr></thead><tbody>${
+    labels.map((l,k) => `<tr><td rowspan="${single?1:2}" style="color:${k<4?WHEEL_COL[k]:'var(--text)'}">${esc(l)}</td>${row(SA[k],'A')}</tr>${single?'':`<tr>${row(SB[k],'B')}</tr>`}`).join('')}</tbody></table></div>
+    <div class="hint" style="border-top:0">Position de suspension : plus la valeur est grande, plus la suspension est comprimée. Vitesse 95 % : 95 % du tour se passe en dessous de cette vitesse.</div>`)}</div>`);
+  const host = mount(body, '<div></div>');
+  let side = 'A';
+  const charts = () => { const p = side==='A' ? M.posA : M.posB, t = side==='A' ? M.thirdA : M.thirdB;
+    return [ p ? {t:'Débattement '+side, u:'mm', h:140, d:1, series:wheelS(p)} : null,
+             t ? {t:'3e éléments '+side, u:'mm', h:100, d:1, series:[{a:t[0], c:'#4CC9FF', n:'AV'}, {a:t[1], c:'#22C55E', n:'AR'}]} : null,
+             {t:'Vitesse', u:'km/h', h:90, series:AB('speed'), min:0} ]; };
+  const ws = makeWS('suspensions', host, {title:'Suspensions sur le tour', mapTools:abSel('suspside', side), charts:charts(),
+    legend:WHEEL.map((n,i) => `<span><i style="background:${WHEEL_COL[i]}"></i>${n}</span>`).join('')});
+  host.querySelectorAll('[data-suspside]').forEach(b => b.onclick = () => { side = b.dataset.suspside; host.querySelectorAll('[data-suspside]').forEach(x => x.classList.toggle('on', x===b)); ws.setCharts(charts()); });
+  requestAnimationFrame(drawHist); window.addEventListener('resize', () => { if(!$('view-suspensions').hidden) drawHist(); });
+  WS.suspensions.afterShow = drawHist;
+};
+
+/* ---------- 03 Châssis / Dynamique ---------- */
+RENDER.chassis = (body, M) => {
+  const A = M.sessions.A, B = M.sessions.B, L = DATA.lap;
+  const vs = (a, b, u, d=1) => single || !b ? '' : `B : ${nf(b,d)}${u} (${sg(b-a,d)})`;
+  mount(body, `<div class="kpis">${
+    (A.hasRideHeight ? kpi('Hauteur avant moyenne', nf(A.front,1), ' mm', vs(A.front, B&&B.front, ' mm')) + kpi('Hauteur arrière moyenne', nf(A.rear,1), ' mm', vs(A.rear, B&&B.rear, ' mm')) +
+      kpi('Rake moyen', nf(A.rake,1), ' mm', vs(A.rake, B&&B.rake, ' mm')) : '') +
+    kpi('Roulis par G', nf(A.rollGradient,2), ' °/G', vs(A.rollGradient, B&&B.rollGradient, ' °/G', 2)) +
+    kpi('Tangage par G', nf(A.pitchGradient,2), ' °/G', vs(A.pitchGradient, B&&B.pitchGradient, ' °/G', 2)) +
+    kpi('G latéral maxi', nf(A.maxLat,2), ' G', `freinage ${nf(A.maxBrake,2)} G · accél. ${nf(A.maxAccel,2)} G`)}</div>`);
+  const bands = A.hasRideHeight ? `<div class="tbl-wrap"><table class="data"><thead><tr><th>Vitesse</th><th>Avant A</th><th>Arrière A</th><th>Rake A</th>${single?'':'<th>Avant B</th><th>Arrière B</th><th>Rake B</th>'}</tr></thead><tbody>${
+      A.bands.map((b,i) => `<tr><td>${esc(b.label)}</td><td>${nf(b.front,1)}</td><td>${nf(b.rear,1)}</td><td>${nf(b.rake,1)}</td>${single?'':`<td>${nf(B.bands[i].front,1)}</td><td>${nf(B.bands[i].rear,1)}</td><td>${nf(B.bands[i].rake,1)}</td>`}</tr>`).join('')}
+</tbody></table></div>
+      <div class="tbl-wrap" style="margin-top:6px"><table class="data"><thead><tr><th>Hauteur mini (1 %)</th>${WHEEL.map((n,i) => `<th style="color:${WHEEL_COL[i]}">${n}</th>`).join('')}</tr></thead><tbody>
+        <tr><td>Session A</td>${A.minByWheel.map(v => `<td>${nf(v,1)}</td>`).join('')}</tr>${single||!B.minByWheel?'':`<tr><td>Session B</td>${B.minByWheel.map(v => `<td>${nf(v,1)}</td>`).join('')}</tr>`}</tbody></table></div>
+      <div class="hint" style="border-top:0">Hauteurs en mm. Avec la vitesse, l’appui aérodynamique écrase la voiture : le rake diminue. Hauteur mini : valeur dépassée vers le bas pendant 1 % du tour.</div>`
+    : absent('Hauteurs de caisse absentes de ce fichier.');
+  mount(body, `<div class="grid2">${panel('Hauteurs de caisse selon la vitesse', bands)}${panel('Diagramme G-G', `<div class="gg"><canvas id="gg"></canvas></div><div class="hint" style="border-top:0">Accélération vers le haut, freinage vers le bas. Cercles tous les 1 G.</div>`,
+    single?'':'<div class="legend"><span><i style="background:var(--lapA)"></i>A</span><span><i style="background:var(--lapB)"></i>B</span></div>')}</div>`);
+  const drawGG = () => { const cv = $('gg'); if(!cv || !M.ggLatA) return; const r = cv.getBoundingClientRect(), dpr = Math.max(1, window.devicePixelRatio||1);
+    cv.width = r.width*dpr; cv.height = r.height*dpr; const g = cv.getContext('2d'); g.setTransform(dpr,0,0,dpr,0,0);
+    const w = r.width, h = r.height, cx = w/2, cy = h/2, lim = Math.ceil(Math.max(3, ...M.ggLatA.map(Math.abs), ...M.ggLongA.map(Math.abs))), s = (Math.min(w,h)/2-16)/lim;
+    g.strokeStyle = C.grid; g.lineWidth = 1; g.fillStyle = C.dim; g.font = '10.5px Bahnschrift, Segoe UI, sans-serif';
+    for(let k=1;k<=lim;k++){ g.beginPath(); g.arc(cx,cy,k*s,0,7); g.stroke(); g.fillText(k+' G', cx+3, cy-k*s+12); }
+    g.beginPath(); g.moveTo(cx,4); g.lineTo(cx,h-4); g.moveTo(4,cy); g.lineTo(w-4,cy); g.stroke();
+    const dots = (la, lo, col) => { g.fillStyle = col; for(let i=0;i<la.length;i++){ g.globalAlpha = .55; g.beginPath(); g.arc(cx+la[i]*s, cy+lo[i]*s, 1.8, 0, 7); g.fill(); } g.globalAlpha = 1; };
+    if(!single && M.ggLatB) dots(M.ggLatB, M.ggLongB, C.b); dots(M.ggLatA, M.ggLongA, C.a);
+    g.fillStyle = C.dim; g.fillText('Accélération', cx+6, 14); g.fillText('Freinage', cx+6, h-8); };
+  requestAnimationFrame(drawGG);
+  const host = mount(body, '<div></div>');
+  let side = 'A';
+  const charts = () => { const rh = side==='A' ? M.rhA : M.rhB;
+    return [ rh ? {t:'Hauteur de caisse '+side, u:'mm', h:140, d:1, series:wheelS(rh)} : null,
+      {t:'Roulis', u:'°', h:90, d:2, td:1, series:pairS(M.rollA, M.rollB), sym:true},
+      {t:'Tangage', u:'°', h:90, d:2, td:1, series:pairS(M.pitchA, M.pitchB), sym:true},
+      {t:'G latéral', u:'G', h:90, d:2, td:1, series:AB('lat'), sym:true},
+      {t:'G longitudinal', u:'G', h:90, d:2, td:1, series:AB('long')},
+      {t:'G vertical', u:'G', h:80, d:2, td:1, series:pairS(M.vertA, M.vertB)} ]; };
+  const ws = makeWS('chassis', host, {title:'Châssis sur le tour', mapTools:abSel('chside', side), charts:charts()});
+  host.querySelectorAll('[data-chside]').forEach(b => b.onclick = () => { side = b.dataset.chside; host.querySelectorAll('[data-chside]').forEach(x => x.classList.toggle('on', x===b)); ws.setCharts(charts()); });
+  WS.chassis.afterShow = drawGG; window.addEventListener('resize', () => { if(!$('view-chassis').hidden) drawGG(); });
+};
+
+/* ---------- 07 Carte / Trajectoires ---------- */
+RENDER.carte = (body, M) => {
+  const segs = M.segments, L = DATA.lap;
+  let show = 'virages', brakes = true;
+  const host = mount(body, '<div></div>');
+  const tools = `<span class="wsel" style="margin-left:8px">Repères : <button class="btn on" data-lbl="virages">Virages</button><button class="btn" data-lbl="tout">Tout</button><button class="btn" data-lbl="aucun">Aucun</button>
+    <button class="btn on" data-brk="1">Freinages</button></span>`;
+  const ws = makeWS('carte', host, {title:'Vitesse et écart', mapFirst:true, mapTools:tools,
+    charts:[{t:'Vitesse', u:'km/h', h:110, series:AB('speed'), min:0}, single ? null : {t:'Écart B − A', u:'s', h:80, delta:true, series:[{a:L.tB.map((t,i)=>t-L.tA[i]), c:'#fff', n:''}]}],
+    labels:() => show==='aucun' ? [] : segs.filter(s => s.corner || show==='tout').map(s => ({d:s.apex, lines:[
+      {t:(s.corner ? 'V'+s.number : s.name.replace('Droite ','D')) + ' · ' + (s.corner?'mini':'maxi')},
+      {t:`A ${nf(s.vA)} km/h · R${s.gearA}`, c:C.a}, ...(single?[]:[{t:`B ${nf(s.vB)} km/h · R${s.gearB}`, c:C.b}])]})),
+    markers:() => brakes ? [...M.brakesA.map(d => ({d, c:C.a, r:5, off:-9})), ...M.brakesB.map(d => ({d, c:C.b, r:5, off:9}))] : [],
+    readout:i => [['Portion', segName(segs, L.d[i])]] });
+  host.querySelectorAll('[data-lbl]').forEach(b => b.onclick = () => { show = b.dataset.lbl; host.querySelectorAll('[data-lbl]').forEach(x => x.classList.toggle('on', x===b)); ws.draw(); });
+  host.querySelectorAll('[data-brk]').forEach(b => b.onclick = () => { brakes = !brakes; b.classList.toggle('on', brakes); ws.draw(); });
+  const rows = segs.map((s,k) => { const d = s.vB - s.vA; return `<tr class="click" data-cseg="${k}"><td class="${s.corner?'corner':'straight'}">${esc(s.name)}</td><td>${s.corner?'mini':'maxi'}</td><td>${nf(s.vA,1)}</td><td>R${s.gearA}</td>${single?'':`<td>${nf(s.vB,1)}</td><td>R${s.gearB}</td><td class="${Math.abs(d)<0.5?'muted':d>0?'neg':'pos'}">${sg(d,1)}</td>`}</tr>`; }).join('');
+  mount(body, `<div style="margin-top:14px">${panel('Vitesses par portion', `<div class="tbl-wrap"><table class="data"><thead><tr><th>Portion</th><th>Valeur</th><th>Vitesse A</th><th>Rapport A</th>${single?'':'<th>Vitesse B</th><th>Rapport B</th><th>B − A (km/h)</th>'}</tr></thead><tbody>${rows}</tbody></table></div>
+    <div class="hint" style="border-top:0">Points bleus et rouges sur la carte : début du freinage de A et de B. Le tracé est reconstruit à partir de la vitesse et du G latéral (GPS absent de ces fichiers) : une seule trajectoire est donc dessinée, celle de A.</div>`)}</div>`);
+  body.querySelectorAll('[data-cseg]').forEach(r => r.addEventListener('click', () => { const s = segs[+r.dataset.cseg]; ws.zoomTo(s.start, s.end, s.apex); window.scrollTo({top:0, behavior:'smooth'}); }));
+};
+
+// Après affichage d'une page : redessiner ce qui n'est pas dans l'espace courbes + carte.
+const _open = openModule;
+openModule = async id => { await _open(id); const w = WS[id]; if(w && w.afterShow && !$('view-'+id).hidden) requestAnimationFrame(w.afterShow); };
+
+/* ---------- démarrage ---------- */
+(async () => {
+  renderCards(); renderSessbar();
+  show(location.hash.slice(1) || 'accueil');
+  try {
+    CAT = await api('sessions');
+    if(CAT.lastA && byId(CAT.lastA)){
+      PICK = {A:CAT.lastA, B:CAT.lastB && byId(CAT.lastB) ? CAT.lastB : null};
+      await openAnalysis(PICK.A, PICK.B, false);
+    } else if(!location.hash) location.hash = 'sessions';
+    if(!$('view-sessions').hidden) renderCatalog();
+  } catch(e) { /* la page Sessions affichera l'erreur */ }
+})();
+</script>
+
+</body>
+</html>

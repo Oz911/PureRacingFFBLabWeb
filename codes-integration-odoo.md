@@ -49,3 +49,14 @@ Point de départ du parcours : matériel, réglages actuels et mesures du FFB An
 ```html
 <iframe src="https://VOTRE-COMPTE.github.io/VOTRE-DEPOT/notice-ffb.html" title="Pure Racing FX — Notice technique" loading="lazy" style="display:block;width:100%;height:1900px;border:0;background:#070e2a" referrerpolicy="strict-origin-when-cross-origin"></iframe>
 ```
+
+## 06 — Pure Racing Engineer, démo (page Odoo : /pure-racing-engineer)
+
+Démo interactive du module Engineer de Pit Box : la vraie page du module, avec deux sessions LMU réelles à Spa
+(pilote anonymisé), calculées à l'avance par Engineer (`engineer/demo-data.json`). Pour la mettre à jour, la
+régénérer depuis le dépôt PureRacingFx (page `src/PureRacingFx/Modules/Engineer/Page/index.html`).
+
+```html
+<iframe src="https://VOTRE-COMPTE.github.io/VOTRE-DEPOT/engineer/index.html" title="Pure Racing Engineer — Démo" loading="lazy" style="display:block;width:100%;height:1400px;border:0;background:#070e2a" referrerpolicy="strict-origin-when-cross-origin"></iframe>
+```
+
