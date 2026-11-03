@@ -1,0 +1,109 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Pit Box – démo</title>
+<!-- Démo de navigation dans Pit Box (Pure Racing FX) pour le site.
+     Captures réelles de Pit Box 0.9.5 sous SimHub ; zones cliquables posées
+     sur le menu de gauche et sur l'accueil. Visite automatique tant que le
+     visiteur ne clique pas (reprise après 10 s sans action). -->
+<style>
+:root{--bg:#070E2A;--panel:#101A3C;--border:#33405F;--text:#FCFDFD;--muted:#98A4C2;--info:#4CC9FF;--accent:#FD1424}
+*{box-sizing:border-box}
+html,body{margin:0;background:var(--bg);color:var(--text);font:14px "Segoe UI",system-ui,sans-serif}
+.wrap{max-width:1670px;margin:0 auto}
+.stage{position:relative;width:min(100%, calc((100vh - 58px) * 1670 / 902));margin:0 auto;aspect-ratio:1670/902;overflow:hidden;background:var(--bg);border:1px solid var(--border);border-radius:10px}
+.stage img{position:absolute;inset:0;width:100%;height:100%;display:block;opacity:0;transition:opacity .28s ease;user-select:none;-webkit-user-drag:none}
+.stage img.on{opacity:1}
+.hot{position:absolute;border:0;padding:0;background:transparent;cursor:pointer;border-radius:8px}
+.hot:hover,.hot:focus-visible{outline:2px solid var(--info);outline-offset:-2px;background:rgba(76,201,255,.08)}
+.cursor{position:absolute;width:2.2%;min-width:14px;pointer-events:none;transform:translate(-8%,-4%);transition:left .75s cubic-bezier(.45,.05,.25,1),top .75s cubic-bezier(.45,.05,.25,1),opacity .4s;z-index:5;filter:drop-shadow(0 2px 3px rgba(0,0,0,.6))}
+.ripple{position:absolute;width:4%;aspect-ratio:1;border:3px solid var(--accent);border-radius:50%;transform:translate(-50%,-50%) scale(.2);opacity:0;pointer-events:none;z-index:4}
+.ripple.go{animation:rip .55s ease-out}
+@keyframes rip{0%{opacity:.95;transform:translate(-50%,-50%) scale(.2)}100%{opacity:0;transform:translate(-50%,-50%) scale(1.4)}}
+.bar{display:flex;gap:6px;align-items:center;flex-wrap:nowrap;overflow-x:auto;padding:10px 2px 2px;scrollbar-width:none}
+.bar button{flex:none}
+.bar button{background:var(--panel);border:1px solid var(--border);color:var(--text);border-radius:999px;padding:6px 12px;font:600 13px "Segoe UI",system-ui,sans-serif;cursor:pointer}
+.bar button:hover{border-color:var(--info)}
+.bar button.on{background:var(--accent);border-color:var(--accent)}
+.bar .play{margin-left:auto;background:transparent;color:var(--muted)}
+.bar .hint{color:var(--muted);font-size:12.5px;margin-right:4px}
+@media (max-width:700px){.bar .hint{display:none}.bar button{padding:5px 10px;font-size:12px}}
+@media (prefers-reduced-motion:reduce){.cursor,.stage img{transition:none}.ripple.go{animation:none}}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="stage" id="stage" aria-label="Capture de Pit Box : cliquez sur le menu de gauche pour changer de module"></div>
+  <div class="bar" id="bar"><span class="hint">Démo · cliquez sur un module :</span></div>
+</div>
+<script>
+// Pages : capture, libellé. Coordonnées en % d'une capture 1670 × 902.
+const PAGES = [
+  ['accueil','Accueil'],['motion','Motion'],['engine','Engine'],['dash','Dash'],
+  ['ffblab','FFB Lab'],['analyzer','FFB Analyzer'],['engineer','Engineer']];
+const W = 1670, H = 902;
+const pct = (x,y,w,h) => ({left:x/W*100, top:y/H*100, width:w/W*100, height:h/H*100});
+// Menu de gauche (toutes les pages) : une ligne par page, 48 px d'écart.
+const MENU = PAGES.map((p,k) => ({to:p[0], ...pct(12, 106+k*48, 224, 44)}));
+// Accueil : boutons pilules et lignes des modules.
+const HOME = [
+  ['motion',297,280,70],['engine',375,280,62],['dash',447,280,52],['ffblab',510,280,67],['analyzer',588,280,98],['engineer',697,280,74]
+].map(([to,x,y,w]) => ({to, ...pct(x,y,w,36)}))
+ .concat(['motion','engine','dash','ffblab'].map((to,k) => ({to, ...pct(288, 578+k*87, 1327, 76)})));
+
+const stage = document.getElementById('stage'), bar = document.getElementById('bar');
+const imgs = {};
+PAGES.forEach(([id,label]) => {
+  const im = new Image(); im.src = id + '.jpg'; im.alt = 'Pit Box – ' + label; stage.appendChild(im); imgs[id] = im;
+  const b = document.createElement('button'); b.textContent = label; b.dataset.to = id; bar.appendChild(b);
+});
+const playBtn = document.createElement('button'); playBtn.className = 'play'; bar.appendChild(playBtn);
+const hotLayer = document.createElement('div'); hotLayer.style.cssText = 'position:absolute;inset:0;z-index:3'; stage.appendChild(hotLayer);
+const cursor = document.createElement('div'); cursor.className = 'cursor';
+cursor.innerHTML = '<svg viewBox="0 0 20 28"><path d="M2 2v21l5.5-5 3.6 8.2 3.4-1.5-3.6-8H18Z" fill="#fff" stroke="#000" stroke-width="1.4" stroke-linejoin="round"/></svg>';
+stage.appendChild(cursor);
+const ripple = document.createElement('div'); ripple.className = 'ripple'; stage.appendChild(ripple);
+
+let cur = null;
+function show(id){
+  if(id === cur) return; cur = id;
+  for(const k in imgs) imgs[k].classList.toggle('on', k === id);
+  bar.querySelectorAll('[data-to]').forEach(b => b.classList.toggle('on', b.dataset.to === id));
+  hotLayer.innerHTML = '';
+  for(const h of MENU.concat(id === 'accueil' ? HOME : [])){
+    const b = document.createElement('button'); b.className = 'hot'; b.dataset.to = h.to;
+    b.setAttribute('aria-label', 'Ouvrir ' + PAGES.find(p => p[0] === h.to)[1]);
+    Object.assign(b.style, {left:h.left+'%', top:h.top+'%', width:h.width+'%', height:h.height+'%'});
+    hotLayer.appendChild(b);
+  }
+}
+
+// Visite automatique : le curseur va sur le module suivant du menu et clique.
+let auto = true, timer = null, idle = null;
+function setAuto(on){ auto = on; playBtn.textContent = on ? '❚❚ Pause' : '▶ Visite auto'; clearTimeout(timer); if(on) timer = setTimeout(next, 1400); else cursor.style.opacity = 0; }
+function next(){
+  if(!auto) return;
+  const k = (PAGES.findIndex(p => p[0] === cur) + 1) % PAGES.length, m = MENU[k];
+  const x = m.left + 3.2, y = m.top + m.height/2;
+  cursor.style.opacity = 1; cursor.style.left = x + '%'; cursor.style.top = y + '%';
+  timer = setTimeout(() => {
+    ripple.style.left = x + '%'; ripple.style.top = y + '%'; ripple.classList.remove('go'); void ripple.offsetWidth; ripple.classList.add('go');
+    show(PAGES[k][0]);
+    timer = setTimeout(() => { cursor.style.opacity = 0; timer = setTimeout(next, 1700); }, 450);
+  }, 850);
+}
+document.addEventListener('click', e => {
+  const t = e.target.closest('[data-to]');
+  if(e.target === playBtn){ setAuto(!auto); return; }
+  if(!t) return;
+  show(t.dataset.to); setAuto(false);
+  clearTimeout(idle); idle = setTimeout(() => setAuto(true), 10000);   // reprise après 10 s sans clic
+});
+cursor.style.left = '50%'; cursor.style.top = '60%'; cursor.style.opacity = 0;
+show('accueil');
+setAuto(!matchMedia('(prefers-reduced-motion: reduce)').matches);
+</script>
+</body>
+</html>
