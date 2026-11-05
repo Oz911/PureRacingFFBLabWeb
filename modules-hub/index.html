@@ -1,0 +1,184 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Pit Box – modules</title>
+<!-- Présentation des modules Pure Racing autour de Pit Box (page d'accueil du site).
+     Pit Box au centre, les modules en cercle : en piste (rouge) à droite,
+     au stand (bleu) à gauche. Survol / clic = fiche du module ; défilement
+     automatique tant que le visiteur ne touche à rien.
+     Liens : renseigner LIENS ci-dessous (adresse de la page Odoo de chaque module). -->
+<style>
+:root{--bg:#070E2A;--panel:#101A3C;--border:#33405F;--text:#FCFDFD;--muted:#98A4C2;--info:#4CC9FF;--accent:#FD1424}
+*{box-sizing:border-box}
+html,body{margin:0;background:var(--bg);color:var(--text);font:15px "Segoe UI",system-ui,sans-serif}
+.wrap{max-width:1200px;margin:0 auto;padding:20px max(16px,env(safe-area-inset-right,0px)) 20px max(16px,env(safe-area-inset-left,0px));display:grid;grid-template-columns:minmax(0,1.25fr) minmax(0,1fr);gap:28px;align-items:center}
+.ring{width:100%;max-width:640px;justify-self:center}
+.ring svg{display:block;width:100%;height:auto;overflow:visible}
+.node{cursor:pointer;outline:none}
+.node .disc{fill:var(--panel);stroke-width:3;transition:fill .25s, stroke-width .25s}
+.node .halo{fill:none;stroke-width:2;opacity:0;transition:opacity .25s}
+.node .lbl{fill:var(--text);font:700 21px "Bahnschrift","Segoe UI",system-ui,sans-serif;letter-spacing:.06em;text-anchor:middle;text-transform:uppercase}
+.node .zoom{transition:transform .25s ease;transform-box:fill-box;transform-origin:center}
+.node.on .zoom,.node:hover .zoom{transform:scale(1.1)}
+.node.on .disc{fill:#1B2752;stroke-width:5}
+.node.on .halo{opacity:.55}
+.node:focus-visible .disc{stroke:var(--text)!important}
+.piste .disc,.piste .halo{stroke:var(--accent)}
+.stand .disc,.stand .halo{stroke:var(--info)}
+.spoke{stroke:var(--border);stroke-width:2;stroke-dasharray:4 7}
+.spoke.on{stroke:var(--text);opacity:.6}
+.orbit{fill:none;stroke-width:3}
+.turn{transform-origin:400px 400px;animation:turn 60s linear infinite}
+@keyframes turn{to{transform:rotate(360deg)}}
+.pulse{fill:var(--accent)}
+.pulse.stand{fill:var(--info)}
+.hub{cursor:pointer}
+.hub .disc{fill:url(#hubfill);stroke:var(--text);stroke-width:2}
+.hub .t1{fill:var(--text);font:700 34px "Bahnschrift","Segoe UI",system-ui,sans-serif;letter-spacing:.14em;text-anchor:middle}
+.hub .t2{fill:var(--muted);font:600 15px "Segoe UI",system-ui,sans-serif;letter-spacing:.16em;text-anchor:middle}
+.soon{fill:var(--accent)}
+.soon-t{fill:#fff;font:800 13px "Segoe UI",system-ui,sans-serif;letter-spacing:.08em;text-anchor:middle}
+
+.card{background:var(--panel);border:1px solid var(--border);border-radius:14px;padding:26px 26px 22px;min-height:300px;display:flex;flex-direction:column;gap:12px;min-width:0}
+.fam{display:flex;align-items:center;gap:8px;font:700 12px "Segoe UI",system-ui,sans-serif;letter-spacing:.16em;text-transform:uppercase;color:var(--muted)}
+.fam i{width:10px;height:10px;border-radius:50%;background:var(--muted)}
+.fam.piste i{background:var(--accent)}.fam.stand i{background:var(--info)}.fam.centre i{background:var(--text)}
+h2{margin:0;font:800 34px "Bahnschrift","Segoe UI",system-ui,sans-serif;letter-spacing:.02em;text-wrap:balance}
+h2 .p{color:var(--text)}h2 .s{color:var(--muted);font-weight:400;margin:0 .2em}h2 .n{color:var(--accent)}
+.card p{margin:0;line-height:1.6;color:#DCE2F0;max-width:46ch}
+.tags{display:flex;flex-wrap:wrap;gap:6px;margin-top:2px}
+.tags span{border:1px solid var(--border);border-radius:999px;padding:4px 10px;font-size:12.5px;color:var(--muted)}
+.go{margin-top:auto;align-self:flex-start;background:var(--accent);color:#fff;text-decoration:none;font:700 14px "Segoe UI",system-ui,sans-serif;border-radius:999px;padding:10px 18px}
+.go:hover{filter:brightness(1.12)}
+.legend{display:flex;gap:16px;flex-wrap:wrap;font-size:12.5px;color:var(--muted);padding-top:4px;border-top:1px solid var(--border);margin-top:8px;padding-top:12px}
+.legend b{display:inline-block;width:9px;height:9px;border-radius:50%;margin-right:6px;vertical-align:1px}
+@media (max-width:820px){.wrap{grid-template-columns:minmax(0,1fr);gap:18px}.card{min-height:0;padding:20px}h2{font-size:28px}}
+@media (prefers-reduced-motion:reduce){.turn{animation:none}.pulse{display:none}.node .zoom{transition:none}}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="ring">
+    <svg id="svg" viewBox="0 0 800 800" role="img" aria-label="Pit Box au centre, entouré des modules Pure Racing">
+      <defs>
+        <radialGradient id="hubfill" cx="50%" cy="40%" r="65%"><stop offset="0" stop-color="#1F2C5C"/><stop offset="1" stop-color="#0B1433"/></radialGradient>
+      </defs>
+      <g id="spokes"></g>
+      <g id="orbits"></g><g class="turn" id="dots"></g>
+      <g id="pulses"></g>
+      <g class="hub" id="hub" tabindex="0" role="button" aria-label="Pit Box">
+        <circle class="disc" cx="400" cy="400" r="138"/>
+        <image href="pitbox.png" x="315" y="300" width="170" height="77" preserveAspectRatio="xMidYMid meet"/>
+        <text class="t1" x="400" y="430">PIT BOX</text>
+        <text class="t2" x="400" y="460">PLUGIN SIMHUB</text>
+      </g>
+      <g id="nodes"></g>
+    </svg>
+  </div>
+  <section class="card" id="card" aria-live="polite"></section>
+</div>
+<script>
+// Adresse de la page de chaque module sur le site (vide = pas de bouton).
+const LIENS = { pitbox:'', motion:'', engine:'', dash:'', spotter:'', lab:'', analyzer:'', engineer:'' };
+
+const W = 'stroke="#fff" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"';
+const R = 'stroke="#FD1424" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"';
+const draw = d => `<g transform="translate(-39,-39) scale(3.25)">${d}</g>`;
+const png = (f,w,h) => `<image href="${f}" x="${-w/2}" y="${-h/2}" width="${w}" height="${h}" preserveAspectRatio="xMidYMid meet"/>`;
+
+const MODULES = [
+  {id:'motion', nom:'Motion', fam:'piste', ico:png('motion.png',74,60),
+   txt:"Analyse en temps réel les données physiques de vos jeux et les convertit en mouvements sur 6 axes, transmis directement à OpenTrack.",
+   tags:['6 axes','OpenTrack','Préréglages par jeu']},
+  {id:'engine', nom:'Engine', fam:'piste', ico:png('engine.png',66,66),
+   txt:"Génère automatiquement des profils moteurs adaptés à chaque voiture et exploite pleinement vos bass shakers et équipements haptiques.",
+   tags:['Bass shakers','Profils par voiture','Réglage en direct']},
+  {id:'dash', nom:'Dash', fam:'piste', ico:png('dash.png',78,50),
+   txt:"Tableaux de bord et LED pensés pour la lisibilité en course : rapports, deltas, carburant, drapeaux et rivaux en un coup d'œil.",
+   tags:['Dashboards','LED','Drapeaux']},
+  {id:'spotter', nom:'Spotter', fam:'piste', soon:true,
+   ico:draw(`<rect x="9" y="4" width="6" height="16" rx="2.5" ${W}/><path d="M10.2,9 L13.8,9 M10.2,16 L13.8,16" ${W} stroke-width="1.5"/><path d="M6.5,8.5 A5,5 0 0 0 6.5,15.5 M17.5,8.5 A5,5 0 0 1 17.5,15.5" ${R}/><path d="M3.5,6 A9,9 0 0 0 3.5,18 M20.5,6 A9,9 0 0 1 20.5,18" ${R} opacity=".5"/>`),
+   txt:"Un équipier à la radio : il annonce les voitures à vos côtés, les écarts et les drapeaux, et bientôt vos repères à la voix pour l'ingénieur.",
+   tags:['Radio','Voitures à côté','Repères vocaux']},
+  {id:'lab', nom:'FFB Lab', fam:'stand',
+   ico:draw(`<path d="M9,3 L15,3 M10,3 L10,9 L4.5,19 Q4,21 6,21 L18,21 Q20,21 19.5,19 L14,9 L14,3" ${W}/><path d="M7,15 L17,15" ${R}/>`),
+   txt:"Un laboratoire pour calculer, comparer et valider sur piste vos réglages de force feedback, en quatre étapes guidées.",
+   tags:['Calculateur','Comparateur','Validation sur piste']},
+  {id:'analyzer', nom:'Analyzer', fam:'stand',
+   ico:draw(`<circle cx="12" cy="12" r="9.5" ${W}/><path d="M4,13 L8,13 L10,7 L13,17 L15,10 L17,13 L20,13" ${R}/>`),
+   txt:"Mesure en direct le couple réel de votre volant, détecte la saturation et vous aide à régler votre force feedback sans écrêtage.",
+   tags:['Mesure en direct','Saturation','Volant DD']},
+  {id:'engineer', nom:'Engineer', fam:'stand',
+   ico:draw(`<path d="M4,13 L4,11 A8,8 0 0 1 20,11 L20,13 M3,12 L6,12 L6,18 L3,18 Z M18,12 L21,12 L21,18 L18,18 Z" ${W}/><path d="M8,16 L10,16 L11.5,12.5 L13,18 L14.5,14.5 L16,16" ${R}/>`),
+   txt:"Votre ingénieur de piste : il compare vos tours, lit votre setup, analyse pneus, freins et suspensions, puis propose réglages et stratégie carburant.",
+   tags:['Télémétrie MoTeC','Setup','Stratégie']},
+];
+const PITBOX = {id:'pitbox', nom:'Pit Box', fam:'centre',
+  txt:"Le plugin SimHub qui réunit tous les modules Pure Racing : une seule installation, un seul menu, et chaque module s'active d'un clic.",
+  tags:['1 plugin','7 modules','LMU · ACC · AC · rF2 · iRacing']};
+
+const NS = 'http://www.w3.org/2000/svg', C = 400, RAD = 292, NR = 60, HUB = 138;
+const step = 360 / MODULES.length;
+const ang = i => (-90 + (i + .5) * step) * Math.PI / 180;
+const pos = (a, r) => [C + r * Math.cos(a), C + r * Math.sin(a)];
+const el = (tag, attrs, parent) => { const e = document.createElementNS(NS, tag); for (const k in attrs) e.setAttribute(k, attrs[k]); parent && parent.appendChild(e); return e; };
+
+// Orbite en deux arcs : en piste (rouge) et au stand (bleu).
+const nP = MODULES.filter(m => m.fam === 'piste').length;
+const arc = (a0, a1, r) => { const [x0,y0] = pos(a0,r), [x1,y1] = pos(a1,r); return `M${x0},${y0} A${r},${r} 0 ${a1-a0>Math.PI?1:0} 1 ${x1},${y1}`; };
+const cut = 0.05, a0 = -Math.PI/2, aMid = a0 + nP*step*Math.PI/180, a1 = a0 + 2*Math.PI;
+const orbits = document.getElementById('orbits');
+el('path', {d: arc(a0+cut, aMid-cut, RAD), class:'orbit', stroke:'#FD1424', 'stroke-opacity':.55}, orbits);
+el('path', {d: arc(aMid+cut, a1-cut, RAD), class:'orbit', stroke:'#4CC9FF', 'stroke-opacity':.55}, orbits);
+el('circle', {cx:C, cy:C, r:RAD+28, fill:'none', stroke:'#33405F', 'stroke-width':1.5, 'stroke-dasharray':'2 10'}, document.getElementById('dots'));
+
+const spokes = document.getElementById('spokes'), pulses = document.getElementById('pulses'), nodes = document.getElementById('nodes');
+MODULES.forEach((m, i) => {
+  const a = ang(i), [x, y] = pos(a, RAD), [sx, sy] = pos(a, HUB + 4), [ex, ey] = pos(a, RAD - NR - 4);
+  m.spoke = el('line', {x1:sx, y1:sy, x2:ex, y2:ey, class:'spoke'}, spokes);
+  const p = el('circle', {r:4.5, cx:sx, cy:sy, opacity:0, class:'pulse ' + m.fam}, pulses);
+  el('animateMotion', {path:`M0,0 L${ex-sx},${ey-sy}`, dur:'2.6s', begin:(-i*0.37)+'s', repeatCount:'indefinite'}, p);
+  el('animate', {attributeName:'opacity', values:'0;1;1;0', dur:'2.6s', begin:(-i*0.37)+'s', repeatCount:'indefinite'}, p);
+  const g = el('g', {class:'node ' + m.fam, tabindex:0, role:'button', 'aria-label':m.nom}, nodes);
+  const z = el('g', {class:'zoom'}, g);
+  el('circle', {cx:x, cy:y, r:NR + 9, class:'halo'}, z);
+  el('circle', {cx:x, cy:y, r:NR, class:'disc'}, z);
+  const ic = el('g', {transform:`translate(${x},${y - 4})`}, z); ic.innerHTML = m.ico;
+  const t = el('text', {x, y: y + NR + 28, class:'lbl'}, g); t.textContent = m.nom;
+  if (m.soon) {
+    el('rect', {x:x - 42, y:y - NR - 14, width:84, height:24, rx:12, class:'soon'}, z);
+    const s = el('text', {x, y:y - NR + 3, class:'soon-t'}, z); s.textContent = 'BIENTÔT';
+  }
+  m.g = g;
+  g.addEventListener('mouseenter', () => pick(m, true));
+  g.addEventListener('click', () => pick(m, true));
+  g.addEventListener('focus', () => pick(m, true));
+});
+const hub = document.getElementById('hub');
+['mouseenter','click','focus'].forEach(ev => hub.addEventListener(ev, () => pick(PITBOX, true)));
+
+const FAM = {piste:'En piste', stand:'Au stand · réglages et analyse', centre:'Le plugin qui centralise tout'};
+const card = document.getElementById('card');
+let cur = null, auto = true, idle;
+function pick(m, user) {
+  if (user) { auto = false; clearTimeout(idle); idle = setTimeout(() => auto = true, 12000); }
+  if (cur === m) return; cur = m;
+  MODULES.forEach(x => { x.g.classList.toggle('on', x === m); x.spoke.classList.toggle('on', x === m); });
+  const lien = LIENS[m.id];
+  card.innerHTML =
+    `<div class="fam ${m.fam}"><i></i>${FAM[m.fam]}</div>` +
+    `<h2>${m.id === 'pitbox' ? '<span class="n">PIT</span> <span class="p">BOX</span>' : `<span class="p">PURE</span><span class="s">|</span><span class="n">${m.nom.toUpperCase()}</span>`}</h2>` +
+    `<p>${m.txt}</p>` +
+    `<div class="tags">${m.tags.map(t => `<span>${t}</span>`).join('')}</div>` +
+    (lien ? `<a class="go" href="${lien}" target="_top">Découvrir ${m.nom}</a>` : '') +
+    `<div class="legend"><span><b style="background:#FD1424"></b>En piste</span><span><b style="background:#4CC9FF"></b>Au stand</span><span>Survolez ou touchez un module</span></div>`;
+}
+pick(PITBOX);
+const order = [PITBOX, ...MODULES]; let k = 0;
+if (!matchMedia('(prefers-reduced-motion: reduce)').matches)
+  setInterval(() => { if (!auto) return; k = (k + 1) % order.length; pick(order[k]); }, 3800);
+</script>
+</body>
+</html>

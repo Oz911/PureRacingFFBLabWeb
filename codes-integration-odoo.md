@@ -71,3 +71,16 @@ le visiteur peut cliquer lui-même sur le menu de gauche, sur l'accueil ou sur l
 ```html
 <iframe src="https://oz911.github.io/PureRacingFFBLabWeb/pitbox-demo/" title="Pit Box — Démo" loading="lazy" style="display:block;width:100%;aspect-ratio:1670/960;border:0;background:#070e2a" referrerpolicy="strict-origin-when-cross-origin"></iframe>
 ```
+
+
+## 08 — Modules autour de Pit Box (page d'accueil)
+
+Pit Box au centre, les 7 modules en cercle : en piste (rouge) à droite, au stand (bleu) à gauche.
+Survol ou toucher = fiche du module à côté (sous le cercle sur téléphone) ; défilement automatique sinon.
+Le Spotter porte un badge « BIENTÔT » (retirer `soon:true` dans `modules-hub/index.html` à sa sortie).
+Liens vers les pages des modules : à renseigner dans `LIENS` en haut du script (vide = pas de bouton).
+Image fixe de secours (sans animation) : `modules-hub/PitBox_modules.png` (1268 × 1268).
+
+```html
+<iframe src="https://oz911.github.io/PureRacingFFBLabWeb/modules-hub/" title="Pure Racing — modules Pit Box" loading="lazy" style="display:block;width:100%;height:720px;border:0;background:#070e2a" referrerpolicy="strict-origin-when-cross-origin"></iframe>
+```
