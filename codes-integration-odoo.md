@@ -73,15 +73,16 @@ le visiteur peut cliquer lui-même sur le menu de gauche, sur l'accueil ou sur l
 ```
 
 
-## 08 — Les modules sur un volant (page d'accueil)
+## 08 — Les modules sur un volant (page d'accueil, fond blanc)
 
-Un volant de simracing présente les modules : écran central et LED = Dash ; bouton radio gauche = Spotter ;
-bouton radio droit = Engineer ; poignée gauche = FFB Lab et poignée droite = Analyzer (le volant tourne) ;
-molette ENGINE (le volant vibre) ; molette MOTION (le volant bouge) ; logo du bas = Pit Box.
-Survol = fiche du module à côté du volant (sous le volant sur téléphone : 1er toucher = fiche, 2e = page).
-Le clic ouvre la page du module : adresses à renseigner dans `LIENS` en haut du script de
-`modules-hub/index.html` (vide = « Page bientôt en ligne »). Badge « BIENTÔT » du Spotter : retirer `soon:true`.
+Photo d'un vrai volant (fournie par Pat) ; chaque élément présente un module : écran + LED = Dash,
+bouton radio gauche = Spotter, bouton radio droit = Engineer, poignée gauche = FFB Lab et poignée droite =
+FFB Analyzer (le volant tourne), molette ENGINE (vibre), molette MOTION (bouge), sélecteur central = Pit Box.
+Survol = fiche du module ; clic = page du module sur pureracing-fx.odoo.com (liens dans `LIENS`, en haut du
+script de `modules-hub/index.html`). Barre des 8 icônes sous le volant. Badge « BIENTÔT » du Spotter :
+retirer `soon:true` et renseigner son lien à sa sortie. Hauteur plus grande sur téléphone (bloc `<style>`).
 
 ```html
-<iframe src="https://oz911.github.io/PureRacingFFBLabWeb/modules-hub/" title="Pure Racing — modules Pit Box" loading="lazy" style="display:block;width:100%;height:560px;border:0;background:#070e2a" referrerpolicy="strict-origin-when-cross-origin"></iframe>
+<style>.prfx-volant{display:block;width:100%;height:600px;border:0;background:#fff}@media (max-width:600px){.prfx-volant{height:900px}}</style>
+<iframe class="prfx-volant" src="https://oz911.github.io/PureRacingFFBLabWeb/modules-hub/" title="Pure Racing — modules Pit Box" loading="lazy" referrerpolicy="strict-origin-when-cross-origin"></iframe>
 ```
