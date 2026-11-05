@@ -73,14 +73,15 @@ le visiteur peut cliquer lui-même sur le menu de gauche, sur l'accueil ou sur l
 ```
 
 
-## 08 — Modules autour de Pit Box (page d'accueil)
+## 08 — Les modules sur un volant (page d'accueil)
 
-Pit Box au centre, les 7 modules en cercle : en piste (rouge) à droite, au stand (bleu) à gauche.
-Survol ou toucher = fiche du module à côté (sous le cercle sur téléphone) ; défilement automatique sinon.
-Le Spotter porte un badge « BIENTÔT » (retirer `soon:true` dans `modules-hub/index.html` à sa sortie).
-Liens vers les pages des modules : à renseigner dans `LIENS` en haut du script (vide = pas de bouton).
-Image fixe de secours (sans animation) : `modules-hub/PitBox_modules.png` (1268 × 1268).
+Un volant de simracing présente les modules : écran central et LED = Dash ; bouton radio gauche = Spotter ;
+bouton radio droit = Engineer ; poignée gauche = FFB Lab et poignée droite = Analyzer (le volant tourne) ;
+molette ENGINE (le volant vibre) ; molette MOTION (le volant bouge) ; logo du bas = Pit Box.
+Survol = fiche du module à côté du volant (sous le volant sur téléphone : 1er toucher = fiche, 2e = page).
+Le clic ouvre la page du module : adresses à renseigner dans `LIENS` en haut du script de
+`modules-hub/index.html` (vide = « Page bientôt en ligne »). Badge « BIENTÔT » du Spotter : retirer `soon:true`.
 
 ```html
-<iframe src="https://oz911.github.io/PureRacingFFBLabWeb/modules-hub/" title="Pure Racing — modules Pit Box" loading="lazy" style="display:block;width:100%;height:720px;border:0;background:#070e2a" referrerpolicy="strict-origin-when-cross-origin"></iframe>
+<iframe src="https://oz911.github.io/PureRacingFFBLabWeb/modules-hub/" title="Pure Racing — modules Pit Box" loading="lazy" style="display:block;width:100%;height:560px;border:0;background:#070e2a" referrerpolicy="strict-origin-when-cross-origin"></iframe>
 ```

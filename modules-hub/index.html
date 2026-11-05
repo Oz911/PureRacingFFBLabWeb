@@ -4,181 +4,329 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Pit Box – modules</title>
-<!-- Présentation des modules Pure Racing autour de Pit Box (page d'accueil du site).
-     Pit Box au centre, les modules en cercle : en piste (rouge) à droite,
-     au stand (bleu) à gauche. Survol / clic = fiche du module ; défilement
-     automatique tant que le visiteur ne touche à rien.
+<!-- Page d'accueil du site : les modules Pure Racing présentés sur un volant.
+     Écran central = Dash ; boutons = Spotter et Engineer ; poignées = FFB Lab
+     et Analyzer (le volant tourne) ; molettes = Engine (vibre) et Motion
+     (bouge) ; logo du bas = Pit Box. Survol = fiche, clic = page du module.
      Liens : renseigner LIENS ci-dessous (adresse de la page Odoo de chaque module). -->
 <style>
 :root{--bg:#070E2A;--panel:#101A3C;--border:#33405F;--text:#FCFDFD;--muted:#98A4C2;--info:#4CC9FF;--accent:#FD1424}
 *{box-sizing:border-box}
 html,body{margin:0;background:var(--bg);color:var(--text);font:15px "Segoe UI",system-ui,sans-serif}
-.wrap{max-width:1200px;margin:0 auto;padding:20px max(16px,env(safe-area-inset-right,0px)) 20px max(16px,env(safe-area-inset-left,0px));display:grid;grid-template-columns:minmax(0,1.25fr) minmax(0,1fr);gap:28px;align-items:center}
-.ring{width:100%;max-width:640px;justify-self:center}
-.ring svg{display:block;width:100%;height:auto;overflow:visible}
-.node{cursor:pointer;outline:none}
-.node .disc{fill:var(--panel);stroke-width:3;transition:fill .25s, stroke-width .25s}
-.node .halo{fill:none;stroke-width:2;opacity:0;transition:opacity .25s}
-.node .lbl{fill:var(--text);font:700 21px "Bahnschrift","Segoe UI",system-ui,sans-serif;letter-spacing:.06em;text-anchor:middle;text-transform:uppercase}
-.node .zoom{transition:transform .25s ease;transform-box:fill-box;transform-origin:center}
-.node.on .zoom,.node:hover .zoom{transform:scale(1.1)}
-.node.on .disc{fill:#1B2752;stroke-width:5}
-.node.on .halo{opacity:.55}
-.node:focus-visible .disc{stroke:var(--text)!important}
-.piste .disc,.piste .halo{stroke:var(--accent)}
-.stand .disc,.stand .halo{stroke:var(--info)}
-.spoke{stroke:var(--border);stroke-width:2;stroke-dasharray:4 7}
-.spoke.on{stroke:var(--text);opacity:.6}
-.orbit{fill:none;stroke-width:3}
-.turn{transform-origin:400px 400px;animation:turn 60s linear infinite}
-@keyframes turn{to{transform:rotate(360deg)}}
-.pulse{fill:var(--accent)}
-.pulse.stand{fill:var(--info)}
-.hub{cursor:pointer}
-.hub .disc{fill:url(#hubfill);stroke:var(--text);stroke-width:2}
-.hub .t1{fill:var(--text);font:700 34px "Bahnschrift","Segoe UI",system-ui,sans-serif;letter-spacing:.14em;text-anchor:middle}
-.hub .t2{fill:var(--muted);font:600 15px "Segoe UI",system-ui,sans-serif;letter-spacing:.16em;text-anchor:middle}
-.soon{fill:var(--accent)}
-.soon-t{fill:#fff;font:800 13px "Segoe UI",system-ui,sans-serif;letter-spacing:.08em;text-anchor:middle}
+.stage{position:relative;max-width:1240px;margin:0 auto;padding:10px max(16px,env(safe-area-inset-right,0px)) 16px max(16px,env(safe-area-inset-left,0px));display:grid;grid-template-columns:270px minmax(0,1fr) 270px;gap:18px;align-items:start}
+.wheelbox{grid-column:2;min-width:0}
+svg{display:block;width:100%;height:auto;overflow:visible;-webkit-tap-highlight-color:transparent}
+.hint{text-align:center;color:var(--muted);font-size:13px;margin-top:8px}
 
-.card{background:var(--panel);border:1px solid var(--border);border-radius:14px;padding:26px 26px 22px;min-height:300px;display:flex;flex-direction:column;gap:12px;min-width:0}
-.fam{display:flex;align-items:center;gap:8px;font:700 12px "Segoe UI",system-ui,sans-serif;letter-spacing:.16em;text-transform:uppercase;color:var(--muted)}
-.fam i{width:10px;height:10px;border-radius:50%;background:var(--muted)}
-.fam.piste i{background:var(--accent)}.fam.stand i{background:var(--info)}.fam.centre i{background:var(--text)}
-h2{margin:0;font:800 34px "Bahnschrift","Segoe UI",system-ui,sans-serif;letter-spacing:.02em;text-wrap:balance}
-h2 .p{color:var(--text)}h2 .s{color:var(--muted);font-weight:400;margin:0 .2em}h2 .n{color:var(--accent)}
-.card p{margin:0;line-height:1.6;color:#DCE2F0;max-width:46ch}
-.tags{display:flex;flex-wrap:wrap;gap:6px;margin-top:2px}
-.tags span{border:1px solid var(--border);border-radius:999px;padding:4px 10px;font-size:12.5px;color:var(--muted)}
-.go{margin-top:auto;align-self:flex-start;background:var(--accent);color:#fff;text-decoration:none;font:700 14px "Segoe UI",system-ui,sans-serif;border-radius:999px;padding:10px 18px}
+/* Volant : animations par module (origine = centre du volant) */
+#wheel{transform-box:view-box;transform-origin:500px 330px;transition:transform .5s ease}
+.act-engine #wheel{animation:shake .09s linear infinite}
+.act-motion #wheel{animation:motion 2.6s ease-in-out infinite}
+.act-lab #wheel{animation:steer 3.2s ease-in-out infinite}
+.act-analyzer #wheel{animation:kick 1.9s ease-out infinite}
+@keyframes shake{0%{transform:translate(0,0)}25%{transform:translate(1.6px,-1.2px)}50%{transform:translate(-1.4px,1.4px)}75%{transform:translate(1.2px,1.5px)}100%{transform:translate(0,0)}}
+@keyframes motion{0%,100%{transform:translate(0,0) rotate(0)}25%{transform:translate(-14px,-10px) rotate(-3deg)}50%{transform:translate(0,12px) rotate(0)}75%{transform:translate(14px,-6px) rotate(3deg)}}
+@keyframes steer{0%,100%{transform:rotate(0)}30%{transform:rotate(-32deg)}70%{transform:rotate(32deg)}}
+@keyframes kick{0%{transform:rotate(0)}8%{transform:rotate(22deg)}18%{transform:rotate(-14deg)}28%{transform:rotate(9deg)}38%{transform:rotate(-5deg)}50%{transform:rotate(2deg)}62%,100%{transform:rotate(0)}}
+.waves circle{fill:none;stroke:var(--accent);stroke-width:3;opacity:0}
+.act-engine .waves circle{animation:wave 1s ease-out infinite}
+.act-engine .waves circle:nth-child(2){animation-delay:.33s}.act-engine .waves circle:nth-child(3){animation-delay:.66s}
+@keyframes wave{0%{r:30;opacity:.9}100%{r:95;opacity:0}}
+.waves{pointer-events:none}
+
+/* Zones survolables */
+.hot{cursor:pointer;outline:none}
+.hot .zone{fill:transparent;stroke:transparent;stroke-width:3;transition:stroke .2s,fill .2s}
+.hot:hover .zone,.hot.on .zone,.hot:focus-visible .zone{stroke:var(--accent);fill:rgba(253,20,36,.08)}
+.hot.stand:hover .zone,.hot.stand.on .zone,.hot.stand:focus-visible .zone{stroke:var(--info);fill:rgba(76,201,255,.08)}
+.ping{fill:none;stroke:var(--accent);stroke-width:2.5;opacity:0;animation:ping 2.4s ease-out infinite;pointer-events:none}
+.stand .ping{stroke:var(--info)}
+.hot.on .ping{animation:none}
+/* le volant bouge pour ces modules : pas de cadre fixe par-dessus */
+.act-lab .hot.on .zone,.act-analyzer .hot.on .zone,.act-engine .hot.on .zone,.act-motion .hot.on .zone{stroke:transparent;fill:transparent}
+@keyframes ping{0%{opacity:.85;transform:scale(.6)}70%,100%{opacity:0;transform:scale(1.25)}}
+.ping{transform-box:fill-box;transform-origin:center}
+.btn-lit{transition:filter .2s}
+.hot.on .btn-lit,.hot:hover .btn-lit{filter:drop-shadow(0 0 8px rgba(253,20,36,.9))}
+
+/* Écran */
+.scr text{font-family:"Bahnschrift","Segoe UI",system-ui,sans-serif}
+.scr [data-v]{display:none}
+.scr[data-mode="dash"] [data-v="dash"],.scr[data-mode="engine"] [data-v="engine"],.scr[data-mode="motion"] [data-v="motion"],
+.scr[data-mode="lab"] [data-v="lab"],.scr[data-mode="analyzer"] [data-v="analyzer"],.scr[data-mode="spotter"] [data-v="spotter"],
+.scr[data-mode="engineer"] [data-v="engineer"],.scr[data-mode="pitbox"] [data-v="pitbox"]{display:inline}
+
+/* Fiche */
+.card{position:absolute;width:270px;background:var(--panel);border:1px solid var(--border);border-radius:14px;padding:18px 18px 16px;display:flex;flex-direction:column;gap:10px;box-shadow:0 18px 40px rgba(0,0,0,.45);opacity:0;transform:translateY(6px);transition:opacity .2s,transform .2s,top .25s;pointer-events:none;z-index:3}
+.card.show{opacity:1;transform:none;pointer-events:auto}
+.card::before{content:"";position:absolute;top:var(--ay,40px);width:14px;height:14px;background:var(--panel);border:1px solid var(--border);transform:rotate(45deg)}
+.card.left::before{right:-8px;border-left:0;border-bottom:0}
+.card.right::before{left:-8px;border-right:0;border-top:0}
+.fam{display:flex;align-items:center;gap:8px;font:700 11.5px "Segoe UI",system-ui,sans-serif;letter-spacing:.16em;text-transform:uppercase;color:var(--muted)}
+.fam i{width:9px;height:9px;border-radius:50%;background:var(--text)}
+.fam.piste i{background:var(--accent)}.fam.stand i{background:var(--info)}
+.card h2{margin:0;font:800 26px "Bahnschrift","Segoe UI",system-ui,sans-serif;letter-spacing:.02em}
+.card h2 .s{color:var(--muted);font-weight:400;margin:0 .2em}.card h2 .n{color:var(--accent)}
+.card p{margin:0;line-height:1.55;color:#DCE2F0;font-size:14.5px}
+.where{font-size:12.5px;color:var(--muted)}
+.soon{display:inline-block;background:var(--accent);color:#fff;font:800 11px "Segoe UI",system-ui,sans-serif;letter-spacing:.08em;border-radius:999px;padding:3px 9px;margin-left:6px;vertical-align:4px}
+.go{align-self:flex-start;background:var(--accent);color:#fff;text-decoration:none;font:700 13.5px "Segoe UI",system-ui,sans-serif;border-radius:999px;padding:9px 16px}
 .go:hover{filter:brightness(1.12)}
-.legend{display:flex;gap:16px;flex-wrap:wrap;font-size:12.5px;color:var(--muted);padding-top:4px;border-top:1px solid var(--border);margin-top:8px;padding-top:12px}
-.legend b{display:inline-block;width:9px;height:9px;border-radius:50%;margin-right:6px;vertical-align:1px}
-@media (max-width:820px){.wrap{grid-template-columns:minmax(0,1fr);gap:18px}.card{min-height:0;padding:20px}h2{font-size:28px}}
-@media (prefers-reduced-motion:reduce){.turn{animation:none}.pulse{display:none}.node .zoom{transition:none}}
+.go.off{background:transparent;border:1px solid var(--border);color:var(--muted);cursor:default}
+
+@media (max-width:980px){
+  .stage{grid-template-columns:minmax(0,1fr)}
+  .wheelbox{grid-column:1}
+  .card{position:relative;width:auto;left:auto!important;top:auto!important;opacity:1;transform:none;pointer-events:auto}
+  .card::before{display:none}
+}
+@media (prefers-reduced-motion:reduce){#wheel{animation:none!important}.ping,.waves circle{animation:none!important}}
 </style>
 </head>
 <body>
-<div class="wrap">
-  <div class="ring">
-    <svg id="svg" viewBox="0 0 800 800" role="img" aria-label="Pit Box au centre, entouré des modules Pure Racing">
+<div class="stage" id="stage">
+  <div class="wheelbox">
+    <svg id="svg" viewBox="120 80 760 495" role="img" aria-label="Volant de simracing : chaque élément présente un module Pure Racing">
       <defs>
-        <radialGradient id="hubfill" cx="50%" cy="40%" r="65%"><stop offset="0" stop-color="#1F2C5C"/><stop offset="1" stop-color="#0B1433"/></radialGradient>
+        <pattern id="carbon" width="12" height="12" patternUnits="userSpaceOnUse">
+          <rect width="12" height="12" fill="#1B1F28"/><rect width="6" height="6" fill="#232835"/><rect x="6" y="6" width="6" height="6" fill="#232835"/>
+        </pattern>
+        <pattern id="rubber" width="8" height="8" patternUnits="userSpaceOnUse" patternTransform="rotate(45)">
+          <rect width="8" height="8" fill="#121419"/><rect width="2" height="8" fill="#191C23"/>
+        </pattern>
+        <linearGradient id="metal" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#C9CFDB"/><stop offset=".5" stop-color="#7D8597"/><stop offset="1" stop-color="#4C5366"/></linearGradient>
+        <radialGradient id="knob" cx="40%" cy="35%" r="70%"><stop offset="0" stop-color="#5A6175"/><stop offset="1" stop-color="#1A1D25"/></radialGradient>
+        <radialGradient id="shadow" cx="50%" cy="50%" r="50%"><stop offset="0" stop-color="#000" stop-opacity=".55"/><stop offset="1" stop-color="#000" stop-opacity="0"/></radialGradient>
       </defs>
-      <g id="spokes"></g>
-      <g id="orbits"></g><g class="turn" id="dots"></g>
-      <g id="pulses"></g>
-      <g class="hub" id="hub" tabindex="0" role="button" aria-label="Pit Box">
-        <circle class="disc" cx="400" cy="400" r="138"/>
-        <image href="pitbox.png" x="315" y="300" width="170" height="77" preserveAspectRatio="xMidYMid meet"/>
-        <text class="t1" x="400" y="430">PIT BOX</text>
-        <text class="t2" x="400" y="460">PLUGIN SIMHUB</text>
+
+      <ellipse cx="500" cy="552" rx="320" ry="20" fill="url(#shadow)"/>
+      
+      <g id="wheel">
+        <!-- palettes derrière -->
+        <path d="M330,175 L200,118 Q168,108 162,140 L170,205 L300,222 Z" fill="url(#metal)"/>
+        <path d="M670,175 L800,118 Q832,108 838,140 L830,205 L700,222 Z" fill="url(#metal)"/>
+        <!-- contour (mêmes formes, trait épais dessous) -->
+        <g fill="#3E4762" stroke="#3E4762" stroke-width="10" stroke-linejoin="round">
+          <rect x="140" y="150" width="180" height="360" rx="85"/><rect x="680" y="150" width="180" height="360" rx="85"/>
+          <rect x="220" y="135" width="560" height="105" rx="48"/><rect x="220" y="420" width="560" height="98" rx="45"/>
+          <rect x="320" y="130" width="360" height="400" rx="60"/>
+        </g>
+        <!-- corps -->
+        <g fill="url(#carbon)">
+          <rect x="140" y="150" width="180" height="360" rx="85"/><rect x="680" y="150" width="180" height="360" rx="85"/>
+          <rect x="220" y="135" width="560" height="105" rx="48"/><rect x="220" y="420" width="560" height="98" rx="45"/>
+          <rect x="320" y="130" width="360" height="400" rx="60"/>
+        </g>
+        <!-- trous pour les mains -->
+        <rect x="228" y="250" width="78" height="165" rx="36" fill="#070E2A" stroke="#3E4762" stroke-width="4"/>
+        <rect x="694" y="250" width="78" height="165" rx="36" fill="#070E2A" stroke="#3E4762" stroke-width="4"/>
+        <!-- poignées caoutchouc -->
+        <rect x="146" y="185" width="70" height="295" rx="35" fill="url(#rubber)"/>
+        <rect x="784" y="185" width="70" height="295" rx="35" fill="url(#rubber)"/>
+        <!-- liseré rouge haut -->
+        <rect x="470" y="131" width="60" height="7" rx="3" fill="#FD1424"/>
+
+        <!-- LED de régime -->
+        <g id="leds"></g>
+        <!-- écran -->
+        <rect x="388" y="190" width="224" height="140" rx="12" fill="#2A3042"/>
+        <rect x="394" y="196" width="212" height="128" rx="8" fill="#04060B"/>
+        <g class="scr" id="scr" data-mode="dash">
+          <g data-v="dash">
+            <text x="404" y="216" font-size="13" fill="#98A4C2">LAP 7</text><text x="596" y="216" font-size="13" fill="#98A4C2" text-anchor="end">P3</text>
+            <text id="gear" x="500" y="282" font-size="64" font-weight="700" fill="#FCFDFD" text-anchor="middle">4</text>
+            <text id="speed" x="420" y="262" font-size="20" fill="#FCFDFD" text-anchor="middle">212</text><text x="420" y="278" font-size="10" fill="#98A4C2" text-anchor="middle">KM/H</text>
+            <text x="580" y="262" font-size="18" fill="#3BE37A" text-anchor="middle">-0.21</text><text x="580" y="278" font-size="10" fill="#98A4C2" text-anchor="middle">DELTA</text>
+            <rect x="404" y="300" width="192" height="8" rx="4" fill="#1B2030"/><rect x="404" y="300" width="120" height="8" rx="4" fill="#4CC9FF"/>
+            <text x="404" y="320" font-size="10" fill="#98A4C2">FUEL 38 L</text><text x="596" y="320" font-size="10" fill="#98A4C2" text-anchor="end">TC 5 · ABS 9</text>
+          </g>
+          <g data-v="engine">
+            <text x="500" y="222" font-size="13" fill="#98A4C2" text-anchor="middle">BASS SHAKERS</text>
+            <path id="eng-wave" d="" fill="none" stroke="#FD1424" stroke-width="3"/>
+            <text x="500" y="314" font-size="14" fill="#FCFDFD" text-anchor="middle">7 450 tr/min</text>
+          </g>
+          <g data-v="motion">
+            <text x="500" y="222" font-size="13" fill="#98A4C2" text-anchor="middle">MOTION · 6 AXES</text>
+            <circle cx="500" cy="268" r="38" fill="none" stroke="#33405F" stroke-width="2"/><circle cx="500" cy="268" r="19" fill="none" stroke="#33405F" stroke-width="1.5"/>
+            <path d="M462,268 L538,268 M500,230 L500,306" stroke="#33405F" stroke-width="1.5"/>
+            <circle id="gdot" cx="500" cy="268" r="7" fill="#FD1424"/>
+          </g>
+          <g data-v="lab">
+            <text x="500" y="222" font-size="13" fill="#98A4C2" text-anchor="middle">FFB LAB</text>
+            <text x="410" y="252" font-size="13" fill="#98A4C2">Mon réglage</text><text x="590" y="252" font-size="14" fill="#FCFDFD" text-anchor="end">82 %</text>
+            <text x="410" y="278" font-size="13" fill="#98A4C2">Proposé</text><text x="590" y="278" font-size="14" fill="#4CC9FF" text-anchor="end">74 %</text>
+            <text x="410" y="304" font-size="13" fill="#98A4C2">Marge</text><text x="590" y="304" font-size="14" fill="#3BE37A" text-anchor="end">20 %</text>
+          </g>
+          <g data-v="analyzer">
+            <text x="500" y="222" font-size="13" fill="#98A4C2" text-anchor="middle">COUPLE MESURÉ</text>
+            <rect x="410" y="250" width="180" height="22" rx="5" fill="#1B2030"/><rect id="ffbbar" x="410" y="250" width="120" height="22" rx="5" fill="#4CC9FF"/>
+            <rect x="554" y="246" width="3" height="30" fill="#FD1424"/>
+            <text id="ffbtxt" x="500" y="306" font-size="15" fill="#FCFDFD" text-anchor="middle">6,2 Nm · pas d'écrêtage</text>
+          </g>
+          <g data-v="spotter">
+            <text x="500" y="222" font-size="13" fill="#98A4C2" text-anchor="middle">SPOTTER</text>
+            <rect x="490" y="236" width="20" height="44" rx="6" fill="#FCFDFD"/>
+            <rect x="440" y="248" width="20" height="44" rx="6" fill="#FD1424"/>
+            <text x="500" y="314" font-size="15" font-weight="700" fill="#FD1424" text-anchor="middle">VOITURE À GAUCHE</text>
+          </g>
+          <g data-v="engineer">
+            <text x="500" y="222" font-size="13" fill="#98A4C2" text-anchor="middle">ENGINEER · RADIO</text>
+            <text x="500" y="262" font-size="15" fill="#FCFDFD" text-anchor="middle">« Arrière instable en entrée »</text>
+            <text x="500" y="292" font-size="14" fill="#4CC9FF" text-anchor="middle">→ Aileron AR +1</text>
+            <text x="500" y="314" font-size="11" fill="#98A4C2" text-anchor="middle">Carburant : 4,15 L / tour</text>
+          </g>
+          <g data-v="pitbox">
+            <image href="pitbox.png" x="450" y="218" width="100" height="45" preserveAspectRatio="xMidYMid meet"/>
+            <text x="500" y="290" font-size="20" font-weight="700" fill="#FCFDFD" text-anchor="middle" letter-spacing="3">PIT BOX</text>
+            <text x="500" y="312" font-size="11" fill="#98A4C2" text-anchor="middle">7 modules · 1 plugin SimHub</text>
+          </g>
+        </g>
+
+        <!-- boutons décoratifs -->
+        <g stroke="#0B0D12" stroke-width="2">
+          <circle cx="352" cy="305" r="17" fill="#2B3040"/><circle cx="352" cy="305" r="11" fill="#E8B21C"/>
+          <circle cx="648" cy="305" r="17" fill="#2B3040"/><circle cx="648" cy="305" r="11" fill="#3BE37A"/>
+          <circle cx="370" cy="368" r="15" fill="#2B3040"/><circle cx="370" cy="368" r="9" fill="#4C5366"/>
+          <circle cx="630" cy="368" r="15" fill="#2B3040"/><circle cx="630" cy="368" r="9" fill="#4C5366"/>
+        </g>
+        <!-- molettes -->
+        <g id="knob-engine"><circle cx="440" cy="400" r="31" fill="#0B0D12"/><circle cx="440" cy="400" r="27" fill="url(#knob)" stroke="#6E7690" stroke-width="2" stroke-dasharray="3 3"/><path d="M440,380 L440,392" stroke="#FD1424" stroke-width="4" stroke-linecap="round"/></g>
+        <g id="knob-motion"><circle cx="560" cy="400" r="31" fill="#0B0D12"/><circle cx="560" cy="400" r="27" fill="url(#knob)" stroke="#6E7690" stroke-width="2" stroke-dasharray="3 3"/><path d="M560,380 L560,392" stroke="#FD1424" stroke-width="4" stroke-linecap="round"/></g>
+        <text x="440" y="452" font-size="12" font-weight="700" fill="#98A4C2" text-anchor="middle" letter-spacing="1.5" font-family="Segoe UI,system-ui,sans-serif">ENGINE</text>
+        <text x="560" y="452" font-size="12" font-weight="700" fill="#98A4C2" text-anchor="middle" letter-spacing="1.5" font-family="Segoe UI,system-ui,sans-serif">MOTION</text>
+        <!-- logo Pit Box -->
+        <rect x="445" y="468" width="110" height="40" rx="10" fill="#0B0D12" stroke="#3E4762" stroke-width="2"/>
+        <image href="pitbox.png" x="455" y="472" width="90" height="32" preserveAspectRatio="xMidYMid meet"/>
+
+        <!-- Spotter / Engineer : boutons lumineux -->
+        <g class="btn-lit">
+          <circle cx="345" cy="232" r="30" fill="#0B0D12"/><circle cx="345" cy="232" r="26" fill="#1B2030" stroke="#FD1424" stroke-width="3"/>
+          <g transform="translate(325,212) scale(1.67)" fill="none" stroke-linecap="round" stroke-linejoin="round">
+            <rect x="9" y="4" width="6" height="16" rx="2.5" stroke="#fff" stroke-width="2"/><path d="M10.2,9 L13.8,9 M10.2,16 L13.8,16" stroke="#fff" stroke-width="1.5"/>
+            <path d="M6.5,8.5 A5,5 0 0 0 6.5,15.5 M17.5,8.5 A5,5 0 0 1 17.5,15.5" stroke="#FD1424" stroke-width="2"/>
+          </g>
+        </g>
+        <g class="btn-lit">
+          <circle cx="655" cy="232" r="30" fill="#0B0D12"/><circle cx="655" cy="232" r="26" fill="#1B2030" stroke="#4CC9FF" stroke-width="3"/>
+          <g transform="translate(635,212) scale(1.67)" fill="none" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M4,13 L4,11 A8,8 0 0 1 20,11 L20,13 M3,12 L6,12 L6,18 L3,18 Z M18,12 L21,12 L21,18 L18,18 Z" stroke="#fff" stroke-width="2"/>
+            <path d="M8,16 L10,16 L11.5,12.5 L13,18 L14.5,14.5 L16,16" stroke="#FD1424" stroke-width="2"/>
+          </g>
+        </g>
+
       </g>
-      <g id="nodes"></g>
+      <g class="waves"><circle cx="440" cy="400"/><circle cx="440" cy="400"/><circle cx="440" cy="400"/></g>
+      <!-- zones survolables : hors du volant pour rester fixes quand il bouge -->
+      <g id="hots"></g>
     </svg>
+    <div class="hint" id="hint">Survolez le volant · cliquez pour ouvrir la page du module</div>
   </div>
   <section class="card" id="card" aria-live="polite"></section>
 </div>
 <script>
-// Adresse de la page de chaque module sur le site (vide = pas de bouton).
-const LIENS = { pitbox:'', motion:'', engine:'', dash:'', spotter:'', lab:'', analyzer:'', engineer:'' };
+// Adresse de la page de chaque module sur le site (vide = « page bientôt en ligne »).
+const LIENS = { pitbox:'', dash:'', spotter:'', engineer:'', lab:'', analyzer:'', engine:'', motion:'' };
 
-const W = 'stroke="#fff" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"';
-const R = 'stroke="#FD1424" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"';
-const draw = d => `<g transform="translate(-39,-39) scale(3.25)">${d}</g>`;
-const png = (f,w,h) => `<image href="${f}" x="${-w/2}" y="${-h/2}" width="${w}" height="${h}" preserveAspectRatio="xMidYMid meet"/>`;
-
-const MODULES = [
-  {id:'motion', nom:'Motion', fam:'piste', ico:png('motion.png',74,60),
-   txt:"Analyse en temps réel les données physiques de vos jeux et les convertit en mouvements sur 6 axes, transmis directement à OpenTrack.",
-   tags:['6 axes','OpenTrack','Préréglages par jeu']},
-  {id:'engine', nom:'Engine', fam:'piste', ico:png('engine.png',66,66),
-   txt:"Génère automatiquement des profils moteurs adaptés à chaque voiture et exploite pleinement vos bass shakers et équipements haptiques.",
-   tags:['Bass shakers','Profils par voiture','Réglage en direct']},
-  {id:'dash', nom:'Dash', fam:'piste', ico:png('dash.png',78,50),
-   txt:"Tableaux de bord et LED pensés pour la lisibilité en course : rapports, deltas, carburant, drapeaux et rivaux en un coup d'œil.",
-   tags:['Dashboards','LED','Drapeaux']},
-  {id:'spotter', nom:'Spotter', fam:'piste', soon:true,
-   ico:draw(`<rect x="9" y="4" width="6" height="16" rx="2.5" ${W}/><path d="M10.2,9 L13.8,9 M10.2,16 L13.8,16" ${W} stroke-width="1.5"/><path d="M6.5,8.5 A5,5 0 0 0 6.5,15.5 M17.5,8.5 A5,5 0 0 1 17.5,15.5" ${R}/><path d="M3.5,6 A9,9 0 0 0 3.5,18 M20.5,6 A9,9 0 0 1 20.5,18" ${R} opacity=".5"/>`),
-   txt:"Un équipier à la radio : il annonce les voitures à vos côtés, les écarts et les drapeaux, et bientôt vos repères à la voix pour l'ingénieur.",
-   tags:['Radio','Voitures à côté','Repères vocaux']},
-  {id:'lab', nom:'FFB Lab', fam:'stand',
-   ico:draw(`<path d="M9,3 L15,3 M10,3 L10,9 L4.5,19 Q4,21 6,21 L18,21 Q20,21 19.5,19 L14,9 L14,3" ${W}/><path d="M7,15 L17,15" ${R}/>`),
-   txt:"Un laboratoire pour calculer, comparer et valider sur piste vos réglages de force feedback, en quatre étapes guidées.",
-   tags:['Calculateur','Comparateur','Validation sur piste']},
-  {id:'analyzer', nom:'Analyzer', fam:'stand',
-   ico:draw(`<circle cx="12" cy="12" r="9.5" ${W}/><path d="M4,13 L8,13 L10,7 L13,17 L15,10 L17,13 L20,13" ${R}/>`),
-   txt:"Mesure en direct le couple réel de votre volant, détecte la saturation et vous aide à régler votre force feedback sans écrêtage.",
-   tags:['Mesure en direct','Saturation','Volant DD']},
-  {id:'engineer', nom:'Engineer', fam:'stand',
-   ico:draw(`<path d="M4,13 L4,11 A8,8 0 0 1 20,11 L20,13 M3,12 L6,12 L6,18 L3,18 Z M18,12 L21,12 L21,18 L18,18 Z" ${W}/><path d="M8,16 L10,16 L11.5,12.5 L13,18 L14.5,14.5 L16,16" ${R}/>`),
-   txt:"Votre ingénieur de piste : il compare vos tours, lit votre setup, analyse pneus, freins et suspensions, puis propose réglages et stratégie carburant.",
-   tags:['Télémétrie MoTeC','Setup','Stratégie']},
+// Zones : forme (rect x,y,w,h,rx ou circle cx,cy,r), famille, fiche.
+const MODS = [
+  {id:'dash', nom:'Dash', fam:'piste', shape:['rect',384,158,232,176,14], where:'L\'écran central et les LED',
+   txt:"Tableaux de bord et LED pensés pour la lisibilité en course : rapports, deltas, carburant, drapeaux et rivaux en un coup d'œil."},
+  {id:'spotter', nom:'Spotter', fam:'piste', soon:true, shape:['circle',345,232,38], where:'Le bouton radio de gauche',
+   txt:"Un équipier à la radio : il annonce les voitures à vos côtés, les écarts et les drapeaux. Un bouton du volant lui est réservé."},
+  {id:'engineer', nom:'Engineer', fam:'stand', shape:['circle',655,232,38], where:'Le bouton radio de droite',
+   txt:"Votre ingénieur de piste : il compare vos tours, lit votre setup, analyse pneus, freins et suspensions, puis propose réglages et stratégie carburant."},
+  {id:'lab', nom:'FFB Lab', fam:'stand', shape:['rect',136,150,92,360,44], where:'La poignée gauche',
+   txt:"Un laboratoire pour calculer, comparer et valider sur piste vos réglages de force feedback, en quatre étapes guidées."},
+  {id:'analyzer', nom:'Analyzer', fam:'stand', shape:['rect',772,150,92,360,44], where:'La poignée droite',
+   txt:"Mesure en direct le couple réel de votre volant, détecte la saturation et vous aide à régler votre force feedback sans écrêtage."},
+  {id:'engine', nom:'Engine', fam:'piste', shape:['circle',440,404,40], where:'La molette ENGINE',
+   txt:"Génère automatiquement des profils moteurs adaptés à chaque voiture et exploite pleinement vos bass shakers et équipements haptiques."},
+  {id:'motion', nom:'Motion', fam:'piste', shape:['circle',560,404,40], where:'La molette MOTION',
+   txt:"Analyse en temps réel les données physiques de vos jeux et les convertit en mouvements sur 6 axes, transmis directement à OpenTrack."},
+  {id:'pitbox', nom:'Pit Box', fam:'centre', shape:['rect',438,462,124,52,12], where:'Le logo du volant',
+   txt:"Le plugin SimHub qui réunit tous les modules Pure Racing : une seule installation, un seul menu, et chaque module s'active d'un clic."},
 ];
-const PITBOX = {id:'pitbox', nom:'Pit Box', fam:'centre',
-  txt:"Le plugin SimHub qui réunit tous les modules Pure Racing : une seule installation, un seul menu, et chaque module s'active d'un clic.",
-  tags:['1 plugin','7 modules','LMU · ACC · AC · rF2 · iRacing']};
+const FAM = {piste:'En piste', stand:'Au stand', centre:'Le plugin qui centralise tout'};
 
-const NS = 'http://www.w3.org/2000/svg', C = 400, RAD = 292, NR = 60, HUB = 138;
-const step = 360 / MODULES.length;
-const ang = i => (-90 + (i + .5) * step) * Math.PI / 180;
-const pos = (a, r) => [C + r * Math.cos(a), C + r * Math.sin(a)];
-const el = (tag, attrs, parent) => { const e = document.createElementNS(NS, tag); for (const k in attrs) e.setAttribute(k, attrs[k]); parent && parent.appendChild(e); return e; };
+const NS = 'http://www.w3.org/2000/svg';
+const el = (t, a, p) => { const e = document.createElementNS(NS, t); for (const k in a) e.setAttribute(k, a[k]); p && p.appendChild(e); return e; };
+const svg = document.getElementById('svg'), stage = document.getElementById('stage'), card = document.getElementById('card'), scr = document.getElementById('scr');
 
-// Orbite en deux arcs : en piste (rouge) et au stand (bleu).
-const nP = MODULES.filter(m => m.fam === 'piste').length;
-const arc = (a0, a1, r) => { const [x0,y0] = pos(a0,r), [x1,y1] = pos(a1,r); return `M${x0},${y0} A${r},${r} 0 ${a1-a0>Math.PI?1:0} 1 ${x1},${y1}`; };
-const cut = 0.05, a0 = -Math.PI/2, aMid = a0 + nP*step*Math.PI/180, a1 = a0 + 2*Math.PI;
-const orbits = document.getElementById('orbits');
-el('path', {d: arc(a0+cut, aMid-cut, RAD), class:'orbit', stroke:'#FD1424', 'stroke-opacity':.55}, orbits);
-el('path', {d: arc(aMid+cut, a1-cut, RAD), class:'orbit', stroke:'#4CC9FF', 'stroke-opacity':.55}, orbits);
-el('circle', {cx:C, cy:C, r:RAD+28, fill:'none', stroke:'#33405F', 'stroke-width':1.5, 'stroke-dasharray':'2 10'}, document.getElementById('dots'));
+// LED de régime
+const leds = document.getElementById('leds'), LED = [];
+for (let i = 0; i < 15; i++) LED.push(el('circle', {cx: 402 + i * 14100 / 1000, cy: 175, r: 5, fill: '#1B2030'}, leds));
+const ledColor = i => i < 5 ? '#3BE37A' : i < 10 ? '#FD1424' : '#4CC9FF';
 
-const spokes = document.getElementById('spokes'), pulses = document.getElementById('pulses'), nodes = document.getElementById('nodes');
-MODULES.forEach((m, i) => {
-  const a = ang(i), [x, y] = pos(a, RAD), [sx, sy] = pos(a, HUB + 4), [ex, ey] = pos(a, RAD - NR - 4);
-  m.spoke = el('line', {x1:sx, y1:sy, x2:ex, y2:ey, class:'spoke'}, spokes);
-  const p = el('circle', {r:4.5, cx:sx, cy:sy, opacity:0, class:'pulse ' + m.fam}, pulses);
-  el('animateMotion', {path:`M0,0 L${ex-sx},${ey-sy}`, dur:'2.6s', begin:(-i*0.37)+'s', repeatCount:'indefinite'}, p);
-  el('animate', {attributeName:'opacity', values:'0;1;1;0', dur:'2.6s', begin:(-i*0.37)+'s', repeatCount:'indefinite'}, p);
-  const g = el('g', {class:'node ' + m.fam, tabindex:0, role:'button', 'aria-label':m.nom}, nodes);
-  const z = el('g', {class:'zoom'}, g);
-  el('circle', {cx:x, cy:y, r:NR + 9, class:'halo'}, z);
-  el('circle', {cx:x, cy:y, r:NR, class:'disc'}, z);
-  const ic = el('g', {transform:`translate(${x},${y - 4})`}, z); ic.innerHTML = m.ico;
-  const t = el('text', {x, y: y + NR + 28, class:'lbl'}, g); t.textContent = m.nom;
-  if (m.soon) {
-    el('rect', {x:x - 42, y:y - NR - 14, width:84, height:24, rx:12, class:'soon'}, z);
-    const s = el('text', {x, y:y - NR + 3, class:'soon-t'}, z); s.textContent = 'BIENTÔT';
-  }
-  m.g = g;
+// Zones survolables
+const hots = document.getElementById('hots');
+const touch = matchMedia('(hover: none)').matches;
+MODS.forEach(m => {
+  const g = el('g', {class: 'hot ' + m.fam, tabindex: 0, role: 'link', 'aria-label': m.nom}, hots);
+  const s = m.shape;
+  const z = s[0] === 'rect' ? el('rect', {x:s[1], y:s[2], width:s[3], height:s[4], rx:s[5], class:'zone'}, g)
+                            : el('circle', {cx:s[1], cy:s[2], r:s[3], class:'zone'}, g);
+  const c = s[0] === 'rect' ? [s[1] + s[3] / 2, s[2] + s[4] / 2] : [s[1], s[2]];
+  if (m.id !== 'dash' && m.id !== 'pitbox') el('circle', {cx:c[0], cy:c[1], r: s[0] === 'rect' ? 22 : s[3], class:'ping'}, g);
+  m.g = g; m.zone = z;
   g.addEventListener('mouseenter', () => pick(m, true));
-  g.addEventListener('click', () => pick(m, true));
   g.addEventListener('focus', () => pick(m, true));
+  g.addEventListener('click', () => { if (touch && cur !== m) { pick(m, true); return; } open(m); });
+  g.addEventListener('keydown', e => { if (e.key === 'Enter') open(m); });
 });
-const hub = document.getElementById('hub');
-['mouseenter','click','focus'].forEach(ev => hub.addEventListener(ev, () => pick(PITBOX, true)));
+function open(m) { const u = LIENS[m.id]; if (u) window.top.location.href = u; }
 
-const FAM = {piste:'En piste', stand:'Au stand · réglages et analyse', centre:'Le plugin qui centralise tout'};
-const card = document.getElementById('card');
 let cur = null, auto = true, idle;
 function pick(m, user) {
-  if (user) { auto = false; clearTimeout(idle); idle = setTimeout(() => auto = true, 12000); }
+  if (user) { auto = false; clearTimeout(idle); idle = setTimeout(() => { auto = true; }, 10000); }
   if (cur === m) return; cur = m;
-  MODULES.forEach(x => { x.g.classList.toggle('on', x === m); x.spoke.classList.toggle('on', x === m); });
-  const lien = LIENS[m.id];
+  MODS.forEach(x => { x.g.classList.toggle('on', x === m); stage.classList.toggle('act-' + x.id, x === m); });
+  scr.dataset.mode = m.id;
+  const u = LIENS[m.id];
   card.innerHTML =
     `<div class="fam ${m.fam}"><i></i>${FAM[m.fam]}</div>` +
-    `<h2>${m.id === 'pitbox' ? '<span class="n">PIT</span> <span class="p">BOX</span>' : `<span class="p">PURE</span><span class="s">|</span><span class="n">${m.nom.toUpperCase()}</span>`}</h2>` +
-    `<p>${m.txt}</p>` +
-    `<div class="tags">${m.tags.map(t => `<span>${t}</span>`).join('')}</div>` +
-    (lien ? `<a class="go" href="${lien}" target="_top">Découvrir ${m.nom}</a>` : '') +
-    `<div class="legend"><span><b style="background:#FD1424"></b>En piste</span><span><b style="background:#4CC9FF"></b>Au stand</span><span>Survolez ou touchez un module</span></div>`;
+    `<h2>${m.id === 'pitbox' ? '<span class="n">PIT</span> BOX' : `PURE<span class="s">|</span><span class="n">${m.nom.toUpperCase()}</span>`}${m.soon ? '<span class="soon">BIENTÔT</span>' : ''}</h2>` +
+    `<p>${m.txt}</p><div class="where">Sur le volant : ${m.where.charAt(0).toLowerCase() + m.where.slice(1)}</div>` +
+    (u ? `<a class="go" href="${u}" target="_top">Découvrir ${m.nom}</a>` : `<span class="go off">Page bientôt en ligne</span>`);
+  place();
 }
-pick(PITBOX);
-const order = [PITBOX, ...MODULES]; let k = 0;
-if (!matchMedia('(prefers-reduced-motion: reduce)').matches)
-  setInterval(() => { if (!auto) return; k = (k + 1) % order.length; pick(order[k]); }, 3800);
+// Fiche à côté de l'élément survolé (à gauche ou à droite du volant) ; sous le volant sur petit écran.
+function place() {
+  if (!cur || innerWidth <= 980) { card.classList.add('show'); return; }
+  const r = cur.zone.getBoundingClientRect(), st = stage.getBoundingClientRect(), wb = svg.getBoundingClientRect();
+  const cx = r.left + r.width / 2, left = cx < wb.left + wb.width / 2;
+  const top = Math.max(10, Math.min(r.top + r.height / 2 - st.top - 50, st.height - card.offsetHeight - 10));
+  card.classList.toggle('left', left); card.classList.toggle('right', !left);
+  card.style.left = (left ? 16 : st.width - 270 - 16) + 'px';
+  card.style.top = top + 'px';
+  card.style.setProperty('--ay', Math.max(18, Math.min(r.top + r.height / 2 - st.top - top - 7, card.offsetHeight - 30)) + 'px');
+  card.classList.add('show');
+}
+addEventListener('resize', place);
+
+// Vie de l'écran : rapports, régime, G, couple.
+let t = 0, gear = 3;
+const gearEl = document.getElementById('gear'), speedEl = document.getElementById('speed'), wave = document.getElementById('eng-wave'),
+      gdot = document.getElementById('gdot'), bar = document.getElementById('ffbbar'), ffbt = document.getElementById('ffbtxt');
+function tick() {
+  t += 1;
+  const rev = (t % 40) / 40;
+  LED.forEach((l, i) => l.setAttribute('fill', i / 15 < rev ? ledColor(i) : '#1B2030'));
+  if (t % 40 === 0) { gear = gear >= 6 ? 3 : gear + 1; gearEl.textContent = gear; }
+  speedEl.textContent = Math.round(150 + gear * 18 + rev * 22);
+  let d = 'M404,268'; for (let x = 0; x <= 192; x += 4) d += ` L${404 + x},${268 + Math.sin((x + t * 9) / 7) * 18 * Math.sin(x / 192 * Math.PI)}`;
+  wave.setAttribute('d', d);
+  gdot.setAttribute('cx', 500 + Math.sin(t / 9) * 26); gdot.setAttribute('cy', 268 + Math.sin(t / 5.5) * 18);
+  const nm = 4.5 + Math.abs(Math.sin(t / 7)) * 3.6; bar.setAttribute('width', nm / 9.4 * 180);
+  ffbt.textContent = nm.toFixed(1).replace('.', ',') + ' Nm · pas d\'écrêtage';
+}
+const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
+tick(); if (!reduce) setInterval(tick, 60);
+
+const ORDER = ['pitbox','dash','spotter','engineer','lab','analyzer','engine','motion'].map(id => MODS.find(m => m.id === id));
+let k = 0; pick(ORDER[0]);
+if (!reduce) setInterval(() => { if (!auto) return; k = (k + 1) % ORDER.length; pick(ORDER[k]); }, 4200);
+document.getElementById('hint').textContent = touch ? 'Touchez un élément du volant · touchez à nouveau pour ouvrir sa page'
+                                                    : 'Survolez le volant · cliquez pour ouvrir la page du module';
 </script>
 </body>
 </html>
