@@ -84,5 +84,5 @@ retirer `soon:true` et renseigner son lien à sa sortie. Hauteur plus grande sur
 
 ```html
 <style>.prfx-volant{display:block;width:100%;height:600px;border:0;background:#fff}@media (max-width:600px){.prfx-volant{height:900px}}</style>
-<iframe class="prfx-volant" src="https://oz911.github.io/PureRacingFFBLabWeb/modules-hub/" title="Pure Racing — modules Pit Box" loading="lazy" referrerpolicy="strict-origin-when-cross-origin"></iframe>
+<iframe class="prfx-volant" src="https://oz911.github.io/PureRacingFFBLabWeb/modules-hub/?v=2" title="Pure Racing — modules Pit Box" loading="lazy" referrerpolicy="strict-origin-when-cross-origin"></iframe>
 ```
