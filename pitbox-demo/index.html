@@ -53,7 +53,8 @@ const HOME = PAGES.slice(1).map((p,k) => ({to:p[0], ...pct(1487, 110+k*66, 358, 
 const stage = document.getElementById('stage'), bar = document.getElementById('bar');
 const imgs = {};
 PAGES.forEach(([id,label]) => {
-  const im = new Image(); im.src = id + '.jpg?v=0.14';   // ?v= : le navigateur recharge les captures quand elles changent im.alt = 'Pit Box – ' + label; stage.appendChild(im); imgs[id] = im;
+  // ?v= : le navigateur recharge les captures quand elles changent.
+  const im = new Image(); im.src = id + '.jpg?v=0.14'; im.alt = 'Pit Box – ' + label; stage.appendChild(im); imgs[id] = im;
   const b = document.createElement('button'); b.textContent = label; b.dataset.to = id; bar.appendChild(b);
 });
 const playBtn = document.createElement('button'); playBtn.className = 'play'; bar.appendChild(playBtn);
