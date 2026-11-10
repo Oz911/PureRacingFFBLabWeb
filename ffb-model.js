@@ -8,7 +8,9 @@
 
   /* Hypothèses de calibration (repères communautaires, non validés pour LMU) */
   const LIMITS = {
-    G: { min: 0.30, max: 0.60 },        // sortie spécifique visée : Nm de base par Nm de voiture
+    G: { min: 0.30, max: 0.80 },        // sortie spécifique visée : Nm de base par Nm de voiture
+                                        // (max 0,60 avant le 10 nov. 2026 : bloquait la LMP2 LMU à 60 % de force alors que l'essai de Pat
+                                        //  à 63 %, niveau 68 %, écrêtage 0 %, restait léger ; c'est la marge visée de 20 % qui limite désormais)
     margin: { min: 0.10, max: 0.60 },   // marge avant écrêtage visée
     marginTarget: 0.20,                 // valeur préférée (hors vibreurs) : laisse la place aux pics des vibreurs en attaque
                                         // (essai LMU Spa, Mercedes LMGT3, oct. 2026 : 24 % hors vibreurs -> pic 90 %, écrêtage 0,2 %)
@@ -68,7 +70,7 @@
     if (!Number.isFinite(G)) return ['neutral', '–'];
     if (G > LIMITS.G.max) return ['bad', 'Force élevée : risque de lutter avec le volant'];
     if (G < LIMITS.G.min) return ['warn', 'Plage dynamique faible : détails peu perceptibles'];
-    return ['ok', 'Dans la bonne plage (30-60 %)'];
+    return ['ok', 'Dans la bonne plage (30-80 %)'];
   }
   function statusL(L) {
     if (!Number.isFinite(L)) return ['neutral', '–'];

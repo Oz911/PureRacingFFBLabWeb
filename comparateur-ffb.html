@@ -279,7 +279,7 @@ details>div{margin-inline:auto;text-align:center}
       <div class="panel">
         <h3>Plages de sortie spécifique</h3>
         <div class="ranges">
-          <div class="range"><span class="b">30-60 %</span><span>Bonne plage pour des bases de 12 à 28 Nm.</span></div>
+          <div class="range"><span class="b">30-80 %</span><span>Bonne plage pour des bases de 12 à 28 Nm.</span></div>
           <div class="range"><span class="b">50-60 %</span><span>Bonne plage pour des bases de 5 à 28 Nm.La plus fidèle avec une fatigue comparable à une vraie voiture.</span></div>
           <div class="range"><span class="b">35-45 %</span><span>Ce que la plupart des gens finissent par choisir après un certain temps de roulage.</span></div>
           <div class="range"><span class="b">≤ 25 %</span><span>Zone des plaintes « je ne sens pas certains effets » : écart trop faible entre forces min et max.</span></div>
@@ -492,9 +492,9 @@ function renderReco(r,ok){
     const toSetting=E=>`${pct(st.STC/(E*st.m))}`;
     if(lo<=hi){
       out.push(`Force Feedback Strength conseillée : <b class="num">${pct(st.STC/(hi*st.m))} à ${pct(st.STC/(lo*st.m))}</b> avec STC = ${nf(st.STC,1)} Nm et un multiplicateur de ${pct(st.m)}.`);
-      out.push('Cette fenêtre donne 30-60 % de sortie spécifique et 10-60 % de marge avec cette voiture.');
+      out.push('Cette fenêtre donne 30-80 % de sortie spécifique et 10-60 % de marge avec cette voiture.');
     } else {
-      out.push(`Aucun réglage ne donne à la fois 30-60 % de sortie spécifique et 10-60 % de marge avec ${nf(r.C,1)} Nm de base et une voiture à ${nf(r.H,1)} Nm.`);
+      out.push(`Aucun réglage ne donne à la fois 30-80 % de sortie spécifique et 10-60 % de marge avec ${nf(r.C,1)} Nm de base et une voiture à ${nf(r.H,1)} Nm.`);
       if(r.H/(1-FM.LIMITS.margin.min)>r.N){
         const Esafe=r.H/(1-FM.LIMITS.margin.min);
         out.push(`La base est trop juste pour cette voiture. Pour ne pas écrêter, visez une force d\'au plus <b class="num">${toSetting(Esafe)}</b> : la sortie spécifique sera alors de ${pct(r.C/Esafe)}, sous les 30 % conseillés.`);
@@ -562,7 +562,7 @@ function renderDetail(r,ok){
 }
 function gridItems(r){
   if(game==='lmu'){const list=[];for(let s=10;s<=150;s+=5)list.push(s/100);
-    return {lead:'Sortie spécifique et couple ressenti selon la Force Feedback Strength, avec votre STC, votre multiplicateur et la voiture choisie. En jaune : 30-60 % sans écrêtage. En rouge : écrêtage. Cliquez pour appliquer.',
+    return {lead:'Sortie spécifique et couple ressenti selon la Force Feedback Strength, avec votre STC, votre multiplicateur et la voiture choisie. En jaune : 30-80 % sans écrêtage. En rouge : écrêtage. Cliquez pour appliquer.',
     items:list.map(s=>{const E=st.STC/(s*st.m),so=r.C/E,J=so*st.H;return{a:Math.round(s*100)+' %',b:nf(J,1)+' Nm',c:Math.round(so*100)+' %',cls:J>r.C?'over':(so>=FM.LIMITS.G.min&&so<=FM.LIMITS.G.max+0.0025?'in':''),cur:Math.abs(s-st.s)<0.001,set:()=>{st.s=s;}};})};}
   const list=[];for(let g=30;g<=150;g+=5)list.push(g/100);
   return {lead:'Pic de force prévu pour chaque gain en jeu, à partir de votre mesure (le pic varie proportionnellement au gain). En jaune : pic de 40 à 90 %. En rouge : écrêtage. Cliquez pour appliquer.',

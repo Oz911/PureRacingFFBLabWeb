@@ -167,7 +167,7 @@
     <h3>Le Mans Ultimate / rFactor 2</h3>
     <p>Le driver limite la base au plafond <span class="mono">T</span>. Le jeu reçoit ce même couple dans <b>Steering Torque Capability</b> (STC) : il sait alors que 100 % de son signal correspond à T newton-mètres, et transmet le couple de la voiture à 1 pour 1 quand la force est à 100 %.</p>
     <div class="formula">STC = B × % driver   (arrondi à 0,5 Nm)</div>
-    <p>La <b>Force Feedback Strength</b> n'a pas de formule propre au calculateur : elle reprend les hypothèses du <a href="#comparateur">comparateur</a>, qui est l'outil de calibration (fichier commun <code>ffb-model.js</code>). Le calculateur cherche la force qui laisse 20 % de marge avec la voiture choisie (couple hors vibreurs) : en attaque, les vibreurs ajoutent environ 15 points au pic, et cette marge leur laisse la place sans écrêtage. La force est ensuite ramenée dans la fenêtre du comparateur (30 à 60 % de sortie spécifique, 10 à 60 % de marge, force ≤ 100 %).</p>
+    <p>La <b>Force Feedback Strength</b> n'a pas de formule propre au calculateur : elle reprend les hypothèses du <a href="#comparateur">comparateur</a>, qui est l'outil de calibration (fichier commun <code>ffb-model.js</code>). Le calculateur cherche la force qui laisse 20 % de marge avec la voiture choisie (couple hors vibreurs) : en attaque, les vibreurs ajoutent environ 15 points au pic, et cette marge leur laisse la place sans écrêtage. La force est ensuite ramenée dans la fenêtre du comparateur (30 à 80 % de sortie spécifique, 10 à 60 % de marge, force ≤ 100 %).</p>
     <div class="formula">visée = 0,85 × STC ÷ (multiplicateur × couple voiture)   →   bornée à la fenêtre du comparateur</div>
     <p>Valeurs GT3 mesurées dans LMU avec le plugin (octobre 2026) : environ 12,5 Nm pour une GT3 à moteur central (Ferrari 296 à Spa) et 15 Nm pour une GT3 à moteur avant (BMW M4 à Imola). Le calculateur propose les deux catégories.</p>
     <p>Exemple en GT3 (~15 Nm), force « Normale » : 45 % sur une base de 10 Nm, 57 % sur 15 Nm, 61 % sur 25 Nm (limitée par les 60 % de sortie spécifique, marge 27 %).</p>
@@ -187,7 +187,7 @@
       <tr><th>Grandeur</th><th>Formule</th><th>Sens</th></tr>
       <tr><td>C · couple disponible</td><td class="mono">min(A, T) × B</td><td>Couple nominal, limite logicielle et % driver de la base</td></tr>
       <tr><td>E · Max Force équivalent</td><td class="mono">LMU : STC ÷ (Strength × multiplicateur)</td><td>Couple voiture qui donne 100 % du signal</td></tr>
-      <tr><td>G · sortie spécifique</td><td class="mono">C ÷ E</td><td>Nm de base par Nm de voiture. Repère communautaire : 30 à 60 %</td></tr>
+      <tr><td>G · sortie spécifique</td><td class="mono">C ÷ E</td><td>Nm de base par Nm de voiture. Repère communautaire : 30 à 60 %, élargi à 80 % (essai LMU LMP2, base 10 Nm, nov. 2026)</td></tr>
       <tr><td>J · couple ressenti max</td><td class="mono">G × H (AC : pic mesuré × C)</td><td>H = couple de direction max de la voiture</td></tr>
       <tr><td>L · marge</td><td class="mono">(C − J) ÷ C</td><td>Négative = écrêtage. Visée : 10 à 60 %</td></tr>
     </table></div>
