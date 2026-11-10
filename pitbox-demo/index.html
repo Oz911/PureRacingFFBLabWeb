@@ -5,15 +5,15 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Pit Box – démo</title>
 <!-- Démo de navigation dans Pit Box (Pure Racing FX) pour le site.
-     Captures réelles de Pit Box 0.9.5 sous SimHub ; zones cliquables posées
-     sur le menu de gauche et sur l'accueil. Visite automatique tant que le
+     Captures réelles de Pit Box 0.14 (interface « UI 2 », 10 nov. 2026) ; zones
+     cliquables posées sur le menu de gauche et sur la liste des modules de l'accueil. Visite automatique tant que le
      visiteur ne clique pas (reprise après 10 s sans action). -->
 <style>
 :root{--bg:#070E2A;--panel:#101A3C;--border:#33405F;--text:#FCFDFD;--muted:#98A4C2;--info:#4CC9FF;--accent:#FD1424}
 *{box-sizing:border-box}
 html,body{margin:0;background:var(--bg);color:var(--text);font:14px "Segoe UI",system-ui,sans-serif}
-.wrap{max-width:1670px;margin:0 auto}
-.stage{position:relative;width:min(100%, calc((100vh - 58px) * 1670 / 902));margin:0 auto;aspect-ratio:1670/902;overflow:hidden;background:var(--bg);border:1px solid var(--border);border-radius:10px}
+.wrap{max-width:1876px;margin:0 auto}
+.stage{position:relative;width:min(100%, calc((100vh - 58px) * 1876 / 1356));margin:0 auto;aspect-ratio:1876/1356;overflow:hidden;background:var(--bg);border:1px solid var(--border);border-radius:10px}
 .stage img{position:absolute;inset:0;width:100%;height:100%;display:block;opacity:0;transition:opacity .28s ease;user-select:none;-webkit-user-drag:none}
 .stage img.on{opacity:1}
 .hot{position:absolute;border:0;padding:0;background:transparent;cursor:pointer;border-radius:8px}
@@ -39,19 +39,16 @@ html,body{margin:0;background:var(--bg);color:var(--text);font:14px "Segoe UI",s
   <div class="bar" id="bar"><span class="hint">Démo · cliquez sur un module :</span></div>
 </div>
 <script>
-// Pages : capture, libellé. Coordonnées en % d'une capture 1670 × 902.
+// Pages : capture, libellé, dans l'ordre du menu. Coordonnées en % d'une capture 1876 × 1356.
 const PAGES = [
-  ['accueil','Accueil'],['motion','Motion'],['engine','Engine'],['dash','Dash'],
-  ['ffblab','FFB Lab'],['analyzer','FFB Analyzer'],['engineer','Engineer']];
-const W = 1670, H = 902;
+  ['accueil','Accueil'],['spotter','Spotter'],['engine','Engine'],['motion','Motion'],
+  ['engineer','Engineer'],['analyzer','FFB Analyzer'],['ffblab','FFB Lab'],['dash','Dash']];
+const W = 1876, H = 1356;
 const pct = (x,y,w,h) => ({left:x/W*100, top:y/H*100, width:w/W*100, height:h/H*100});
-// Menu de gauche (toutes les pages) : une ligne par page, 48 px d'écart.
-const MENU = PAGES.map((p,k) => ({to:p[0], ...pct(12, 106+k*48, 224, 44)}));
-// Accueil : boutons pilules et lignes des modules.
-const HOME = [
-  ['motion',297,280,70],['engine',375,280,62],['dash',447,280,52],['ffblab',510,280,67],['analyzer',588,280,98],['engineer',697,280,74]
-].map(([to,x,y,w]) => ({to, ...pct(x,y,w,36)}))
- .concat(['motion','engine','dash','ffblab'].map((to,k) => ({to, ...pct(288, 578+k*87, 1327, 76)})));
+// Menu de gauche (toutes les pages) : une ligne par page, 44 px d'écart.
+const MENU = PAGES.map((p,k) => ({to:p[0], ...pct(12, 90+k*44, 206, 40)}));
+// Accueil : liste des modules à droite (un clic ouvre le module, comme dans Pit Box).
+const HOME = PAGES.slice(1).map((p,k) => ({to:p[0], ...pct(1487, 110+k*66, 358, 54)}));
 
 const stage = document.getElementById('stage'), bar = document.getElementById('bar');
 const imgs = {};

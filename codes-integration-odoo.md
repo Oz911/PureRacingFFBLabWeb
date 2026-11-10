@@ -63,13 +63,13 @@ régénérer depuis le dépôt PureRacingFx (page `src/PureRacingFx/Modules/Engi
 
 ## 07 — Pit Box, démo de navigation (page Odoo au choix)
 
-Captures réelles de Pit Box (accueil + 6 modules). Visite automatique : le curseur clique sur chaque module ;
-le visiteur peut cliquer lui-même sur le menu de gauche, sur l'accueil ou sur les boutons sous l'image
-(la visite reprend après 10 s sans clic). Images : `pitbox-demo/*.jpg` (à remplacer par de nouvelles captures
-1670 × 902 si l'interface change).
+Captures réelles de Pit Box 0.14 (accueil + 7 modules, interface UI 2). Visite automatique : le curseur clique
+sur chaque module ; le visiteur peut cliquer lui-même sur le menu de gauche, sur la liste des modules de l'accueil
+ou sur les boutons sous l'image (la visite reprend après 10 s sans clic). Images : `pitbox-demo/*.jpg`
+(captures 1876 × 1356 ; à refaire au même format si l'interface change).
 
 ```html
-<iframe src="https://oz911.github.io/PureRacingFFBLabWeb/pitbox-demo/" title="Pit Box — Démo" loading="lazy" style="display:block;width:100%;aspect-ratio:1670/960;border:0;background:#070e2a" referrerpolicy="strict-origin-when-cross-origin"></iframe>
+<iframe src="https://oz911.github.io/PureRacingFFBLabWeb/pitbox-demo/" title="Pit Box — Démo" loading="lazy" style="display:block;width:100%;aspect-ratio:1876/1416;border:0;background:#070e2a" referrerpolicy="strict-origin-when-cross-origin"></iframe>
 ```
 
 
