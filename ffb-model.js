@@ -96,7 +96,7 @@
           {k:'D', name:'Mechanical Damper (amortissement)', f:x=>x, max:50, typ:[4,20]},
           {k:'F', name:'Mechanical Friction', f:x=>x, max:20, typ:[0,6]},
           {k:'I', name:'Mechanical Inertia (inertie)', f:x=>x, max:40, typ:[0,20]}],
-        extras:[['Vitesse de rotation de la roue (WRS)','0 au départ · 3 max, Damper au-dessus'],['Smoothing (lissage)','1 (2 à 3 si le FFB grésille)'],['FFB Detail','0'],['Other Effects · Mechanical Spring, Center Damper','0 %'],['Other Effects · Game Spring, Damper, Friction, Inertia','100 (neutre)']]},
+        extras:[['Vitesse de rotation de la roue (WRS)','0 au départ · au plus les 3/4 du Mechanical Damper'],['Smoothing (lissage)','1 (2 à 3 si le FFB grésille)'],['FFB Detail','0'],['Other Effects · Mechanical Spring, Center Damper','0 %'],['Other Effects · Game Spring, Damper, Friction, Inertia','100 (neutre)']]},
       moza:{name:'Moza', soft:'Pit House', strength:'Maximum Output Torque Limit', strengthUnit:'pct',
         models:[['R3',3.9],['R5',5.5],['R9',9],['R12',12],['R16',16],['R21',21],['R25 Ultra',25]],
         params:[
@@ -143,6 +143,13 @@
     // (8 Nm auparavant : 48 % proposés pour la LMP2, niveau ≈ 70 % sous la fenêtre 75-90 % de l'Analyzer.)
     // v : changer la version écarte les références enregistrées par les navigateurs.
     const REF_DEFAULT = {base:10, T:9.4, m:1.1, dia:300, D:7, F:2, I:4, k:0.70, v:3};
+    // Variante vive Simagic validée sur piste (LMU, LMP2, São Paulo, 10 nov. 2026, force en jeu 63 %, même montage) :
+    // WRS 10 tenue par Mechanical Damper 15, Friction 8, Inertie 15 : retour du volant vif, centrage ferme.
+    // Utilisée quand la WRS dépasse 3. Les filtres sont recalés comme la référence (base, volant, force visée).
+    const REF_VIVE = {D:15, F:8, I:15, wrs:10};
+    // WRS (amortissement négatif) : au plus les 3/4 du Mechanical Damper. Validé : 3 / 4 (GT) et 10 / 15 (LMP2).
+    const WRS_RATIO = 0.75;
+    function wrsMax(D){ return Math.floor((Number(D)||0)*WRS_RATIO + 1e-9); }
 
     function inertia(m, diaMm, k){ const r = diaMm/2000; return k*m*r*r; } // kg·m²
     function curveT(B, Tmax){ return Tmax*(1-Math.exp(-B/TAU)); }
@@ -201,7 +208,7 @@
         return { p, v, inTyp: v >= p.typ[0] && v <= p.typ[1] };
       });
     }
-    return { BRANDS, GAMES, PREFS, TAU, REF_DEFAULT, inertia, curveT, compute, brandValues };
+    return { BRANDS, GAMES, PREFS, TAU, REF_DEFAULT, REF_VIVE, WRS_RATIO, wrsMax, inertia, curveT, compute, brandValues };
   })();
 
   root.FFBModel = { LIMITS, CARS, baseTorque, lmuEq, lmuStrength, evaluate, evaluatePeak, windowE, lmuRecommend, acGainWindow, statusG, statusL, Calc };

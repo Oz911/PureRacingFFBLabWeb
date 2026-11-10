@@ -359,6 +359,22 @@ try{
     game=h.game; load(game); Object.assign(st, h.st); store.handoffTs=h.ts;
   }
 }catch(e){}
+/* Couple voiture mesuré par l'FFB Analyzer (LMU / rF2, fiche « Mon réglage ») : repris dans H une fois par
+   nouvelle mesure. Une saisie à la main reste en place jusqu'à la mesure suivante. */
+let carMeas=null;
+function takeMeasuredCar(){
+  let P=null;try{P=JSON.parse(localStorage.getItem('ffbLabProfile')||'null');}catch(e){}
+  const m=P&&P.measure;
+  carMeas=P&&P.equip&&P.equip.game==='lmu'&&m&&m.car>=5&&m.car<=60?m:null;
+  if(!carMeas||game!=='lmu'||!(carMeas.at>(store.carMeasAt||0)))return false;
+  st.H=Math.round(carMeas.car*10)/10;store.carMeasAt=carMeas.at;return true;
+}
+takeMeasuredCar();
+function carHintText(){
+  if(game!=='lmu')return 'Couple de direction max estimé en usage normal (hors vibreurs et bosses). Le choix d\'une voiture prend le haut de sa plage, par prudence.';
+  if(carMeas&&Math.abs(st.H-Math.round(carMeas.car*10)/10)<0.05)return 'Mesuré par le FFB Analyzer'+(carMeas.lap?' (tour '+carMeas.lap+')':'')+' : couple voiture équivalent FFB Lab, repris automatiquement.';
+  return 'Couple de direction max (hors vibreurs). Les voitures de la liste sans mention « mesuré LMU » sont des estimations, non mesurées dans LMU : roule quelques tours avec le FFB Analyzer, la mesure est reprise ici automatiquement.';
+}
 function showHandoff(){
   if(!handoff) return;
   const box=document.createElement('div');
@@ -413,9 +429,7 @@ function buildGameInputs(){
   $('carGroup').hidden=!G.usesCar;
   $('gamenote').innerHTML=G.note;
   document.querySelectorAll('.games button').forEach(b=>b.setAttribute('aria-pressed',b.dataset.game===game?'true':'false'));
-  $('carHint').textContent=game==='lmu'
-    ?'Couple de direction max (hors vibreurs). Les voitures de la liste sans mention « mesuré LMU » sont des estimations, non mesurées dans LMU : saisis de préférence le « couple voiture équivalent FFB Lab » affiché par le plugin FFB Analyzer (dernier tour complet), pas le couple de colonne brut du jeu, qui n\'est pas à la même échelle.'
-    :'Couple de direction max estimé en usage normal (hors vibreurs et bosses). Le choix d\'une voiture prend le haut de sa plage, par prudence.';
+  $('carHint').textContent=carHintText();
   $('vGk').textContent=G.eq?'Sortie spécifique · G':'Couple ressenti max · J';
   $('fixTable').innerHTML=fixRows().map((r,i)=>`<tr><td>${i+1}</td><td>${r[0]}</td><td><span class="pill neutral">${r[1]}</span></td></tr>`).join('');
 }
@@ -433,7 +447,7 @@ inA.addEventListener('input',()=>{readBase();render()});
 inT.addEventListener('input',()=>{readBase();render()});
 inB.addEventListener('input',()=>{rgB.value=inB.value;readBase();render()});
 rgB.addEventListener('input',()=>{inB.value=rgB.value;readBase();render()});
-inH.addEventListener('input',()=>{car.value='';readBase();render()});
+inH.addEventListener('input',()=>{car.value='';readBase();$('carHint').textContent=carHintText();render()});
 car.addEventListener('change',()=>{if(car.value==='')return;inH.value=CARS[+car.value][2];readBase();render();});
 document.querySelectorAll('.games button').forEach(b=>b.addEventListener('click',()=>{
   if(b.dataset.game===game)return; save();
@@ -594,6 +608,10 @@ function renderCmp(){
 }
 
 buildGameInputs(); buildCmp(); fill(); render(); showHandoff();
+// Nouvelle mesure de l'Analyzer (ce comparateur ou la fiche ouverte dans un autre onglet) : H mis à jour
+const onMeasure=()=>{if(takeMeasuredCar()){save();fill();render();}$('carHint').textContent=carHintText();};
+window.addEventListener('ffbMeasure',onMeasure);
+window.addEventListener('storage',e=>{if(e.key==='ffbLabProfile')onMeasure();});
 })();
 </script>
 <script>
@@ -619,6 +637,26 @@ function measureOf(P){
   const x=P.manual||{};if(x.level!=null||x.clip!=null||x.car!=null)return {src:'manual',level:x.level,clip:x.clip,car:x.car};
   return null;
 }
+/* Plugin : la mesure du dernier tour valide de l'Analyzer est reprise ici aussi (pas seulement dans « Mon réglage »),
+   pour comparer avec la sortie que tu viens de faire. Même règle que la fiche : tour fait après le dernier envoi des réglages. */
+let anaGame=null;
+function refreshMeasure(){
+  if(location.pathname.indexOf('/lab/')!==0)return;
+  fetch('/lab/api/analyzer',{cache:'no-store'}).then(r=>r.ok?r.json():null).then(a=>{
+    if(!a||!a.available)return;
+    const g0=anaGame;let changed=false;
+    if(a.running)anaGame=a.game_key;
+    const P=get('ffbLabProfile');
+    if(P&&P.equip&&a.last){
+      const l=a.last,fresh=!P.sentAt||l.lap>(P.sentLap||0),cur=P.measure;
+      if(fresh&&(!cur||cur.src!=='analyzer'||cur.lap!==l.lap||Math.abs((cur.level||0)-l.ref_level*100)>0.05)){
+        P.measure={at:Date.now(),car_name:P.equip.car,src:'analyzer',lap:l.lap,level:l.ref_level*100,clip:l.clip_pct*100,car:l.car_nm,status:l.status,game:a.game_name};
+        put('ffbLabProfile',P);window.dispatchEvent(new Event('ffbMeasure'));changed=true;
+      }
+    }
+    if(changed||anaGame!==g0)render();
+  }).catch(()=>{});
+}
 function proposal(P,pref){
   const e=P.equip,c=P.cur,meas=measureOf(P);
   const inp=get('ffbInput')||{}, refSv=get('ffbRef');
@@ -630,7 +668,10 @@ function proposal(P,pref){
   const s={B,m:e.wheelKg||1.1,dia:e.wheelMm||300,k:parseFloat(inp.dist)||0.70,game:e.game==='ace'?'ace':e.game,pref,ref,H,full};
   const r=C.compute(s);
   const vals=C.brandValues(e.brand,r);
-  return {s,r,vals,carMeasured,H,meas};
+  // Simagic : mêmes calculs avec la référence vive (WRS au-dessus de 3), recalée sur la base et le volant
+  let valsV=null;
+  if(C.BRANDS[e.brand]===C.BRANDS.simagic){const refV=Object.assign({},ref,{D:C.REF_VIVE.D,F:C.REF_VIVE.F,I:C.REF_VIVE.I});valsV=C.brandValues(e.brand,C.compute(Object.assign({},s,{ref:refV})));}
+  return {s,r,vals,valsV,carMeasured,H,meas};
 }
 function rows(P,pr){
   const e=P.equip,c=P.cur,b=C.BRANDS[e.brand]||C.BRANDS.simagic,r=pr.r,L=[];
@@ -649,19 +690,23 @@ function rows(P,pr){
     if(lv&&c.gain){const w=FFBModel.acGainWindow(c.gain/100,lv/100);gp=Math.round((w.lo+w.hi)/2*100);why='Fenêtre '+Math.round(w.lo*100)+' à '+Math.round(w.hi*100)+' % calculée avec ton niveau mesuré ('+fr(lv)+' %) : pic visé 75 à 90 %.';}
     L.push({k:'gain',name:'Gain FFB (jeu)',mine:c.gain,prop:gp==null?(e.game==='ace'?80:70):gp,u:' %',d:0,why});
   }
-  // Simagic : une WRS conservée (≤ 3, sous le Damper) est compensée sur le Damper, pour garder l'amortissement
-  // net de la référence (validé sur piste : Damper 7 / WRS 0 ≈ Damper 4 / WRS 3).
+  // Simagic : une WRS est conservée tant qu'elle reste sous les 3/4 de ton Mechanical Damper.
+  //  - WRS de 1 à 3 : référence GT, Damper compensé (validé : Damper 7 / WRS 0 ≈ Damper 4 / WRS 3) ;
+  //  - WRS au-dessus de 3 : référence vive LMU LMP2 (WRS 10, Damper 15, Friction 8, Inertie 15).
   const isSim=b===C.BRANDS.simagic, w=isSim?Number(c.wrs)||0:0;
-  const Dref=(pr.vals.find(o=>o.p.k==='D')||{}).v;
-  const keep=isSim&&w>0&&w<=3&&Dref!=null&&w<Dref;
-  pr.vals.forEach(o=>{const k=o.p.k,u=o.p.unit===undefined?' %':(o.p.unit?' '+o.p.unit:'');
+  const Dmine=Number(c.D)||0, wNeedD=Math.ceil(w/C.WRS_RATIO);
+  const keep=isSim&&w>0&&w<=C.wrsMax(Dmine);
+  const vive=keep&&w>3&&!!pr.valsV;
+  (vive?pr.valsV:pr.vals).forEach(o=>{const k=o.p.k,u=o.p.unit===undefined?' %':(o.p.unit?' '+o.p.unit:'');
     let prop=o.v,why=k==='D'?'Recalé sur ta base ('+fr(e.baseNm,1)+' Nm), ton volant ('+fr(e.wheelKg,2)+' kg, '+fr(e.wheelMm)+' mm) et la force visée.':k==='I'?'Inertie simulée : retrouve le poids d\'une colonne de direction pour ton volant.':'Friction fixe de la référence validée sur piste.';
-    if(k==='D'&&keep){prop=Math.max(w+1,o.v-w);why='Équivaut à '+o.v+' % sans WRS (base '+fr(e.baseNm,1)+' Nm, volant '+fr(e.wheelKg,2)+' kg) : réduit de ta WRS '+w+' pour garder le même amortissement net.';}
+    if(vive){prop=k==='D'?Math.max(o.v,wNeedD):o.v;
+      why=k==='D'?'Référence vive validée sur piste (LMU, LMP2 : WRS 10, Damper 15), recalée sur ta base et ton volant. Le Damper reste au moins à '+wNeedD+' % pour tenir ta WRS '+w+'.':k==='I'?'Référence vive (LMU, LMP2) : avec une WRS haute, l\'inertie raffermit le centrage.':'Référence vive (LMU, LMP2) : la friction tient le centre du volant.';}
+    else if(k==='D'&&keep){prop=Math.max(w+1,o.v-w);why='Équivaut à '+o.v+' % sans WRS (base '+fr(e.baseNm,1)+' Nm, volant '+fr(e.wheelKg,2)+' kg) : réduit de ta WRS '+w+' pour garder le même amortissement net.';}
     L.push({k,name:o.p.name,mine:c[k],prop,u,d:0,why});});
   if(isSim){
     L.push({k:'sm',name:'Smoothing (SimPro Manager)',mine:c.sm,prop:1,u:'',d:0,why:'1 par défaut ; 2 à 3 seulement si le FFB grésille.'});
     L.push({k:'wrs',name:'Vitesse de rotation de la roue (WRS)',mine:w,prop:keep?w:0,u:'',d:0,
-      why:keep?'Variante plus vive conservée (3 max, toujours sous le Mechanical Damper).':w>0?'WRS au niveau du Damper proposé ou au-dessus : amortissement net nul ou négatif, risque d\'oscillation.':'Point de départ sûr. Jusqu\'à 3 possible, sous le Damper, si le volant paraît pâteux.'});
+      why:vive?'Variante vive conservée : ta WRS reste sous les 3/4 de ton Mechanical Damper (référence LMU LMP2 : WRS 10, Damper 15).':keep?'Variante plus vive conservée : ta WRS reste sous les 3/4 de ton Mechanical Damper.':w>0?'WRS au-dessus des 3/4 de ton Mechanical Damper ('+Dmine+' %) : amortissement net trop faible, risque d\'oscillation. Repars de 0, ou monte le Damper à '+wNeedD+' % au moins.':'Point de départ sûr. Si le volant paraît pâteux : une WRS jusqu\'aux 3/4 du Mechanical Damper.'});
   }
   L.push({k:'fx',name:'Effets supplémentaires du gestionnaire',mine:c.fx?'modifiés':'neutres',prop:'neutres',u:'',txt:true,
     why:c.fx?'Ils modifient le signal du jeu : remets-les au neutre (0, ou 100 pour les effets du jeu chez Simagic) avant de régler, puis réintroduis-les un par un si besoin.':'Effets au neutre : rien à changer.'});
@@ -689,6 +734,8 @@ function render(){
   $('mSub').textContent=[e.baseName||'Base '+fr(e.baseNm,1)+' Nm',e.wheel,e.car,e.track].filter(Boolean).join(' · ');
   const pv=predicted(P,L);
   let h='';
+  const anaL=anaGame==='lmu'||anaGame==='rf2';
+  if((anaL||anaGame==='ac')&&anaL!==(e.game==='lmu'))h+='<div class="mnote warn">L\'Analyzer mesure '+(anaL?'Le Mans Ultimate':'Assetto Corsa')+', mais ta fiche est réglée sur '+(e.game==='lmu'?'Le Mans Ultimate':'Assetto Corsa')+' : '+(anaL?'la force en jeu et le couple voiture mesuré ne sont pas pris en compte':'la proposition ne correspond pas au jeu mesuré')+'. <a href="https://pureracing-fx.odoo.com/mon-reglage-ffb" target="_top">Corrige le jeu dans « Mon réglage » →</a></div>';
   if(!m)h+='<div class="mnote warn">Pas encore de mesure : la proposition utilise un couple voiture estimé. <a href="https://pureracing-fx.odoo.com/mon-reglage-ffb" target="_top">Étape 2 : 3 tours avec l\'Analyzer →</a></div>';
   else if(e.game==='lmu'&&!pr.carMeasured)h+='<div class="mnote warn">Couple voiture non mesuré : la force en jeu proposée repose sur une estimation ('+fr(pr.H,1)+' Nm).</div>';
   h+='<div style="overflow-x:auto"><table class="mtbl"><thead><tr><th>Réglage</th><th>Mon réglage</th><th>Proposé</th><th>Écart</th><th>Je retiens</th></tr></thead><tbody>';
@@ -738,6 +785,7 @@ function apply(P,L){
 document.querySelectorAll('#mine .mseg button').forEach(b=>b.onclick=()=>{CS.pref=b.dataset.pref;put('ffbLabCompare',CS);render();});
 window.addEventListener('storage',e=>{if(e.key==='ffbLabProfile')render();});
 render();
+refreshMeasure();setInterval(refreshMeasure,5000);
 })();
 </script>
 </body>

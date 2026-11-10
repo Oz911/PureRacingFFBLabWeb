@@ -175,7 +175,15 @@ function render(){
   }
   else if(g)sync='<div class="note ok">L\'Analyzer utilise les réglages du jeu de ta fiche : le couple voiture mesuré est juste.</div>';
   else if(P.equip.game!=='lmu')sync='<div class="note info">Assetto Corsa : l\'Analyzer mesure le niveau et l\'écrêtage ; le couple voiture n\'est disponible que sur LMU et rFactor 2.</div>';
+  // Jeu mesuré par l'Analyzer différent du jeu de la fiche : rien n'est transmis ni comparé correctement
+  const ak=ana.running?ana.game_key:null,anaL=ak==='lmu'||ak==='rf2',ficheL=P.equip.game==='lmu';
+  if((anaL||ak==='ac')&&anaL!==ficheL)sync='<div class="note warn">L\'Analyzer mesure <b>'+String(ana.game_name||'').replace(/[<>&"]/g,'')+'</b>, mais ta fiche indique '+(ficheL?'Le Mans Ultimate':'Assetto Corsa')+' : '+(anaL?'la force en jeu et le couple voiture mesuré ne sont ni transmis à l\'Analyzer ni utilisés par le comparateur':'les mesures ne correspondent pas à ta fiche')+'. <button type="button" id="fixGame">Passer ma fiche sur '+(anaL?'Le Mans Ultimate':'Assetto Corsa')+'</button></div>';
   $('syncNote').innerHTML=sync;
+  if($('fixGame'))$('fixGame').onclick=()=>{const c=P.cur;
+   // Fiche AC : la force en jeu saisie est le gain ; elle devient la Force Feedback Strength (et inversement)
+   if(anaL){P.equip.game='lmu';if(c.gain!=null&&c.gain!=='')c.strength=c.gain;if(c.stc==null||c.stc==='')c.stc=P.equip.baseNm||10;if(c.mult==null||c.mult==='')c.mult=100;P.gEdit=Date.now();}
+   else{P.equip.game='ac';if(c.strength!=null&&c.strength!=='')c.gain=c.strength;}
+   fill();labels();save();render();};
  } else {
   $('anaDot').classList.remove('on');
   $('anaState').textContent='FFB Analyzer non connecté : saisis les mesures à la main (ou ouvre cette page depuis le plugin Pure Racing FX).';

@@ -40,7 +40,7 @@ button{cursor:pointer;border:0;background:var(--red);color:#fff;padding:10px 16p
  <div class="f2"><div><label for="car">Voiture</label><input id="car" placeholder="Ex. Ferrari 296 GT3"></div><div><label for="base">Base / volant</label><input id="base" placeholder="Ex. Alpha Mini · GT Neo"></div></div>
  <div class="f2"><div><label for="driver" id="lDriver">Puissance driver (%)</label><input id="driver" type="number" min="1" max="100"></div><div><label for="gain" id="lGain">Force en jeu (%)</label><input id="gain" type="number" min="1" max="200"></div></div>
  <div class="f3"><div><label for="D" id="lD">Damper</label><input id="D" type="number" step="1"></div><div><label for="F" id="lF">Friction</label><input id="F" type="number" step="0.5"></div><div><label for="I" id="lI">Inertie</label><input id="I" type="number" step="1"></div></div>
- <div class="f2"><div><label for="sm" id="lSm">Lissage</label><input id="sm" type="number" min="0" max="20" step="1"></div><div id="wrsBox"><label for="wrs">WRS (vitesse de rotation)</label><input id="wrs" type="number" min="0" max="100" step="1" placeholder="0 à 3"></div></div>
+ <div class="f2"><div><label for="sm" id="lSm">Lissage</label><input id="sm" type="number" min="0" max="20" step="1"></div><div id="wrsBox"><label for="wrs">WRS (vitesse de rotation)</label><input id="wrs" type="number" min="0" max="100" step="1" placeholder="0 à 100"></div></div>
  <h3 style="margin-top:16px">Mesures FFB Analyzer <span class="small">(facultatif, dernier tour complet)</span></h3>
  <p class="small" id="anaLine" style="margin:4px 0 0"></p>
  <div class="f2"><div><label for="p995">Niveau de référence, 99,5e centile (%)</label><input id="p995" type="number" min="1" max="300" placeholder="ex. 94"></div><div><label for="clip">Écrêtage du tour (%)</label><input id="clip" type="number" min="0" max="100" step="0.1" placeholder="ex. 0,4"></div></div>
@@ -201,16 +201,18 @@ function stepTo(k,dEq){
 function candidates(t,a){
  const c=S.cfg,b=BRANDS[c.brand],gN=GAMES[c.game].gain,p=Number(c.p995)/100,clip=Number(c.clip),hasP=c.p995!==''&&p>0;
  const L=[],drv=(id,k,dEq,why,watch,rep)=>{let to=stepTo(k,dEq);
-  // Simagic : le Mechanical Damper reste toujours au-dessus de la WRS (amortissement net positif)
-  if(to!=null&&k==='D'&&b.wrs&&wrsV>0&&to<=wrsV){to=wrsV+1;if(to>=Number(c[k]))to=null;}
+  // Simagic : le Mechanical Damper reste au moins à 4/3 de la WRS (WRS ≤ 3/4 du Damper, amortissement net positif)
+  if(to!=null&&k==='D'&&b.wrs&&wrsV>0&&to<Math.ceil(wrsV/0.75)){to=Math.ceil(wrsV/0.75);if(to>=Number(c[k]))to=null;}
   if(to!=null)L.push({id,type:'param',k,from:Number(c[k]),to,name:par(k).name,unit:par(k).unit,why,watch,rep});};
  const sm=(id,d,why,watch)=>{const sp=smParam();if(!sp)return;const cur=Number(c.sm)||0,to=Math.min(sp.max,Math.max(sp.min,cur+d));if(to!==cur)L.push({id,type:'param',k:'sm',from:cur,to,name:sp.name,unit:'',why,watch});};
  const gain=(id,f,why,watch)=>{const cur=Number(c.gain);let to=Math.round(cur*f);if(to===cur)to=cur+(f<1?-1:1);to=Math.max(1,to);L.push({id,type:'param',k:'gain',from:cur,to,name:gN+' ('+GAMES[c.game].name+')',unit:' %',why,watch});};
  const check=(id,title,text)=>L.push({id,type:'check',title,text});
- // WRS Simagic (amortissement négatif) : valeur saisie, '' si inconnue. Plafond 3, toujours sous le Mechanical Damper.
+ // WRS Simagic (amortissement négatif) : valeur saisie, '' si inconnue. Au plus les 3/4 du Mechanical Damper
+ // (validé sur piste : WRS 3 / Damper 4 en GT, WRS 10 / Damper 15 en LMP2 sur LMU).
  const wrsV=c.wrs===''||c.wrs==null?-1:Number(c.wrs);
- const wrsTo=(id,to,why,watch)=>{to=Math.max(0,Math.min(3,to));if(wrsV>=0&&to!==wrsV)L.push({id,type:'param',k:'wrs',from:wrsV,to,name:'WRS (vitesse de rotation de la roue, '+b.soft+')',unit:'',why,watch});};
- const wrsUp=()=>{if(b.wrs&&wrsV>=0&&wrsV<3&&wrsV+1<Number(c.D))wrsTo('wrs+',wrsV+1,'Variante plus vive : une petite WRS, gardée sous le Mechanical Damper, rend de la vivacité à un volant trop amorti. Validée sur LMU à Spa avec WRS 3 et Damper 4.','Test mains lâchées en sortie de virage et au freinage en ligne droite : au moindre pompage, reviens à la valeur précédente.');};
+ const wrsMaxD=Math.floor((Number(c.D)||0)*0.75+1e-9);
+ const wrsTo=(id,to,why,watch)=>{to=Math.max(0,Math.min(wrsMaxD,to));if(wrsV>=0&&to!==wrsV)L.push({id,type:'param',k:'wrs',from:wrsV,to,name:'WRS (vitesse de rotation de la roue, '+b.soft+')',unit:'',why,watch});};
+ const wrsUp=()=>{if(b.wrs&&wrsV>=0&&wrsV+1<=wrsMaxD)wrsTo('wrs+',wrsV+1,'Variante plus vive : une petite WRS, gardée sous le Mechanical Damper, rend de la vivacité à un volant trop amorti. Validée sur piste avec WRS 3 / Damper 4 (GT) et WRS 10 / Damper 15 (LMU, LMP2).','Test mains lâchées en sortie de virage et au freinage en ligne droite : au moindre pompage, reviens à la valeur précédente.');};
  const key=t+':'+a;
  if(key==='T3:osc1'||key==='T3:osc2'){
   if(b.wrs&&c.wrs==='') check('wrs?','Indiquer la WRS','La WRS (vitesse de rotation de la roue) amplifie la rotation du volant : c\'est un amortissement négatif, première cause d\'oscillation chez Simagic. Saisis sa valeur dans ta configuration (SimPro Manager) pour recevoir le bon conseil.');
