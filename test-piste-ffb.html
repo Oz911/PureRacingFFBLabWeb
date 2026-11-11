@@ -151,6 +151,7 @@ if(setup&&(!S.cfgTs||setup.ts>S.cfgTs)){
 /* ---------- Raccord avec la fiche « Mon réglage » et le FFB Analyzer ---------- */
 const inPlugin=location.pathname.indexOf('/lab/')===0;
 let anaLap=null;   // dernier numéro de tour vu dans l'Analyzer (plugin)
+let anaSession=''; // séance de l'Analyzer (session_id) : une nouvelle séance repart des mesures à zéro
 function syncProfile(){
  const P=get('ffbLabProfile');if(!P||!P.cur||!P.equip)return;const c=S.cfg,cur=P.cur;
  if(P.equip.game!==c.game||P.equip.brand!==c.brand)return;      // autre configuration : on ne touche pas à la fiche
@@ -160,7 +161,7 @@ function syncProfile(){
  if(gv!=null&&cur[gk]!==gv){cur[gk]=gv;ch=true;gch=c.game==='lmu';}
  if(!ch)return;
  P.ts=Date.now();P.trackEdit=Date.now();
- if(gch){P.gEdit=Date.now();P.measure=null;P.sentAt=Date.now();if(anaLap!=null)P.sentLap=anaLap;}
+ if(gch){P.gEdit=Date.now();P.measure=null;P.sentAt=Date.now();if(anaLap!=null){P.sentLap=anaLap;P.sentSession=anaSession;}}
  put('ffbLabProfile',P);
  // Réglage modifié : les mesures en place ne lui correspondent plus (plugin : la prochaine arrive seule)
  if(inPlugin){S.measAfter=anaLap==null?0:anaLap;if(c.p995!==''||c.clip!==''){c.p995='';c.clip='';put(KEY,S);fillCfg();}}
@@ -393,7 +394,11 @@ $('reset').onclick=()=>{if(!confirm('Effacer les réponses et l\'historique ? Le
 function pollAnalyzer(){
  fetch('/lab/api/analyzer',{cache:'no-store'}).then(r=>r.ok?r.json():null).then(a=>{
   if(!a||!a.available){$('anaLine').textContent='FFB Analyzer inactif dans Pit Box : saisis les mesures à la main.';return;}
-  anaLap=a.current_lap||0;if(S.measAfter==null){const P=get('ffbLabProfile');S.measAfter=P&&P.sentLap!=null?P.sentLap:-1;}
+  anaLap=a.current_lap||0;
+  const sid=String(a.session_id||'');
+  if(S.measSession==null)S.measSession=sid;
+  else if(S.measSession!==sid||anaLap<(S.measAfter||0)){S.measSession=sid;if(S.measAfter!=null&&S.measAfter>=0)S.measAfter=-1;}
+  anaSession=sid;if(S.measAfter==null){const P=get('ffbLabProfile');S.measAfter=P&&P.sentLap!=null?P.sentLap:-1;}
   const l=a.last;
   if(l&&l.lap>S.measAfter){const p=Math.round(l.ref_level*100),cl=Math.round(l.clip_pct*1000)/10;
    if(Number(S.cfg.p995)!==p||Number(S.cfg.clip)!==cl){S.cfg.p995=p;S.cfg.clip=cl;put(KEY,S);fillCfg();renderFix();}

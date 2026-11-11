@@ -12,6 +12,64 @@
    Liens : pages Odoo du site, ou pages locales dans le plugin Pure Racing FX
    (pages servies sous /lab/).
    ===================================================================== */
+/* ---------------------------------------------------------------------
+   Outils communs du parcours (0.14.27, demande de Pat le 11 nov. 2026 :
+   « repartir avec des données propres » et jeu choisi automatiquement).
+   - FFBLab.gameOf(cléAnalyzer) : clé de jeu du FFB Lab (lmu, ac, ace) ou null.
+   - Une fiche par jeu : le matériel (equip sauf game) est commun ; réglages,
+     mesures et état d'envoi sont rangés dans P.byGame[jeu] au changement de jeu.
+   - Mesures suivies par séance de l'Analyzer (session_id), plus seulement par
+     numéro de tour : la 1re mesure d'une nouvelle séance est prise en compte.
+   --------------------------------------------------------------------- */
+(function () {
+  'use strict';
+  var GAME_KEYS = { lmu: 'lmu', rf2: 'lmu', ac: 'ac', acevo: 'ace' };
+  var PER_GAME = ['cur', 'measure', 'manual', 'sentAt', 'sentLap', 'sentSession', 'sent', 'gEdit', 'applied', 'prev', 'trackEdit'];
+  var NAMES = { lmu: 'Le Mans Ultimate', ac: 'Assetto Corsa', ace: 'Assetto Corsa EVO' };
+  function copy(v) { return v == null ? v : JSON.parse(JSON.stringify(v)); }
+  var api = {
+    names: NAMES,
+    gameOf: function (k) { return GAME_KEYS[String(k || '').toLowerCase()] || null; },
+    // Range la fiche du jeu courant et charge celle de g (ou garde les réglages de la base, sans mesures).
+    switchGame: function (P, g) {
+      if (!P || !P.equip || !g || P.equip.game === g) return false;
+      P.byGame = P.byGame || {};
+      var old = P.equip.game, keep = {};
+      PER_GAME.forEach(function (k) { keep[k] = copy(P[k]); });
+      if (old) P.byGame[old] = keep;
+      var nx = P.byGame[g];
+      PER_GAME.forEach(function (k) { if (k !== 'cur') delete P[k]; });
+      if (nx) PER_GAME.forEach(function (k) { if (nx[k] !== undefined) P[k] = copy(nx[k]); });
+      P.manual = P.manual || {};
+      P.equip.game = g; P.ts = Date.now();
+      return true;
+    },
+    // Tour de l'Analyzer fait après le dernier envoi des réglages, dans la même séance (ou une nouvelle).
+    fresh: function (P, a, l) {
+      if (!P || !P.sentAt) return true;
+      if (String(a.session_id || '') !== String(P.sentSession || '')) return true;
+      if ((a.current_lap || 0) < (P.sentLap || 0)) return true;    // séance remise à zéro
+      return l.lap > (P.sentLap || 0);
+    },
+    markSent: function (P, a) { P.sentAt = Date.now(); P.sentLap = a && a.current_lap || 0; P.sentSession = a && a.session_id || ''; },
+    // Efface les mesures et l'historique du jeu en cours (matériel et réglages gardés).
+    resetMeasures: function () {
+      var P = null; try { P = JSON.parse(localStorage.getItem('ffbLabProfile') || 'null'); } catch (e) {}
+      if (P) {
+        ['measure', 'sentAt', 'sentLap', 'sentSession', 'sent', 'applied', 'prev', 'trackEdit'].forEach(function (k) { delete P[k]; });
+        P.manual = {}; P.ts = Date.now();
+        localStorage.setItem('ffbLabProfile', JSON.stringify(P));
+      }
+      ['ffbLabHandoff', 'ffbLabCompare', 'ffbTrackAssistant'].forEach(function (k) { localStorage.removeItem(k); });
+    },
+    // Tout effacer : fiche vierge (tous les jeux), comparateur, calculateur, validation sur piste.
+    resetAll: function () {
+      ['ffbLabProfile', 'ffbLabHandoff', 'ffbLabSetup', 'ffbLabCompare', 'ffbTrackAssistant', 'ffbInput', 'ffbRef'].forEach(function (k) { localStorage.removeItem(k); });
+    }
+  };
+  window.FFBLab = api;
+})();
+
 (function () {
   'use strict';
   var nav = document.getElementById('ffbnav');

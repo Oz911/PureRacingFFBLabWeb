@@ -68,6 +68,11 @@ input:invalid{border-color:var(--bad)}button{cursor:pointer;border:0;background:
  <div class="actions"><button type="button" id="next">Étape 3 : comparer avec la proposition →</button><button type="button" class="secondary" id="toTrack">Aller à la validation sur piste</button></div>
 </section>
 </div>
+<section class="card" id="reset" style="margin-top:22px"><h2 style="margin-top:0">Repartir à zéro</h2>
+ <p class="small">Nouvelle séance, autre matériel, mesures qui ne te semblent plus cohérentes : efface ce qui est en mémoire avant de rouler. Chaque jeu a sa propre fiche ; le jeu est choisi automatiquement quand une séance est en cours dans Pit Box.</p>
+ <div class="actions"><button type="button" class="secondary" id="rsMeas">Effacer les mesures de ce jeu</button><button type="button" class="secondary" id="rsAll">Tout effacer</button></div>
+ <div id="resetBox"></div>
+</section>
 <p class="small" style="margin-top:22px">Ta fiche est enregistrée sur cet appareil (et, avec le plugin Pure Racing FX, partagée entre le PC et la tablette). Le comparateur et la validation sur piste la reprennent automatiquement.</p>
 </div>
 <script>
@@ -141,14 +146,40 @@ function sameSettings(a){const g=gameSettings();if(!g||!a||!a.settings)return tr
  return s.confirmed&&Math.abs(s.stc-g.stc)<0.05&&Math.abs(s.strength-g.strength)<0.005&&Math.abs(s.mult-g.mult)<0.005;}
 function pushSettings(){const g=gameSettings();if(!anaOk||!g||sending)return;sending=true;
  fetch(ANALYZER+'/settings',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(g)}).then(r=>r.json()).then(r=>{
-  if(r.ok){P.sentAt=Date.now();P.sentLap=ana&&ana.current_lap||0;P.sent=g;save(false);}}).catch(()=>{}).finally(()=>{sending=false;poll();});}
+  if(r.ok){FFBLab.markSent(P,ana);P.sent=g;save(false);}}).catch(()=>{}).finally(()=>{sending=false;poll();});}
 function poll(){
- fetch(ANALYZER,{cache:'no-store'}).then(r=>r.ok?r.json():null).then(a=>{ana=a;anaOk=!!(a&&a.available);render();}).catch(()=>{ana=null;anaOk=false;render();});
+ fetch(ANALYZER,{cache:'no-store'}).then(r=>r.ok?r.json():null).then(a=>{ana=a;anaOk=!!(a&&a.available);autoGame();render();}).catch(()=>{ana=null;anaOk=false;render();});
+}
+/* Jeu de la séance en cours (Analyzer, d'après SimHub) : la fiche passe sur ce jeu, celle de l'ancien est rangée */
+function autoGame(){
+ if(!anaOk||!ana.running)return;const g=FFBLab.gameOf(ana.game_key);if(!g)return;
+ if(g===P.equip.game){if(P.autoGame!==g){P.autoGame=g;save(false);}return;}
+ read();FFBLab.switchGame(P,g);P.autoGame=g;fill();labels();save();
+}
+/* Choix manuel du jeu : même rangement par jeu */
+function chooseGame(g){const old=P.equip.game;$('game').value=old;read();if(FFBLab.switchGame(P,g)){P.autoGame=null;fill();labels();save();render();}}
+/* Repartir à zéro (0.14.27) : confirmation dans la page */
+function askReset(kind){
+ const box=$('resetBox');
+ box.innerHTML=kind==='all'
+  ?'<div class="note warn"><b>Tout effacer ?</b> Ta fiche (matériel, réglages et mesures de tous les jeux), le comparateur, le calculateur et la validation sur piste repartent à vide. <div class="actions"><button type="button" id="rsYes">Oui, tout effacer</button><button type="button" class="secondary" id="rsNo">Annuler</button></div></div>'
+  :'<div class="note warn"><b>Effacer les mesures de '+FFBLab.names[P.equip.game]+' ?</b> Ton matériel et tes réglages sont gardés. Les mesures, les choix du comparateur et la validation sur piste repartent à zéro. <div class="actions"><button type="button" id="rsYes">Oui, effacer</button><button type="button" class="secondary" id="rsNo">Annuler</button></div></div>';
+ $('rsNo').onclick=()=>{box.innerHTML='';};
+ $('rsYes').onclick=()=>{
+  if(kind==='all'){FFBLab.resetAll();P=defaults();}
+  else{read();save();FFBLab.resetMeasures();P=get(KEY)||defaults();P.equip=Object.assign(defaults().equip,P.equip||{});P.cur=Object.assign(defaults().cur,P.cur||{});}
+  // Les tours déjà faits ne comptent plus : on attend le prochain tour complet
+  if(anaOk)FFBLab.markSent(P,ana);
+  lastSave='';fill();render();save();
+  box.innerHTML='<div class="note ok">'+(kind==='all'?'Tout est effacé : remplis ta fiche, puis roule quelques tours.':'Mesures effacées : roule quelques tours, la prochaine mesure arrivera ici.')+'</div>';
+ };
 }
 /* Mesure retenue : dernier tour valide de l'Analyzer, fait après la dernière transmission des réglages ; sinon la saisie manuelle */
 function analyzerMeasure(){
  if(!anaOk||!ana.last)return null;const l=ana.last;
- const fresh=!P.sentAt||l.lap>(P.sentLap||0);
+ // Mesure d'un autre jeu que celui de la fiche : ignorée
+ const ag=FFBLab.gameOf(ana.game_key);if(ag&&ag!==P.equip.game)return null;
+ const fresh=FFBLab.fresh(P,ana,l);
  return {src:'analyzer',lap:l.lap,level:l.ref_level*100,clip:l.clip_pct*100,car:l.car_nm,status:l.status,game:ana.game_name,fresh};
 }
 function bestMeasure(){const a=analyzerMeasure();if(a&&a.fresh)return a;
@@ -157,6 +188,9 @@ function bestMeasure(){const a=analyzerMeasure();if(a&&a.fresh)return a;
 
 function render(){
  const g=gameSettings();
+ // Séance en cours : le jeu suit la séance
+ const locked=!!(anaOk&&ana.running&&FFBLab.gameOf(ana.game_key));
+ $('game').disabled=locked;$('game').title=locked?'Choisi automatiquement d\'après la séance en cours':'';
  if(anaOk){
   $('anaDot').classList.toggle('on',!!ana.running);
   $('anaState').textContent='FFB Analyzer connecté · '+(ana.running?(ana.game_name||'jeu')+' · tour '+ana.current_lap:'en attente d\'une session');
@@ -175,15 +209,9 @@ function render(){
   }
   else if(g)sync='<div class="note ok">L\'Analyzer utilise les réglages du jeu de ta fiche : le couple voiture mesuré est juste.</div>';
   else if(P.equip.game!=='lmu')sync='<div class="note info">Assetto Corsa : l\'Analyzer mesure le niveau et l\'écrêtage ; le couple voiture n\'est disponible que sur LMU et rFactor 2.</div>';
-  // Jeu mesuré par l'Analyzer différent du jeu de la fiche : rien n'est transmis ni comparé correctement
-  const ak=ana.running?ana.game_key:null,anaL=ak==='lmu'||ak==='rf2',ficheL=P.equip.game==='lmu';
-  if((anaL||ak==='ac')&&anaL!==ficheL)sync='<div class="note warn">L\'Analyzer mesure <b>'+String(ana.game_name||'').replace(/[<>&"]/g,'')+'</b>, mais ta fiche indique '+(ficheL?'Le Mans Ultimate':'Assetto Corsa')+' : '+(anaL?'la force en jeu et le couple voiture mesuré ne sont ni transmis à l\'Analyzer ni utilisés par le comparateur':'les mesures ne correspondent pas à ta fiche')+'. <button type="button" id="fixGame">Passer ma fiche sur '+(anaL?'Le Mans Ultimate':'Assetto Corsa')+'</button></div>';
+  // Jeu choisi automatiquement d'après la séance en cours (0.14.27)
+  if(P.autoGame&&P.autoGame===P.equip.game)sync='<div class="note info">Jeu détecté automatiquement : <b>'+FFBLab.names[P.equip.game]+'</b> (séance en cours). Ta fiche de ce jeu est reprise ; celle des autres jeux est gardée de côté.</div>'+sync;
   $('syncNote').innerHTML=sync;
-  if($('fixGame'))$('fixGame').onclick=()=>{const c=P.cur;
-   // Fiche AC : la force en jeu saisie est le gain ; elle devient la Force Feedback Strength (et inversement)
-   if(anaL){P.equip.game='lmu';if(c.gain!=null&&c.gain!=='')c.strength=c.gain;if(c.stc==null||c.stc==='')c.stc=P.equip.baseNm||10;if(c.mult==null||c.mult==='')c.mult=100;P.gEdit=Date.now();}
-   else{P.equip.game='ac';if(c.strength!=null&&c.strength!=='')c.gain=c.strength;}
-   fill();labels();save();render();};
  } else {
   $('anaDot').classList.remove('on');
   $('anaState').textContent='FFB Analyzer non connecté : saisis les mesures à la main (ou ouvre cette page depuis le plugin Pure Racing FX).';
@@ -210,6 +238,8 @@ function render(){
 let lastSave='';
 function save(stamp=true){const sig=JSON.stringify([P.equip,P.cur,P.manual,P.measure&&[P.measure.lap,P.measure.level,P.measure.car]]);if(sig===lastSave&&!stamp)return;lastSave=sig;P.ts=Date.now();put(KEY,P);handoff();}
 
+$('game').addEventListener('change',e=>{e.stopImmediatePropagation();chooseGame($('game').value);},true);
+$('rsMeas').onclick=()=>askReset('meas');$('rsAll').onclick=()=>askReset('all');
 EQ.concat(CUR,['fx','mLevel','mClip','mCar']).forEach(k=>{const el=$(k);const on=()=>{if(k==='strength'||k==='stc'||k==='mult')P.gEdit=Date.now();read();labels();render();};el.addEventListener('change',on);if(el.tagName==='INPUT')el.addEventListener('input',on);});
 /* Navigation : page entière (le site affiche les outils dans des cadres) */
 const go=u=>{save();try{window.top.location.href=u}catch(e){location.href=u}};

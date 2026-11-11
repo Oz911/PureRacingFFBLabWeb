@@ -647,8 +647,11 @@ function refreshMeasure(){
     const g0=anaGame;let changed=false;
     if(a.running)anaGame=a.game_key;
     const P=get('ffbLabProfile');
-    if(P&&P.equip&&a.last){
-      const l=a.last,fresh=!P.sentAt||l.lap>(P.sentLap||0),cur=P.measure;
+    // Jeu de la séance en cours : la fiche passe dessus (celle de l'autre jeu est rangée), 0.14.27
+    const gk=a.running?FFBLab.gameOf(a.game_key):null;
+    if(P&&P.equip&&gk&&gk!==P.equip.game){FFBLab.switchGame(P,gk);P.autoGame=gk;put('ffbLabProfile',P);changed=true;}
+    if(P&&P.equip&&a.last&&(!FFBLab.gameOf(a.game_key)||FFBLab.gameOf(a.game_key)===P.equip.game)){
+      const l=a.last,fresh=FFBLab.fresh(P,a,l),cur=P.measure;
       if(fresh&&(!cur||cur.src!=='analyzer'||cur.lap!==l.lap||Math.abs((cur.level||0)-l.ref_level*100)>0.05)){
         P.measure={at:Date.now(),car_name:P.equip.car,src:'analyzer',lap:l.lap,level:l.ref_level*100,clip:l.clip_pct*100,car:l.car_nm,status:l.status,game:a.game_name};
         put('ffbLabProfile',P);window.dispatchEvent(new Event('ffbMeasure'));changed=true;
@@ -734,8 +737,7 @@ function render(){
   $('mSub').textContent=[e.baseName||'Base '+fr(e.baseNm,1)+' Nm',e.wheel,e.car,e.track].filter(Boolean).join(' · ');
   const pv=predicted(P,L);
   let h='';
-  const anaL=anaGame==='lmu'||anaGame==='rf2';
-  if((anaL||anaGame==='ac')&&anaL!==(e.game==='lmu'))h+='<div class="mnote warn">L\'Analyzer mesure '+(anaL?'Le Mans Ultimate':'Assetto Corsa')+', mais ta fiche est réglée sur '+(e.game==='lmu'?'Le Mans Ultimate':'Assetto Corsa')+' : '+(anaL?'la force en jeu et le couple voiture mesuré ne sont pas pris en compte':'la proposition ne correspond pas au jeu mesuré')+'. <a href="https://pureracing-fx.odoo.com/mon-reglage-ffb" target="_top">Corrige le jeu dans « Mon réglage » →</a></div>';
+  if(P.autoGame&&P.autoGame===e.game&&anaGame)h+='<div class="mnote">Jeu détecté automatiquement : <b>'+FFBLab.names[e.game]+'</b> (séance en cours).</div>';
   if(!m)h+='<div class="mnote warn">Pas encore de mesure : la proposition utilise un couple voiture estimé. <a href="https://pureracing-fx.odoo.com/mon-reglage-ffb" target="_top">Étape 2 : 3 tours avec l\'Analyzer →</a></div>';
   else if(e.game==='lmu'&&!pr.carMeasured)h+='<div class="mnote warn">Couple voiture non mesuré : la force en jeu proposée repose sur une estimation ('+fr(pr.H,1)+' Nm).</div>';
   h+='<div style="overflow-x:auto"><table class="mtbl"><thead><tr><th>Réglage</th><th>Mon réglage</th><th>Proposé</th><th>Écart</th><th>Je retiens</th></tr></thead><tbody>';
@@ -780,7 +782,7 @@ function apply(P,L){
   P.sentAt=Date.now();P.measure=null;P.manual={};
   put('ffbLabProfile',P);pushAnalyzer(P);setup(P);render();
   // Plugin : les tours déjà faits ne comptent plus, la fiche attend le prochain tour complet
-  if(location.pathname.indexOf('/lab/')===0)fetch('/lab/api/analyzer',{cache:'no-store'}).then(r=>r.json()).then(a=>{if(a&&a.available){const Q=get('ffbLabProfile');Q.sentLap=a.current_lap||0;put('ffbLabProfile',Q);}}).catch(()=>{});
+  if(location.pathname.indexOf('/lab/')===0)fetch('/lab/api/analyzer',{cache:'no-store'}).then(r=>r.json()).then(a=>{if(a&&a.available){const Q=get('ffbLabProfile');FFBLab.markSent(Q,a);put('ffbLabProfile',Q);}}).catch(()=>{});
 }
 document.querySelectorAll('#mine .mseg button').forEach(b=>b.onclick=()=>{CS.pref=b.dataset.pref;put('ffbLabCompare',CS);render();});
 window.addEventListener('storage',e=>{if(e.key==='ffbLabProfile')render();});
