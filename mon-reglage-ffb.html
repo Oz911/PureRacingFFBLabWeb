@@ -142,9 +142,16 @@ function handoff(){
 
 /* ---------------- FFB Analyzer (plugin Pure Racing FX) ---------------- */
 let ana=null,anaOk=false,sendTimer=null,sending=false;
-function sameSettings(a){const g=gameSettings();if(!g||!a||!a.settings)return true;const s=a.settings;
+function sameSettings(a){const g=gameSettings();if(!g||!a||!a.settings)return true;
+ if(!a.running||FFBLab.gameOf(a.game_key)!=='lmu')return true;   // réglages d'un autre jeu : pas de comparaisonconst s=a.settings;
  return s.confirmed&&Math.abs(s.stc-g.stc)<0.05&&Math.abs(s.strength-g.strength)<0.005&&Math.abs(s.mult-g.mult)<0.005;}
-function pushSettings(){const g=gameSettings();if(!anaOk||!g||sending)return;sending=true;
+// 0.14.28 : envoi seulement pendant une séance LMU / rF2 et au plus toutes les 10 s. Hors séance,
+// l'Analyzer renvoie les réglages d'un autre jeu : la fiche les renvoyait chaque seconde (journal de
+// Pat du 11 nov. : 70 envois en 2 minutes).
+let lastPush=0;
+function pushSettings(){const g=gameSettings();if(!anaOk||!g||sending)return;
+ if(!ana.running||FFBLab.gameOf(ana.game_key)!=='lmu'||Date.now()-lastPush<10000)return;
+ lastPush=Date.now();sending=true;
  fetch(ANALYZER+'/settings',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(g)}).then(r=>r.json()).then(r=>{
   if(r.ok){FFBLab.markSent(P,ana);P.sent=g;save(false);}}).catch(()=>{}).finally(()=>{sending=false;poll();});}
 function poll(){
