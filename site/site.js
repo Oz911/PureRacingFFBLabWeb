@@ -11,14 +11,14 @@ window.PRFX = {
   // Si une page Odoo change d'adresse, il suffit de corriger la ligne ici.
   pages: {
     accueil: '/',
-    spotter: '/pure-spotter',
-    training: '/pure-training',
-    telemetrie: '/pure-engineer',
-    ingenieur: '/pure-ingenieur',
-    engine: '/pure-engine',
-    motion: '/pure-motion',
-    'ffb-analyzer': '/pure-ffb-analyzer',
-    dash: '/pure-dash',
+    spotter: '/spotter',
+    training: '/training',
+    telemetrie: '/telemetrie',
+    ingenieur: '/ingenieur',
+    engine: '/engine-bass-shaker',
+    motion: '/motion',
+    'ffb-analyzer': '/ffb-analyzer',
+    dash: '/dashboard',
   },
 };
 

@@ -115,14 +115,14 @@ Même principe que l'accueil : une page Odoo par module (section en Hauteur « A
 
 | Page Odoo | Fichier (à mettre dans src=) |
 | --- | --- |
-| /pure-spotter | site/spotter.html |
-| /pure-training | site/training.html |
-| /pure-engineer (Télémétrie) | site/telemetrie.html |
-| /pure-ingenieur | site/ingenieur.html |
-| /pure-engine | site/engine.html |
-| /pure-motion | site/motion.html |
-| /pure-ffb-analyzer | site/ffb-analyzer.html |
-| /pure-dash | site/dash.html |
+| /spotter | site/spotter.html |
+| /training | site/training.html |
+| /telemetrie | site/telemetrie.html |
+| /ingenieur | site/ingenieur.html |
+| /engine-bass-shaker | site/engine.html |
+| /motion | site/motion.html |
+| /ffb-analyzer | site/ffb-analyzer.html |
+| /dashboard | site/dash.html |
 
 ```html
 <iframe id="prfx-page" src="https://oz911.github.io/PureRacingFFBLabWeb/site/training.html" title="Pure Racing FX — Training" style="display:block;width:100vw;max-width:100vw;margin-left:calc(50% - 50vw);height:3600px;border:0;background:#070e2a"></iframe>
