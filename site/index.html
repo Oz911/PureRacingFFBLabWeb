@@ -1,0 +1,331 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Pit Box · Pure Racing FX</title>
+<meta name="description" content="Pit Box, le plugin SimHub de Pure Racing FX : spotter, training, télémétrie, ingénieur, bass shakers, motion, force feedback et tableaux de bord.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Barlow:wght@400;500;600;700&family=Barlow+Condensed:ital,wght@0,600;0,700;1,700&display=swap" rel="stylesheet">
+<style>
+/* Palette Pit Box (plugin) : bleu nuit, panneaux marine, rouge Pure Racing. Thème unique, sombre. */
+:root{
+  --bg:#070E2A; --bg2:#050826; --panel:#101A3C; --panel2:#0B1434; --line:#22305A; --line2:#33405F;
+  --text:#FCFDFD; --muted:#B7C0D8; --dim:#8D98B5; --accent:#FD1424; --info:#4CC9FF; --ok:#22C55E; --guide:#FF8A1F;
+  --title:"Barlow Condensed","Bahnschrift SemiBold Condensed","Arial Narrow",sans-serif;
+  --body:"Barlow","Segoe UI",system-ui,sans-serif;
+  color-scheme:dark;
+}
+*{box-sizing:border-box}
+html,body{margin:0;background:var(--bg);color:var(--text);font:16px/1.6 var(--body);-webkit-font-smoothing:antialiased}
+img{max-width:100%;display:block}
+a{color:inherit}
+.wrap{max-width:1180px;margin:0 auto;padding-left:max(20px,env(safe-area-inset-left,0px));padding-right:max(20px,env(safe-area-inset-right,0px))}
+section{padding-block:64px}
+.kicker{font:700 13px/1 var(--title);letter-spacing:.22em;text-transform:uppercase;color:var(--accent);display:flex;align-items:center;gap:10px}
+.kicker::before{content:"";width:5px;height:15px;background:var(--accent);transform:skewX(-14deg)}
+h1,h2,h3{font-family:var(--title);font-weight:700;text-transform:uppercase;margin:0;line-height:.98;text-wrap:balance}
+h2{font-size:clamp(32px,4.4vw,48px);font-style:italic;margin-top:12px}
+h2 span,h1 span{color:var(--accent)}
+.lead{color:var(--muted);font-size:18px;max-width:62ch;margin:14px 0 0}
+.btn{display:inline-flex;align-items:center;gap:10px;font:700 16px/1 var(--title);letter-spacing:.08em;text-transform:uppercase;text-decoration:none;padding:15px 22px;border-radius:9px;border:1px solid var(--line2);background:var(--panel);color:var(--text);transition:transform .15s,background .15s}
+.btn:hover{transform:translateY(-1px);background:#16224a}
+.btn.red{background:linear-gradient(180deg,#FF3A46,#C40C18);border-color:#FF6A72}
+.btn.red:hover{background:linear-gradient(180deg,#FF4C57,#D2101D)}
+.btn small{font:600 12px var(--body);letter-spacing:0;text-transform:none;opacity:.85}
+
+/* ---------- Héros ---------- */
+.hero{position:relative;overflow:hidden;background:var(--bg2);border-bottom:1px solid var(--line)}
+.hero .photo{position:absolute;inset:0 0 0 auto;width:min(58%,720px);background:url(img/garage-hero.jpg) center 30%/cover}
+.hero .photo::after{content:"";position:absolute;inset:0;background:linear-gradient(90deg,var(--bg2) 0%,rgba(5,8,38,.82) 28%,rgba(5,8,38,.15) 70%,rgba(5,8,38,.35) 100%)}
+.hero .wrap{position:relative;padding-block:72px 64px}
+.hero .logo{width:300px;opacity:.95}
+.hero h1{font-size:clamp(48px,7.5vw,92px);font-style:italic;margin-top:28px;max-width:11ch}
+.hero .lead{max-width:46ch}
+.hero .cta{display:flex;flex-wrap:wrap;gap:12px;margin-top:30px}
+.hero .facts{display:flex;flex-wrap:wrap;gap:10px 28px;margin-top:36px;color:var(--dim);font-size:14px}
+.hero .facts b{color:var(--text);font:700 22px/1 var(--title);display:block;letter-spacing:.02em}
+
+/* ---------- Présentation ---------- */
+.about{display:grid;grid-template-columns:minmax(0,1.15fr) minmax(0,.85fr);gap:40px;align-items:center}
+.about p{color:var(--muted);margin:14px 0 0;max-width:62ch}
+.quote{margin:0;background:var(--panel);border:1px solid var(--line);border-left:4px solid var(--accent);border-radius:12px;padding:26px 28px}
+.quote p{font:600 italic 21px/1.45 var(--body);color:var(--text);margin:0}
+.quote footer{margin-top:14px;color:var(--dim);font-size:14px}
+.quote footer b{color:var(--text);font-family:var(--title);font-size:18px;letter-spacing:.05em;margin-right:6px}
+
+/* ---------- Modules ---------- */
+.flow{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:0;margin-top:34px;border:1px solid var(--line);border-radius:12px;overflow:hidden;background:var(--panel2)}
+.flow div{padding:16px 18px;border-right:1px solid var(--line);position:relative}
+.flow div:last-child{border-right:0}
+.flow b{display:block;font:700 18px/1.1 var(--title);text-transform:uppercase;letter-spacing:.04em}
+.flow span{color:var(--dim);font-size:13.5px}
+.flow i{font:700 12px var(--title);color:var(--accent);letter-spacing:.2em;font-style:normal}
+.group{margin-top:38px}
+.group h3{font-size:20px;letter-spacing:.12em;color:var(--dim);display:flex;align-items:center;gap:14px}
+.group h3::after{content:"";flex:1;height:1px;background:var(--line)}
+.cards{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:16px;margin-top:16px}
+.card{display:flex;flex-direction:column;background:var(--panel);border:1px solid var(--line);border-radius:12px;overflow:hidden;text-decoration:none;transition:border-color .15s,transform .15s;min-width:0}
+.card:hover{border-color:#4a5a8c;transform:translateY(-2px)}
+.card .img{aspect-ratio:16/8;background:#000 center/cover;position:relative}
+.card .img::after{content:"";position:absolute;inset:0;background:linear-gradient(180deg,rgba(7,14,42,0) 40%,rgba(16,26,60,.95))}
+.card .n{position:absolute;left:14px;top:12px;z-index:1;font:700 12px var(--title);letter-spacing:.2em;color:#fff;background:rgba(5,8,38,.7);border:1px solid rgba(255,255,255,.2);border-radius:5px;padding:4px 7px}
+.card .body{padding:4px 18px 18px;display:flex;flex-direction:column;flex:1}
+.card h4{margin:0;font:700 italic 26px/1 var(--title);text-transform:uppercase}
+.card .t{font:700 12.5px var(--title);letter-spacing:.14em;text-transform:uppercase;color:var(--accent);margin-top:6px}
+.card p{color:var(--muted);font-size:14.5px;line-height:1.5;margin:10px 0 0;flex:1}
+.card .go{margin-top:14px;font:700 14px var(--title);letter-spacing:.1em;text-transform:uppercase;color:var(--info)}
+.tag{display:inline-block;font:600 11px var(--body);color:var(--dim);border:1px solid var(--line2);border-radius:20px;padding:2px 8px;margin-left:6px;vertical-align:2px;text-transform:none;letter-spacing:0;font-style:normal}
+
+/* ---------- Atouts ---------- */
+.perks{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:16px;margin-top:30px}
+.perk{background:var(--panel2);border:1px solid var(--line);border-radius:12px;padding:20px}
+.perk svg{width:30px;height:30px;stroke:var(--accent);fill:none;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
+.perk.guide svg{stroke:var(--guide)}
+.perk b{display:block;font:700 19px/1.15 var(--title);text-transform:uppercase;margin-top:12px;letter-spacing:.03em}
+.perk p{color:var(--muted);font-size:14.5px;line-height:1.5;margin:8px 0 0}
+.pill{display:inline-flex;align-items:center;gap:7px;background:linear-gradient(180deg,#FFA32E,#E86A00);color:#fff;font:700 13px var(--body);border-radius:7px;padding:4px 10px}
+
+/* ---------- Jeux ---------- */
+.games{display:flex;flex-wrap:wrap;gap:10px;margin-top:22px}
+.games span{background:var(--panel);border:1px solid var(--line);border-radius:8px;padding:9px 14px;font:600 15px var(--body)}
+.games span.main{border-color:var(--accent)}
+.note{color:var(--dim);font-size:14px;margin-top:14px;max-width:70ch}
+
+/* ---------- Installation ---------- */
+.install{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,340px);gap:32px;align-items:start;margin-top:28px}
+.steps{list-style:none;margin:0;padding:0;counter-reset:s;display:grid;gap:10px}
+.steps li{counter-increment:s;display:grid;grid-template-columns:44px minmax(0,1fr);gap:14px;align-items:start;background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:14px 16px;color:var(--muted)}
+.steps li::before{content:counter(s,decimal-leading-zero);font:700 22px/1 var(--title);color:var(--accent);padding-top:2px}
+.steps li b{color:var(--text)}
+.dl{background:var(--panel);border:1px solid var(--line2);border-radius:14px;padding:24px;position:sticky;top:16px}
+.dl .v{font:700 italic 40px/1 var(--title)}
+.dl .s{color:var(--dim);font-size:14px;margin-top:6px}
+.dl .btn{width:100%;justify-content:center;margin-top:18px}
+.dl .warn{margin-top:16px;font-size:13.5px;color:var(--muted);border-top:1px solid var(--line);padding-top:14px}
+
+/* ---------- Soutien ---------- */
+.support{background:linear-gradient(100deg,#142c52,#0a1633 70%);border:1px solid #304b6d;border-radius:18px;padding:36px;display:flex;flex-wrap:wrap;gap:24px;align-items:center;justify-content:space-between}
+.support p{color:var(--muted);margin:10px 0 0;max-width:58ch}
+.links{display:flex;flex-wrap:wrap;gap:10px}
+
+@media (max-width:980px){
+  .cards,.perks{grid-template-columns:repeat(2,minmax(0,1fr))}
+  .about,.install{grid-template-columns:minmax(0,1fr)}
+  .dl{position:static}
+  .hero .photo{width:100%;opacity:.4}
+}
+@media (max-width:640px){
+  section{padding-block:44px}
+  .cards,.perks,.flow{grid-template-columns:minmax(0,1fr)}
+  .flow div{border-right:0;border-bottom:1px solid var(--line)}
+  .flow div:last-child{border-bottom:0}
+  .hero .logo{width:220px}
+  .support{padding:24px}
+}
+</style>
+</head>
+<body>
+
+<!-- ================= HÉROS ================= -->
+<header class="hero">
+  <div class="photo" role="img" aria-label="Simulateur Pure Racing dans un garage de course"></div>
+  <div class="wrap">
+    <img class="logo" src="img/logo.png" alt="Pure Racing FX">
+    <h1>Ton écurie <span>de course</span></h1>
+    <p class="lead">Pit Box réunit tous les outils Pure Racing dans un seul plugin SimHub : une radio d'équipe, un coach virage par virage, la télémétrie, un ingénieur pour ton setup, et ce qu'il faut pour faire vibrer, bouger et ressentir ta voiture.</p>
+    <div class="cta">
+      <a class="btn red" data-prfx="download" target="_top" href="#">Télécharger Pit Box <small>v<span data-prfx="version"></span></small></a>
+      <a class="btn" href="#modules">Découvrir les modules</a>
+    </div>
+    <div class="facts">
+      <div><b>8 modules</b>un seul plugin</div>
+      <div><b>6 simulations</b>LMU en tête</div>
+      <div><b>Tablette</b>réglages en roulant</div>
+      <div><b>En français</b>radio et notices</div>
+    </div>
+  </div>
+</header>
+
+<!-- ================= PRÉSENTATION ================= -->
+<section>
+  <div class="wrap about">
+    <div>
+      <div class="kicker">Pure Racing FX</div>
+      <h2>Né de la passion <span>du simracing</span></h2>
+      <p>Pure Racing FX est un projet né de la passion du simracing et d'une perpétuelle quête d'immersion, sans forcément dépenser plus. Le plugin Pit Box centralise tous mes projets, des plus simples aux plus aboutis.</p>
+      <p>Je ne prétends pas révolutionner le simracing ni proposer des outils meilleurs que ceux qui existent déjà. Téléchargez, testez, expérimentez et faites-moi part de vos retours ! Vos remarques et suggestions sont précieuses pour faire évoluer ces outils développés au fil du temps.</p>
+    </div>
+    <blockquote class="quote">
+      <p>« Je passe probablement plus de temps à imaginer, développer et expérimenter qu'à rouler sur le tarmac… mais c'est aussi ça, la passion du simracing. »</p>
+      <footer><b>Øz</b>Pure Racing FX</footer>
+    </blockquote>
+  </div>
+</section>
+
+<!-- ================= MODULES ================= -->
+<section id="modules" style="background:var(--bg2);border-block:1px solid var(--line)">
+  <div class="wrap">
+    <div class="kicker">Les modules</div>
+    <h2>Une séance <span>de A à Z</span></h2>
+    <p class="lead">Les modules suivent le déroulé d'une séance. Tu actives seulement ceux qui correspondent à ton matériel : ceux que tu coupes ne consomment rien.</p>
+
+    <div class="flow" aria-label="Déroulé d'une séance">
+      <div><i>01</i><b>La radio</b><span>Ton spotter et ton ingénieur en ligne</span></div>
+      <div><i>02</i><b>Je roule</b><span>Un conseil après chaque tour</span></div>
+      <div><i>03</i><b>J'analyse</b><span>Où je perds du temps, et pourquoi</span></div>
+      <div><i>04</i><b>Je règle</b><span>Le setup, un changement à la fois</span></div>
+    </div>
+
+    <div class="group">
+      <h3>En piste</h3>
+      <div class="cards">
+        <a class="card" data-page="/pure-spotter">
+          <div class="img" style="background-image:url(img/spotter.jpg)"><span class="n">01</span></div>
+          <div class="body"><h4>Spotter</h4><div class="t">Ta radio d'équipe</div>
+            <p>Les voitures autour de toi, l'entrée des stands, tes questions à la voix et les modules pilotés sans lâcher le volant.</p>
+            <span class="go">Découvrir →</span></div>
+        </a>
+        <a class="card" data-page="/pure-training">
+          <div class="img" style="background-image:url(img/training.jpg)"><span class="n">02</span></div>
+          <div class="body"><h4>Training <span class="tag">LMU</span></h4><div class="t">Virage par virage</div>
+            <p>Chaque tour comparé à un tour de référence de ta catégorie. Après la ligne : « Arrêt de bus, tu perds 5 dixièmes. »</p>
+            <span class="go">Découvrir →</span></div>
+        </a>
+        <a class="card" data-page="/pure-engineer">
+          <div class="img" style="background-image:url(img/engineer.jpg)"><span class="n">03</span></div>
+          <div class="body"><h4>Télémétrie</h4><div class="t">Comprendre ton chrono</div>
+            <p>Tes séances MoTeC et LMU : courbes, freinages, pneus, suspensions et trajectoires, deux tours comparés point par point.</p>
+            <span class="go">Découvrir →</span></div>
+        </a>
+        <a class="card" data-page="/pure-ingenieur">
+          <div class="img" style="background-image:url(img/ingenieur.jpg)"><span class="n">04</span></div>
+          <div class="body"><h4>Ingénieur</h4><div class="t">Réglage de setup</div>
+            <p>Ton ressenti et ta télémétrie donnent un diagnostic, puis des changements de setup chiffrés à essayer en piste.</p>
+            <span class="go">Découvrir →</span></div>
+        </a>
+      </div>
+    </div>
+
+    <div class="group">
+      <h3>Ton matériel</h3>
+      <div class="cards">
+        <a class="card" data-page="/pure-engine">
+          <div class="img" style="background-image:url(img/engine.jpg)"><span class="n">05</span></div>
+          <div class="body"><h4>Engine</h4><div class="t">Profils haptiques</div>
+            <p>Des profils moteur pour tes bass shakers, adaptés à chaque voiture et chargés automatiquement.</p>
+            <span class="go">Découvrir →</span></div>
+        </a>
+        <a class="card" data-page="/pure-motion">
+          <div class="img" style="background-image:url(img/motion.jpg)"><span class="n">06</span></div>
+          <div class="body"><h4>Motion</h4><div class="t">Vue dynamique</div>
+            <p>Les mouvements de ta voiture sur ton moniteur, ou sur ta plateforme, par OpenTrack. Préréglages par jeu et par châssis.</p>
+            <span class="go">Découvrir →</span></div>
+        </a>
+        <a class="card" data-page="/pure-ffb-analyzer">
+          <div class="img" style="background-image:url(img/ffb.jpg)"><span class="n">07</span></div>
+          <div class="body"><h4>FFB Analyzer</h4><div class="t">Force feedback mesuré</div>
+            <p>Écrêtage, marge et couple de la voiture, tour par tour : tu sais si ton réglage sature, et de combien.</p>
+            <span class="go">Découvrir →</span></div>
+        </a>
+        <a class="card" data-page="/pure-dash">
+          <div class="img" style="background-image:url(img/dash.jpg)"><span class="n">08</span></div>
+          <div class="body"><h4>Dash</h4><div class="t">Tableaux de bord</div>
+            <p>Une collection de dashboards SimHub, du plus épuré au plus complet, avec drapeaux et écarts avec tes rivaux.</p>
+            <span class="go">Découvrir →</span></div>
+        </a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ================= ATOUTS ================= -->
+<section>
+  <div class="wrap">
+    <div class="kicker">Pit Box au quotidien</div>
+    <h2>Pensé pour <span>le baquet</span></h2>
+    <div class="perks">
+      <div class="perk">
+        <svg viewBox="0 0 24 24"><rect x="5" y="2.5" width="14" height="19" rx="2.5"/><path d="M10 18.5h4"/></svg>
+        <b>Depuis ta tablette</b>
+        <p>Engine, Motion, Télémétrie et Training s'ouvrent sur une tablette ou un téléphone du même Wi-Fi : tu règles en roulant.</p>
+      </div>
+      <div class="perk">
+        <svg viewBox="0 0 24 24"><path d="M12 15a3 3 0 0 0 3-3V6a3 3 0 0 0-6 0v6a3 3 0 0 0 3 3z"/><path d="M5.5 11a6.5 6.5 0 0 0 13 0M12 17.5V21"/></svg>
+        <b>À la voix</b>
+        <p>Pose tes questions à ton ingénieur, active ou coupe un module : le Spotter comprend le français.</p>
+      </div>
+      <div class="perk">
+        <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M8 9.5l-3 2.5 3 2.5M16 9.5l3 2.5-3 2.5"/></svg>
+        <b>Un bouton du volant</b>
+        <p>Bascule entre le jeu et Pit Box sans lâcher le volant. Le plus confortable : le jeu en plein écran fenêtré.</p>
+      </div>
+      <div class="perk guide">
+        <svg viewBox="0 0 24 24"><path d="M2.5 5c3-1.6 6-1.6 9.5 1 3.5-2.6 6.5-2.6 9.5-1v14c-3-1.6-6-1.6-9.5 1-3.5-2.6-6.5-2.6-9.5-1z"/><path d="M12 6v14"/></svg>
+        <b>Prise en main</b>
+        <p>Chaque module a son bouton <span class="pill">Prise en main</span> : le mode d'emploi, toujours à un clic.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ================= JEUX ================= -->
+<section style="padding-top:0">
+  <div class="wrap">
+    <div class="kicker">Compatibilité</div>
+    <h2>Tes <span>simulations</span></h2>
+    <div class="games">
+      <span class="main">Le Mans Ultimate</span><span>Assetto Corsa</span><span>Assetto Corsa Competizione</span>
+      <span>Assetto Corsa EVO</span><span>Automobilista 2</span><span>rFactor 2</span>
+    </div>
+    <p class="note">Pit Box est un plugin pour SimHub (Windows). Spotter, Training et Ingénieur sont pensés d'abord pour Le Mans Ultimate ; Télémétrie lit les fichiers MoTeC des autres simulations.</p>
+  </div>
+</section>
+
+<!-- ================= INSTALLATION ================= -->
+<section id="installation" style="background:var(--bg2);border-block:1px solid var(--line)">
+  <div class="wrap">
+    <div class="kicker">Installation</div>
+    <h2>En piste en <span>cinq minutes</span></h2>
+    <div class="install">
+      <ol class="steps">
+        <li><div><b>Télécharge et décompresse</b> l'installateur PureRacingFx_Setup.exe.</div></li>
+        <li><div><b>Ferme SimHub</b> avant de lancer l'installation : le fichier du plugin doit pouvoir être copié.</div></li>
+        <li><div><b>Lance l'installateur</b>, accepte la licence et confirme le dossier de SimHub. Si Windows affiche une alerte, clique sur « Informations complémentaires » puis « Exécuter quand même ».</div></li>
+        <li><div><b>Accepte</b> si l'installateur te propose de retirer les anciens plugins Pure Racing.</div></li>
+        <li><div><b>Relance SimHub</b> : dans Settings › Plugins, vérifie que PureRacingFx est coché, puis ouvre Pit Box dans le menu de gauche.</div></li>
+        <li><div><b>Active tes modules</b> sur l'accueil de Pit Box, puis ouvre leur « Prise en main ».</div></li>
+      </ol>
+      <aside class="dl">
+        <div class="kicker">Pit Box</div>
+        <div class="v" style="margin-top:12px">v<span data-prfx="version"></span></div>
+        <div class="s" data-prfx="status"></div>
+        <a class="btn red" data-prfx="download" target="_top" href="#">Télécharger</a>
+        <p class="warn">L'installateur n'est pas signé : un certificat coûte des centaines d'euros. Le fichier n'est pas dangereux ; Windows affiche simplement une alerte.</p>
+      </aside>
+    </div>
+  </div>
+</section>
+
+<!-- ================= SOUTIEN ================= -->
+<section>
+  <div class="wrap">
+    <div class="support">
+      <div>
+        <div class="kicker">Soutenir</div>
+        <h2>Un projet <span>indépendant</span></h2>
+        <p>Pit Box est un projet indépendant. Chaque contribution, même modeste, permet de continuer à développer, et chaque retour aide à l'améliorer.</p>
+      </div>
+      <div class="links">
+        <a class="btn red" data-prfx="support" target="_top" href="#">Soutenir Pure Racing FX</a>
+        <a class="btn" href="https://www.youtube.com/@PureRacingFx" target="_blank" rel="noopener">YouTube</a>
+        <a class="btn" href="https://www.instagram.com/pureracingfx/" target="_blank" rel="noopener">Instagram</a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<script src="site.js"></script>
+</body>
+</html>

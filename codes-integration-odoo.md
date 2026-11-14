@@ -86,3 +86,21 @@ retirer `soon:true` et renseigner son lien à sa sortie. Hauteur plus grande sur
 <style>.prfx-volant{display:block;width:100%;height:600px;border:0;background:#fff}@media (max-width:600px){.prfx-volant{height:900px}}</style>
 <iframe class="prfx-volant" src="https://oz911.github.io/PureRacingFFBLabWeb/modules-hub/?v=2" title="Pure Racing — modules Pit Box" loading="lazy" referrerpolicy="strict-origin-when-cross-origin"></iframe>
 ```
+
+
+## 10 — Nouveau site : accueil (page Odoo : /)
+
+Page d'accueil complète (présentation de Pit Box, 8 modules, installation, téléchargement), dans le dossier `site/`.
+Version et lien de l'installateur : `site/site.js` (un seul endroit à changer à chaque publication).
+La page envoie sa hauteur à Odoo : le cadre s'ajuste tout seul, sans double barre de défilement.
+Dans Odoo : un bloc « Embed Code » pleine largeur, seul sur la page, avec ce code :
+
+```html
+<iframe id="prfx-accueil" src="https://oz911.github.io/PureRacingFFBLabWeb/site/" title="Pure Racing FX — Pit Box" style="display:block;width:100%;height:4400px;border:0;background:#070e2a" referrerpolicy="strict-origin-when-cross-origin"></iframe>
+<script>
+window.addEventListener('message',function(e){
+  if(e.origin!=='https://oz911.github.io'||!e.data||!e.data.prfxHeight)return;
+  var f=document.getElementById('prfx-accueil'); if(f) f.style.height=e.data.prfxHeight+'px';
+});
+</script>
+```
