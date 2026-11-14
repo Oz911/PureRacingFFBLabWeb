@@ -1,6 +1,8 @@
 # Génère les pages des modules du site Pure Racing FX (même modèle que training.html).
 import html, sys
 OUT = sys.argv[1]
+# À augmenter quand site.css ou site.js changent : les navigateurs gardent l'ancien fichier 10 min.
+VERSION = '3'
 
 HEAD = '''<!doctype html>
 <html lang="fr">
@@ -12,11 +14,11 @@ HEAD = '''<!doctype html>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Barlow:wght@400;500;600;700&family=Barlow+Condensed:ital,wght@0,600;0,700;1,700&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="site.css">
+<link rel="stylesheet" href="site.css?v={V}">
 </head>
 <body>
 '''
-MIC = '<svg viewBox="0 0 24 24"><path d="M12 15a3 3 0 0 0 3-3V6a3 3 0 0 0-6 0v6a3 3 0 0 0 3 3z"/><path d="M5.5 11a6.5 6.5 0 0 0 13 0M12 17.5V21"/></svg>'
+MIC = '<svg width="26" height="26" viewBox="0 0 24 24"><path d="M12 15a3 3 0 0 0 3-3V6a3 3 0 0 0-6 0v6a3 3 0 0 0 3 3z"/><path d="M5.5 11a6.5 6.5 0 0 0 13 0M12 17.5V21"/></svg>'
 TONES = ['tone-steel', 'tone-navy', 'tone-black', 'tone-navy']
 
 def hero(p):
@@ -110,14 +112,14 @@ def nxt(n):
 '''
 
 def page(p):
-    s = HEAD.format(name=p['name'], desc=html.escape(p['desc'])) + hero(p)
+    s = HEAD.replace('{V}', VERSION).format(name=p['name'], desc=html.escape(p['desc'])) + hero(p)
     for i, f in enumerate(p['features']):
         s += feature(f, i)
     n = len(p['features'])
     if p.get('boxes'):
         s += boxes(p['boxes'], TONES[n % len(TONES)]); n += 1
     s += table(p['table'], 'tone-steel' if TONES[(n - 1) % len(TONES)] != 'tone-steel' else 'tone-black')
-    s += nxt(p['next']) + '\n<script src="site.js"></script>\n</body>\n</html>\n'
+    s += nxt(p['next']) + '\n<script src="site.js?v=' + VERSION + '"></script>\n</body>\n</html>\n'
     open(f"{OUT}/{p['file']}", 'w', encoding='utf-8').write(s)
 
 PAGES = [
