@@ -8,7 +8,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Barlow:wght@400;500;600;700&family=Barlow+Condensed:ital,wght@0,600;0,700;1,700&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="site.css?v=6">
+<link rel="stylesheet" href="site.css?v=7">
 </head>
 <body>
 
@@ -25,6 +25,7 @@
     <div class="cta">
       <a class="btn red" href="#modules">Découvrir les modules</a>
       <a class="btn ghost" href="#video">▶ Voir Pit Box en vidéo</a>
+      <a class="btn ghost heartlink" href="#soutenir">♥ Soutenir le projet</a>
     </div>
   </div>
   <div class="strip"><div class="wrap">
@@ -93,25 +94,25 @@
     <div class="group">
       <h3>En piste</h3>
       <div class="cards">
-        <a class="card" data-page="/pure-spotter">
+        <a class="card" data-page="spotter">
           <div class="img" style="background-image:url(img/spotter.jpg)"><span class="n">01</span></div>
           <div class="body"><h4>Spotter</h4><div class="t">Ta radio d'équipe</div>
             <p>Les voitures autour de toi, l'entrée des stands, tes questions à la voix et les modules pilotés sans lâcher le volant.</p>
             <span class="go">Découvrir →</span></div>
         </a>
-        <a class="card" data-page="/pure-training">
+        <a class="card" data-page="training">
           <div class="img" style="background-image:url(img/training.jpg)"><span class="n">02</span></div>
           <div class="body"><h4>Training <span class="tag">LMU</span></h4><div class="t">Virage par virage</div>
             <p>Chaque tour comparé à un tour de référence de ta catégorie. Après la ligne : « Arrêt de bus, tu perds 5 dixièmes. »</p>
             <span class="go">Découvrir →</span></div>
         </a>
-        <a class="card" data-page="/pure-engineer">
+        <a class="card" data-page="telemetrie">
           <div class="img" style="background-image:url(img/engineer.jpg)"><span class="n">03</span></div>
           <div class="body"><h4>Télémétrie</h4><div class="t">Comprendre ton chrono</div>
             <p>Tes séances MoTeC et LMU : courbes, freinages, pneus, suspensions et trajectoires, deux tours comparés point par point.</p>
             <span class="go">Découvrir →</span></div>
         </a>
-        <a class="card" data-page="/pure-ingenieur">
+        <a class="card" data-page="ingenieur">
           <div class="img" style="background-image:url(img/ingenieur.jpg)"><span class="n">04</span></div>
           <div class="body"><h4>Ingénieur</h4><div class="t">Réglage de setup</div>
             <p>Ton ressenti et ta télémétrie donnent un diagnostic, puis des changements de setup chiffrés à essayer en piste.</p>
@@ -123,25 +124,25 @@
     <div class="group">
       <h3>Ton matériel</h3>
       <div class="cards">
-        <a class="card" data-page="/pure-engine">
+        <a class="card" data-page="engine">
           <div class="img" style="background-image:url(img/engine.jpg)"><span class="n">05</span></div>
           <div class="body"><h4>Engine</h4><div class="t">Profils haptiques</div>
             <p>Des profils moteur pour tes bass shakers, adaptés à chaque voiture et chargés automatiquement.</p>
             <span class="go">Découvrir →</span></div>
         </a>
-        <a class="card" data-page="/pure-motion">
+        <a class="card" data-page="motion">
           <div class="img" style="background-image:url(img/motion.jpg)"><span class="n">06</span></div>
           <div class="body"><h4>Motion</h4><div class="t">Vue dynamique</div>
             <p>Les mouvements de ta voiture sur ton moniteur, ou sur ta plateforme, par OpenTrack. Préréglages par jeu et par châssis.</p>
             <span class="go">Découvrir →</span></div>
         </a>
-        <a class="card" data-page="/pure-ffb-analyzer">
+        <a class="card" data-page="ffb-analyzer">
           <div class="img" style="background-image:url(img/ffb.jpg)"><span class="n">07</span></div>
           <div class="body"><h4>FFB Analyzer</h4><div class="t">Force feedback mesuré</div>
             <p>Écrêtage, marge et couple de la voiture, tour par tour : tu sais si ton réglage sature, et de combien.</p>
             <span class="go">Découvrir →</span></div>
         </a>
-        <a class="card" data-page="/pure-dash">
+        <a class="card" data-page="dash">
           <div class="img" style="background-image:url(img/dash.jpg)"><span class="n">08</span></div>
           <div class="body"><h4>Dash</h4><div class="t">Tableaux de bord</div>
             <p>Une collection de dashboards SimHub, du plus épuré au plus complet, avec drapeaux et écarts avec tes rivaux.</p>
@@ -199,7 +200,7 @@
 <section id="installation" class="tone-deep">
   <div class="wrap">
     <div class="kicker">Installation</div>
-    <h2>En piste en <span>cinq minutes</span></h2>
+    <h2>Télécharge <span>et soutiens</span></h2>
     <div class="install">
       <ol class="steps">
         <li><div><b>Télécharge et décompresse</b> l'installateur PureRacingFx_Setup.exe.</div></li>
@@ -210,35 +211,26 @@
         <li><div><b>Active tes modules</b> sur l'accueil de Pit Box, puis ouvre leur « Prise en main ».</div></li>
       </ol>
       <aside class="dl">
-        <div class="kicker">Pit Box</div>
-        <div class="v" style="margin-top:12px">v<span data-prfx="version"></span></div>
-        <div class="s" data-prfx="status"></div>
-        <a class="btn red" data-prfx="download" target="_top" href="#">Télécharger</a>
-        <p class="warn">L'installateur n'est pas signé : un certificat coûte des centaines d'euros. Le fichier n'est pas dangereux ; Windows affiche simplement une alerte.</p>
+        <div class="dl-get">
+          <div class="kicker">Pit Box</div>
+          <div class="v" style="margin-top:12px">v<span data-prfx="version"></span></div>
+          <div class="s" data-prfx="status"></div>
+          <a class="btn red" data-prfx="download" target="_top" href="#">Télécharger</a>
+          <p class="warn">L'installateur n'est pas signé : un certificat coûte des centaines d'euros. Le fichier n'est pas dangereux ; Windows affiche simplement une alerte.</p>
+        </div>
+        <div class="dl-support" id="soutenir">
+          <div class="heart" aria-hidden="true"><svg width="26" height="26" viewBox="0 0 24 24"><path d="M12 21s-7.5-4.6-9.6-9.2C.9 8.4 3 4.5 6.7 4.5c2.1 0 3.6 1.1 4.3 2.6h2c.7-1.5 2.2-2.6 4.3-2.6 3.7 0 5.8 3.9 4.3 7.3C19.5 16.4 12 21 12 21z"/></svg></div>
+          <h3>Pit Box est gratuit.<br><span>Tu peux le faire avancer.</span></h3>
+          <p>Pit Box est développé en indépendant, sur le temps libre. Ton soutien finance les prochains modules, les nouveaux circuits du Training et le temps passé à tester en piste.</p>
+          <a class="btn gold" data-prfx="support" target="_top" href="#">Soutenir Pure Racing FX</a>
+          <p class="also">Un retour ou une idée compte aussi : écris-nous sur <a href="https://www.instagram.com/pureracingfx/" target="_blank" rel="noopener">Instagram</a>, ou suis les nouveautés sur <a href="https://www.youtube.com/@PureRacingFx" target="_blank" rel="noopener">YouTube</a>.</p>
+        </div>
       </aside>
     </div>
   </div>
 </section>
 
-<!-- ================= SOUTIEN ================= -->
-<section class="tone-steel">
-  <div class="wrap">
-    <div class="support">
-      <div>
-        <div class="kicker">Soutenir</div>
-        <h2>Un projet <span>indépendant</span></h2>
-        <p>Pit Box est un projet indépendant. Chaque contribution, même modeste, permet de continuer à développer, et chaque retour aide à l'améliorer.</p>
-      </div>
-      <div class="links">
-        <a class="btn red" data-prfx="support" target="_top" href="#">Soutenir Pure Racing FX</a>
-        <a class="btn" href="https://www.youtube.com/@PureRacingFx" target="_blank" rel="noopener">YouTube</a>
-        <a class="btn" href="https://www.instagram.com/pureracingfx/" target="_blank" rel="noopener">Instagram</a>
-      </div>
-    </div>
-  </div>
-</section>
-
-<script src="site.js?v=6"></script>
+<script src="site.js?v=7"></script>
 <script>
 /* Accroche qui tourne sous le titre (inspiration : en-têtes vidéo dynamiques). */
 (function(){

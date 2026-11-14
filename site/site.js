@@ -3,11 +3,23 @@
 window.PRFX = {
   version: '0.14.66',
   status: 'Version bêta',
-  // Adresse fixe (redirection Odoo /telecharger → fichier joint de la dernière version).
-  // À chaque version : changer seulement la cible de la redirection dans Odoo.
+  // Adresse fixe : redirection Odoo /telecharger → dernière release GitHub (rien à changer à chaque version).
   download: 'https://pureracing-fx.odoo.com/telecharger',
   support: 'https://pureracing-fx.odoo.com/r/abg',
   odoo: 'https://pureracing-fx.odoo.com',
+  // Adresse de chaque page du site Odoo (ce qui suit pureracing-fx.odoo.com).
+  // Si une page Odoo change d'adresse, il suffit de corriger la ligne ici.
+  pages: {
+    accueil: '/',
+    spotter: '/pure-spotter',
+    training: '/pure-training',
+    telemetrie: '/pure-engineer',
+    ingenieur: '/pure-ingenieur',
+    engine: '/pure-engine',
+    motion: '/pure-motion',
+    'ffb-analyzer': '/pure-ffb-analyzer',
+    dash: '/pure-dash',
+  },
 };
 
 (function () {
@@ -21,7 +33,8 @@ window.PRFX = {
     });
     // Liens vers les pages Odoo : ouverts dans la fenêtre du site, pas dans le cadre.
     document.querySelectorAll('a[data-page]').forEach(function (a) {
-      a.setAttribute('href', P.odoo + a.getAttribute('data-page'));
+      var k = a.getAttribute('data-page'), path = P.pages[k] || k;
+      a.setAttribute('href', /^https?:/.test(path) ? path : P.odoo + path);
       a.setAttribute('target', '_top');
     });
   }

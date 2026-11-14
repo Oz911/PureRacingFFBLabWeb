@@ -2,7 +2,7 @@
 import html, sys
 OUT = sys.argv[1]
 # À augmenter quand site.css ou site.js changent : les navigateurs gardent l'ancien fichier 10 min.
-VERSION = '6'
+VERSION = '7'
 
 HEAD = '''<!doctype html>
 <html lang="fr">
@@ -28,7 +28,7 @@ def hero(p):
   <div class="bg" style="background-image:url(img/{p['img']})"></div>
   <div class="veil"></div>
   <div class="wrap">
-    <div class="crumbs"><a data-page="/">Pit Box</a> › <b>Module {p['num']}</b> · {p['name']}</div>
+    <div class="crumbs"><a data-page="accueil">Pit Box</a> › <b>Module {p['num']}</b> · {p['name']}</div>
     <h1>Pure Racing <span>{p['title']}</span></h1>
     <div class="sub">{p['sub']}</div>
     <p class="lead">{p['lead']}</p>
@@ -158,7 +158,7 @@ dict(file='spotter.html', num='01', name='Spotter', title='Spotter', img='spotte
          ("Bouton du volant", "Un appui pour parler. Le même bouton peut aussi servir à la bascule jeu / Pit Box."),
          ("Voix", "Une voix enregistrée pour les annonces courantes, et une voix de synthèse pour le reste."),
          ("Langue", "Français, pour les annonces comme pour les questions.")],
-  next=dict(t='Ensuite : <span>Training</span>', p="Tes tours comparés à une référence, virage par virage, avec un conseil à la radio.", page='/pure-training', label='02 · Training')),
+  next=dict(t='Ensuite : <span>Training</span>', p="Tes tours comparés à une référence, virage par virage, avec un conseil à la radio.", page='training', label='02 · Training')),
 
 # ------------------------------------------------------------------ TÉLÉMÉTRIE
 dict(file='telemetrie.html', num='03', name='Télémétrie', title='Télémétrie', img='engineer.jpg',
@@ -190,7 +190,7 @@ dict(file='telemetrie.html', num='03', name='Télémétrie', title='Télémétri
          ("Jeux", "Le Mans Ultimate en priorité ; les autres jeux qui exportent au format MoTeC."),
          ("Place sur le disque", "Une croix à côté de chaque séance supprime les vieux enregistrements, qui pèsent lourd."),
          ("Tablette", "Toutes les pages s'ouvrent aussi sur une tablette ou un téléphone du même Wi-Fi.")],
-  next=dict(t="Ensuite : <span>l'ingénieur</span>", p="De la télémétrie au setup : un diagnostic et des réglages à essayer.", page='/pure-ingenieur', label='04 · Ingénieur')),
+  next=dict(t="Ensuite : <span>l'ingénieur</span>", p="De la télémétrie au setup : un diagnostic et des réglages à essayer.", page='ingenieur', label='04 · Ingénieur')),
 
 # ------------------------------------------------------------------ INGÉNIEUR
 dict(file='ingenieur.html', num='04', name='Ingénieur', title='Ingénieur', img='ingenieur.jpg',
@@ -219,7 +219,7 @@ dict(file='ingenieur.html', num='04', name='Ingénieur', title='Ingénieur', img
          ("Jeu", "Pensé pour Le Mans Ultimate : le setup est lu dans les fichiers de la séance."),
          ("Conseils", "Des pistes de réglage à essayer en piste, pas une vérité absolue : ton ressenti a toujours le dernier mot."),
          ("Radio", "Avec le Spotter, ton ingénieur te parle aussi en piste : encouragements et conseils.")],
-  next=dict(t='Ensuite : <span>Engine</span>', p="Côté matériel : des profils moteur pour tes bass shakers.", page='/pure-engine', label='05 · Engine')),
+  next=dict(t='Ensuite : <span>Engine</span>', p="Côté matériel : des profils moteur pour tes bass shakers.", page='engine', label='05 · Engine')),
 
 # ------------------------------------------------------------------ ENGINE
 dict(file='engine.html', num='05', name='Engine', title='Engine', img='engine.jpg',
@@ -241,7 +241,7 @@ dict(file='engine.html', num='05', name='Engine', title='Engine', img='engine.jp
   table=[("Matériel", "Un ou plusieurs bass shakers (transducteurs) branchés sur une carte son, gérés par SimHub ShakeIt."),
          ("Jeux", "Le Mans Ultimate en priorité (templates) ; les jeux reconnus par SimHub."),
          ("Sortie audio", "Le spectre peut écouter la sortie réelle de tes shakers pour vérifier le rendu.")],
-  next=dict(t='Ensuite : <span>Motion</span>', p="Les mouvements de ta voiture sur ton moniteur, ou sur ta plateforme.", page='/pure-motion', label='06 · Motion')),
+  next=dict(t='Ensuite : <span>Motion</span>', p="Les mouvements de ta voiture sur ton moniteur, ou sur ta plateforme.", page='motion', label='06 · Motion')),
 
 # ------------------------------------------------------------------ MOTION
 dict(file='motion.html', num='06', name='Motion', title='Motion', img='motion.jpg',
@@ -269,7 +269,7 @@ dict(file='motion.html', num='06', name='Motion', title='Motion', img='motion.jp
   table=[("Logiciel", "OpenTrack (gratuit), configuré une fois : entrée UDP sur le port 4242, sortie freetrack. La prise en main du module guide pas à pas."),
          ("Jeux", "Ceux qui acceptent un suivi de tête (TrackIR / freetrack) : Le Mans Ultimate, et d'autres. Pas Assetto Corsa, qui a son propre mouvement avec CSP."),
          ("Sens des axes", "Seul Z s'inverse dans OpenTrack ; les autres avec « Inverser » dans Pit Box.")],
-  next=dict(t='Ensuite : <span>FFB Analyzer</span>', p="Ton force feedback mesuré : écrêtage, marge et couple.", page='/pure-ffb-analyzer', label='07 · FFB Analyzer')),
+  next=dict(t='Ensuite : <span>FFB Analyzer</span>', p="Ton force feedback mesuré : écrêtage, marge et couple.", page='ffb-analyzer', label='07 · FFB Analyzer')),
 
 # ------------------------------------------------------------------ FFB ANALYZER
 dict(file='ffb-analyzer.html', num='07', name='FFB Analyzer', title='FFB Analyzer', img='ffb.jpg',
@@ -293,7 +293,7 @@ dict(file='ffb-analyzer.html', num='07', name='FFB Analyzer', title='FFB Analyze
          ("Jeux", "Le Mans Ultimate, rFactor 2, Assetto Corsa (et les jeux qui publient leur FFB dans SimHub)."),
          ("Sessions", "Chaque séance est enregistrée : tu compares tes réglages d'un jour à l'autre."),
          ("Tablette", "Une page de suivi en direct s'ouvre sur une tablette ou un téléphone du même Wi-Fi.")],
-  next=dict(t='Ensuite : <span>Dash</span>', p="Des tableaux de bord SimHub pour tous les styles de pilotage.", page='/pure-dash', label='08 · Dash')),
+  next=dict(t='Ensuite : <span>Dash</span>', p="Des tableaux de bord SimHub pour tous les styles de pilotage.", page='dash', label='08 · Dash')),
 
 # ------------------------------------------------------------------ DASH
 dict(file='dash.html', num='08', name='Dash', title='Dash', img='dash.jpg',
@@ -312,7 +312,7 @@ dict(file='dash.html', num='08', name='Dash', title='Dash', img='dash.jpg',
   table=[("Installation", "Télécharge le modèle, puis double-clique dessus : SimHub l'ajoute à tes tableaux de bord."),
          ("Écrans", "Un écran de PC, un écran secondaire, une tablette ou un écran de volant reconnu par SimHub."),
          ("Assetto Corsa", "Les autres voitures ne sont connues que si les applications Python sont activées dans le jeu.")],
-  next=dict(t='Retour <span>à Pit Box</span>', p="Les huit modules, la vidéo et l'installation.", page='/', label='Accueil')),
+  next=dict(t='Retour <span>à Pit Box</span>', p="Les huit modules, la vidéo et l'installation.", page='accueil', label='Accueil')),
 ]
 
 for p in PAGES:

@@ -105,18 +105,30 @@ h2 span,h1 span{color:var(--accent)}
 .note{color:var(--dim);font-size:14px;margin-top:14px;max-width:70ch}
 
 /* ---------- Installation ---------- */
-.install{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,340px);gap:32px;align-items:start;margin-top:28px}
+.install{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,400px);gap:32px;align-items:start;margin-top:28px}
 .steps{list-style:none;margin:0;padding:0;counter-reset:s;display:grid;gap:10px}
 .steps li{counter-increment:s;display:grid;grid-template-columns:44px minmax(0,1fr);gap:14px;align-items:start;background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:14px 16px;color:var(--muted)}
 .steps li::before{content:counter(s,decimal-leading-zero);font:700 22px/1 var(--title);color:var(--accent);padding-top:2px}
 .steps li b{color:var(--text)}
-.dl{background:var(--panel);border:1px solid var(--line2);border-radius:14px;padding:24px;position:sticky;top:16px}
+.dl{background:var(--panel);border:1px solid var(--line2);border-radius:14px;overflow:hidden;position:sticky;top:16px}
+.dl-get{padding:24px}
 .dl .v{font:700 italic 40px/1 var(--title)}
 .dl .s{color:var(--dim);font-size:14px;margin-top:6px}
 .dl .btn{width:100%;justify-content:center;margin-top:18px}
 .dl .warn{margin-top:16px;font-size:13.5px;color:var(--muted);border-top:1px solid var(--line);padding-top:14px}
 
-/* ---------- Soutien ---------- */
+/* ---------- Soutien (dans le bloc de téléchargement) ---------- */
+.dl-support{padding:24px;background:linear-gradient(160deg,rgba(255,138,31,.20),rgba(253,20,36,.10) 55%,transparent);border-top:1px solid rgba(255,138,31,.45);display:grid;gap:12px}
+.dl-support .heart{width:46px;height:46px;border-radius:50%;display:grid;place-items:center;background:rgba(255,138,31,.16);border:1px solid rgba(255,138,31,.5)}
+.dl-support .heart svg{fill:var(--guide)}
+.dl-support h3{font:700 italic 26px/1.05 var(--title);text-transform:uppercase}
+.dl-support h3 span{color:var(--guide)}
+.dl-support p{margin:0;color:var(--muted);font-size:15px}
+.dl-support .also{font-size:13.5px;color:var(--dim)}
+.dl-support .also a{color:var(--text)}
+.btn.gold{background:var(--guide);border-color:var(--guide);color:#1a0d00;width:100%;justify-content:center;font-size:17px}
+.btn.gold:hover{background:#ffa047;border-color:#ffa047}
+.hero .heartlink{border-color:rgba(255,138,31,.6);color:#ffc48a}
 .support{background:linear-gradient(100deg,#142c52,#0a1633 70%);border:1px solid #304b6d;border-radius:18px;padding:36px;display:flex;flex-wrap:wrap;gap:24px;align-items:center;justify-content:space-between}
 .support p{color:var(--muted);margin:10px 0 0;max-width:58ch}
 .links{display:flex;flex-wrap:wrap;gap:10px}
@@ -204,3 +216,4 @@ table.ref td:first-child{color:var(--text);font-weight:600;white-space:nowrap}
   .feat.rev .txt{order:0}
   .grid3{grid-template-columns:minmax(0,1fr)}
 }
+.dl-support .btn{margin-top:4px}
