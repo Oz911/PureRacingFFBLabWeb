@@ -1,7 +1,9 @@
 /* Pure Racing FX — réglages communs du site (pages intégrées dans Odoo).
-   À mettre à jour à chaque publication de Pit Box : version et lien de l'installateur. */
+   Le numéro de version est lu sur la dernière release GitHub à l'ouverture de la page :
+   rien à changer à chaque publication. La valeur ci-dessous ne sert que si GitHub ne répond pas. */
 window.PRFX = {
-  version: '0.14.66',
+  version: '0.14.67',
+  releases: 'https://api.github.com/repos/Oz911/PureRacingFFBLabWeb/releases/latest',
   status: 'Version bêta',
   // Adresse fixe : redirection Odoo /telecharger → dernière release GitHub (rien à changer à chaque version).
   download: 'https://pureracing-fx.odoo.com/telecharger',
@@ -58,8 +60,21 @@ window.PRFX = {
     if (window.parent !== window) { try { parent.postMessage({ prfxScroll: y }, '*'); } catch (err) {} }
     else t.scrollIntoView({ behavior: 'smooth' });
   });
+  // Dernière version publiée (release GitHub « latest », tag vX.Y.Z).
+  function latest() {
+    if (!window.fetch) return;
+    fetch(P.releases, { headers: { Accept: 'application/vnd.github+json' } })
+      .then(function (r) { return r.ok ? r.json() : null; })
+      .then(function (j) {
+        var v = j && j.tag_name ? String(j.tag_name).replace(/^v/i, '') : '';
+        if (!/^\d+\.\d+\.\d+$/.test(v)) return;
+        P.version = v;
+        document.querySelectorAll('[data-prfx="version"]').forEach(function (el) { el.textContent = v; });
+      })
+      .catch(function () {});
+  }
   document.addEventListener('DOMContentLoaded', function () {
-    fill(); post();
+    fill(); post(); latest();
     if (window.ResizeObserver) new ResizeObserver(post).observe(document.body);
     window.addEventListener('load', post);
   });
