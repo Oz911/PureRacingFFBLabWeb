@@ -93,14 +93,16 @@ retirer `soon:true` et renseigner son lien à sa sortie. Hauteur plus grande sur
 Page d'accueil complète (présentation de Pit Box, 8 modules, installation, téléchargement), dans le dossier `site/`.
 Version et lien de l'installateur : `site/site.js` (un seul endroit à changer à chaque publication).
 La page envoie sa hauteur à Odoo : le cadre s'ajuste tout seul, sans double barre de défilement.
-Dans Odoo : un bloc « Embed Code » pleine largeur, seul sur la page, avec ce code :
+Dans Odoo : un bloc « Embed Code » pleine largeur, seul sur la page (section sans marge, fond #070E2A), avec ce code. Le script ajuste la hauteur du cadre et fait défiler la page Odoo vers les ancres (« Découvrir les modules »).
 
 ```html
-<iframe id="prfx-accueil" src="https://oz911.github.io/PureRacingFFBLabWeb/site/" title="Pure Racing FX — Pit Box" style="display:block;width:100%;height:4400px;border:0;background:#070e2a" referrerpolicy="strict-origin-when-cross-origin"></iframe>
+<iframe id="prfx-accueil" src="https://oz911.github.io/PureRacingFFBLabWeb/site/" title="Pure Racing FX — Pit Box" style="display:block;width:100%;height:4600px;border:0;background:#070e2a"></iframe>
 <script>
 window.addEventListener('message',function(e){
-  if(e.origin!=='https://oz911.github.io'||!e.data||!e.data.prfxHeight)return;
-  var f=document.getElementById('prfx-accueil'); if(f) f.style.height=e.data.prfxHeight+'px';
+  if(e.origin!=='https://oz911.github.io'||!e.data)return;
+  var f=document.getElementById('prfx-accueil'); if(!f)return;
+  if(e.data.prfxHeight) f.style.height=e.data.prfxHeight+'px';
+  if(e.data.prfxScroll!=null) window.scrollTo({top:f.getBoundingClientRect().top+window.scrollY+e.data.prfxScroll-80,behavior:'smooth'});
 });
 </script>
 ```

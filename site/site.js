@@ -32,6 +32,18 @@ window.PRFX = {
     last = h;
     try { parent.postMessage({ prfxHeight: h, page: location.pathname }, '*'); } catch (e) {}
   }
+  // Ancres (« Découvrir les modules ») : dans Odoo, le cadre a toute sa hauteur et c'est la
+  // page Odoo qui défile ; on lui demande d'aller à la bonne hauteur.
+  document.addEventListener('click', function (e) {
+    var a = e.target.closest && e.target.closest('a[href^="#"]');
+    if (!a || a.getAttribute('href').length < 2) return;
+    var t = document.getElementById(a.getAttribute('href').slice(1));
+    if (!t) return;
+    e.preventDefault();
+    var y = t.getBoundingClientRect().top + window.scrollY;
+    if (window.parent !== window) { try { parent.postMessage({ prfxScroll: y }, '*'); } catch (err) {} }
+    else t.scrollIntoView({ behavior: 'smooth' });
+  });
   document.addEventListener('DOMContentLoaded', function () {
     fill(); post();
     if (window.ResizeObserver) new ResizeObserver(post).observe(document.body);
