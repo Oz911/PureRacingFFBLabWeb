@@ -2,7 +2,7 @@
 import html, sys
 OUT = sys.argv[1]
 # À augmenter quand site.css ou site.js changent : les navigateurs gardent l'ancien fichier 10 min.
-VERSION = '5'
+VERSION = '6'
 
 HEAD = '''<!doctype html>
 <html lang="fr">

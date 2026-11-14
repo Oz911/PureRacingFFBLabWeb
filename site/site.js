@@ -1,7 +1,7 @@
 /* Pure Racing FX — réglages communs du site (pages intégrées dans Odoo).
    À mettre à jour à chaque publication de Pit Box : version et lien de l'installateur. */
 window.PRFX = {
-  version: '0.14.65',
+  version: '0.14.66',
   status: 'Version bêta',
   // Adresse fixe (redirection Odoo /telecharger → fichier joint de la dernière version).
   // À chaque version : changer seulement la cible de la redirection dans Odoo.
