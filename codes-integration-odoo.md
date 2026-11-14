@@ -106,3 +106,25 @@ window.addEventListener('message',function(e){
 });
 </script>
 ```
+
+
+## 11 — Nouveau site : pages des modules
+
+Même principe que l'accueil : une page Odoo par module, un seul bloc « Embed Code » pleine largeur
+(section sans marge, fond #070E2A). Seule l'adresse change (`training.html`, puis `spotter.html`…).
+
+| Page Odoo | Fichier |
+| --- | --- |
+| /pure-training | site/training.html |
+
+```html
+<iframe id="prfx-page" src="https://oz911.github.io/PureRacingFFBLabWeb/site/training.html" title="Pure Racing FX — Training" style="display:block;width:100%;height:3600px;border:0;background:#070e2a"></iframe>
+<script>
+window.addEventListener('message',function(e){
+  if(e.origin!=='https://oz911.github.io'||!e.data)return;
+  var f=document.getElementById('prfx-page'); if(!f)return;
+  if(e.data.prfxHeight) f.style.height=e.data.prfxHeight+'px';
+  if(e.data.prfxScroll!=null) window.scrollTo({top:f.getBoundingClientRect().top+window.scrollY+e.data.prfxScroll-80,behavior:'smooth'});
+});
+</script>
+```

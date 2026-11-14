@@ -1,0 +1,199 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Training · Pit Box · Pure Racing FX</title>
+<meta name="description" content="Training, module de Pit Box pour Le Mans Ultimate : chaque tour comparé à un tour de référence, virage par virage, avec un conseil à la radio après chaque tour.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Barlow:wght@400;500;600;700&family=Barlow+Condensed:ital,wght@0,600;0,700;1,700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="site.css">
+<style>
+/* ---------- Page d'un module (modèle commun) ---------- */
+.mhero{position:relative;overflow:hidden;background:#000;min-height:clamp(440px,34vw,640px);display:flex;flex-direction:column;justify-content:flex-end}
+.mhero .bg{position:absolute;inset:0;background:center/cover no-repeat}
+.mhero .veil{position:absolute;inset:0;background:linear-gradient(90deg,rgba(3,5,18,.95) 0%,rgba(3,5,18,.8) 40%,rgba(3,5,18,.2) 80%),linear-gradient(0deg,rgba(3,5,18,.95) 0%,rgba(3,5,18,0) 50%)}
+.mhero .wrap{position:relative;padding-block:56px 48px;width:100%}
+.mhero .crumbs{font:700 13px var(--title);letter-spacing:.2em;text-transform:uppercase;color:var(--dim)}
+.mhero .crumbs a{color:var(--dim);text-decoration:none}.mhero .crumbs a:hover{color:var(--text)}
+.mhero .crumbs b{color:var(--accent);font-weight:700}
+.mhero h1{font-size:clamp(48px,6.4vw,104px);font-style:italic;margin-top:14px;line-height:.9}
+.mhero .sub{margin-top:14px;font:700 italic clamp(22px,2.2vw,34px)/1.1 var(--title);text-transform:uppercase}
+.mhero .sub span{color:var(--accent)}
+.mhero .lead{max-width:56ch}
+.chips{display:flex;flex-wrap:wrap;gap:8px;margin-top:22px}
+.chips span{font:600 13px var(--body);border:1px solid rgba(255,255,255,.25);background:rgba(255,255,255,.06);border-radius:20px;padding:5px 12px;backdrop-filter:blur(4px)}
+.chips span.red{border-color:var(--accent);color:#fff;background:rgba(253,20,36,.18)}
+
+.feat{display:grid;grid-template-columns:minmax(0,.85fr) minmax(0,1.15fr);gap:48px;align-items:center}
+.feat.rev{grid-template-columns:minmax(0,1.15fr) minmax(0,.85fr)}
+.feat.rev .txt{order:2}
+.feat p{color:var(--muted);margin:14px 0 0;max-width:60ch}
+.feat ul{margin:16px 0 0;padding:0;list-style:none;display:grid;gap:9px;color:var(--muted)}
+.feat li{display:flex;gap:10px}
+.feat li::before{content:"";flex:none;width:8px;height:8px;margin-top:9px;background:var(--accent);transform:skewX(-14deg)}
+.feat li b{color:var(--text)}
+.cap{border:1px solid var(--line2);border-radius:14px;overflow:hidden;background:#000;box-shadow:0 24px 60px rgba(0,0,0,.45)}
+.cap img{width:100%;height:auto}
+.cap.crop img{aspect-ratio:16/8.6;object-fit:cover;object-position:var(--pos,center)}
+.capnote{color:var(--dim);font-size:13px;margin-top:10px}
+
+.radio{display:grid;gap:12px;margin-top:20px}
+.bubble{display:flex;gap:14px;align-items:flex-start;background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:14px 16px}
+.bubble svg{flex:none;width:26px;height:26px;stroke:var(--accent);fill:none;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round;margin-top:2px}
+.bubble p{margin:0;font:600 italic 17px/1.45 var(--body);color:var(--text)}
+.bubble small{display:block;color:var(--dim);font:500 13px var(--body);margin-top:4px;font-style:normal}
+
+.grid3{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:16px;margin-top:28px}
+.box{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:20px}
+.box b{display:block;font:700 19px/1.15 var(--title);text-transform:uppercase;letter-spacing:.03em}
+.box p{color:var(--muted);font-size:14.5px;line-height:1.5;margin:8px 0 0}
+.box .k{font:700 12px var(--title);letter-spacing:.2em;color:var(--accent)}
+
+table.ref{width:100%;border-collapse:collapse;margin-top:22px;font-size:15px}
+table.ref th{text-align:left;color:var(--dim);font:700 12px var(--title);letter-spacing:.14em;text-transform:uppercase;padding:10px 14px;border-bottom:1px solid var(--line2)}
+table.ref td{padding:12px 14px;border-bottom:1px solid var(--line);color:var(--muted);vertical-align:top}
+table.ref td:first-child{color:var(--text);font-weight:600;white-space:nowrap}
+.tbl{overflow-x:auto}
+
+.next{display:flex;flex-wrap:wrap;gap:12px;justify-content:space-between;align-items:center;background:var(--panel);border:1px solid var(--line2);border-radius:16px;padding:26px 28px}
+.next .t{font:700 italic 30px/1 var(--title);text-transform:uppercase}
+.next .t span{color:var(--accent)}
+.next p{color:var(--muted);margin:8px 0 0}
+
+@media (max-width:980px){
+  .feat,.feat.rev{grid-template-columns:minmax(0,1fr)}
+  .feat.rev .txt{order:0}
+  .grid3{grid-template-columns:minmax(0,1fr)}
+}
+</style>
+</head>
+<body>
+
+<!-- ================= EN-TÊTE DU MODULE ================= -->
+<header class="mhero">
+  <div class="bg" style="background-image:url(img/training.jpg)"></div>
+  <div class="veil"></div>
+  <div class="wrap">
+    <div class="crumbs"><a data-page="/">Pit Box</a> › <b>Module 02</b> · Training</div>
+    <h1>Pure Racing <span>Training</span></h1>
+    <div class="sub">Tes tours, <span>virage par virage</span></div>
+    <p class="lead">Training compare chacun de tes tours à un tour de référence de ta catégorie. Tu vois où tu perds du temps, virage par virage, et pourquoi : freinage, vitesse à la corde, trajectoire, remise des gaz. Et après chaque tour, ton ingénieur te le dit à la radio.</p>
+    <div class="chips"><span class="red">Le Mans Ultimate</span><span>Hypercar · LMP2 · GT3</span><span>Conseil radio après chaque tour</span><span>Sur ta tablette</span></div>
+  </div>
+</header>
+
+<!-- ================= LA PAGE ================= -->
+<section class="tone-steel">
+  <div class="wrap feat">
+    <div class="txt">
+      <div class="kicker">Après chaque tour</div>
+      <h2>Où tu perds <span>du temps</span></h2>
+      <p>Dès que tu passes la ligne, la page se met à jour : ton tour, ton meilleur tour, ton tour idéal (tes meilleurs segments mis bout à bout) et le tour de référence.</p>
+      <ul>
+        <li><span><b>Le virage où tu perds le plus de temps</b>, en tête de page, avec ce qui pénalise ton chrono.</span></li>
+        <li><span><b>La carte du circuit</b> : ta trajectoire et celle de la référence, avec tes freinages, la zone entre-deux et le plein gaz en couleur. Un clic sur un virage zoome dessus.</span></li>
+        <li><span><b>Le temps par virage</b> : ce que tu gagnes ou perds dans chacun, et le total sur le tour.</span></li>
+      </ul>
+    </div>
+    <div>
+      <div class="cap"><img src="captures/training.jpg" alt="Page Training : carte d'Interlagos et temps par virage" loading="lazy"></div>
+      <p class="capnote">Interlagos en GT3 : 4,80 s de retard sur la référence, dont 0,88 s dans le S de Senna.</p>
+    </div>
+  </div>
+</section>
+
+<section class="tone-navy">
+  <div class="wrap feat rev">
+    <div class="txt">
+      <div class="kicker">Le détail</div>
+      <h2>Virage <span>par virage</span></h2>
+      <p>Pour chaque virage, tes valeurs face à celles de la référence. Rouge : moins bien. Vert : mieux. Blanc : pareil.</p>
+      <ul>
+        <li><span><b>Freinage</b> : où tu commences à freiner. Freiner plus tard n'est vert que si tu gardes ta vitesse en sortie.</span></li>
+        <li><span><b>Vitesse à la corde</b>, et la corde elle-même : trop large, trop serrée, prise trop tôt.</span></li>
+        <li><span><b>Remise des gaz</b> et plein gaz, ou le lever de pied dans les virages pris sans freiner.</span></li>
+        <li><span><b>Dans le trafic</b> : un virage gêné par une autre voiture est signalé, pour ne pas te le reprocher.</span></li>
+      </ul>
+    </div>
+    <div>
+      <div class="cap"><img src="captures/training-virages.jpg" alt="Tableau virage par virage : temps, freinage, vitesse mini, gaz et ce qui pénalise le chrono" loading="lazy"></div>
+      <p class="capnote">Les virages portent leur vrai nom (S do Senna, Ferradura, Junção…) sur les circuits connus.</p>
+    </div>
+  </div>
+</section>
+
+<section class="tone-black" id="radio">
+  <div class="wrap feat">
+    <div class="txt">
+      <div class="kicker">À la radio</div>
+      <h2>Un conseil <span>par tour</span></h2>
+      <p>Avec le module Spotter actif, ton ingénieur te donne après chaque tour le virage où tu perds le plus, et une seule consigne : celle qui compte. Tu corriges au tour suivant, sans quitter la piste des yeux.</p>
+    </div>
+    <div class="radio">
+      <div class="bubble"><svg viewBox="0 0 24 24"><path d="M12 15a3 3 0 0 0 3-3V6a3 3 0 0 0-6 0v6a3 3 0 0 0 3 3z"/><path d="M5.5 11a6.5 6.5 0 0 0 13 0M12 17.5V21"/></svg><p>« Arrêt de bus, tu perds 5 dixièmes. 5 kilomètres heure de moins à la corde. »<small>Spa-Francorchamps · GT3</small></p></div>
+      <div class="bubble"><svg viewBox="0 0 24 24"><path d="M12 15a3 3 0 0 0 3-3V6a3 3 0 0 0-6 0v6a3 3 0 0 0 3 3z"/><path d="M5.5 11a6.5 6.5 0 0 0 13 0M12 17.5V21"/></svg><p>« Pouhon, tu perds 8 dixièmes. Tu es trop large de 6 mètres à la corde. »<small>Spa-Francorchamps · GT3</small></p></div>
+      <div class="bubble"><svg viewBox="0 0 24 24"><path d="M12 15a3 3 0 0 0 3-3V6a3 3 0 0 0-6 0v6a3 3 0 0 0 3 3z"/><path d="M5.5 11a6.5 6.5 0 0 0 13 0M12 17.5V21"/></svg><p>« Bruxelles, tu perds 7 dixièmes. Tu es trop large de 5 mètres à la corde. »<small>Spa-Francorchamps · GT3</small></p></div>
+    </div>
+  </div>
+</section>
+
+<!-- ================= LA RÉFÉRENCE ================= -->
+<section class="tone-navy">
+  <div class="wrap">
+    <div class="kicker">Le tour de référence</div>
+    <h2>Construit <span>par l'IA du jeu</span></h2>
+    <p class="lead">La référence n'est pas le tour d'un pilote : c'est le tour médian des voitures de l'IA, virage par virage, mesuré pendant une séance d'essais. Elle est créée une fois par circuit et par catégorie, puis gardée.</p>
+    <div class="grid3">
+      <div class="box"><span class="k">01</span><b>Une séance multiclasse</b><p>Lance une séance d'essais avec l'IA à 100 %, Hypercar, LMP2 et GT3 ensemble. 15 à 20 minutes suffisent, et tu peux rester au garage.</p></div>
+      <div class="box"><span class="k">02</span><b>Trois références</b><p>Training mesure tous les tours de l'IA et construit la référence de chaque catégorie. Tu peux accélérer le temps avec « Terminer la séance » : ces tours-là sont écartés.</p></div>
+      <div class="box"><span class="k">03</span><b>Ta catégorie, toute seule</b><p>Ensuite, tu roules : Training reconnaît ta voiture et te compare à la référence de sa catégorie. Rien à choisir.</p></div>
+    </div>
+    <div class="grid3">
+      <div class="box"><b>Choisis ta comparaison</b><p>La référence de l'IA, ton meilleur tour, ton tour idéal, ton tour précédent ou n'importe lequel de tes tours.</p></div>
+      <div class="box"><b>Tes tours gardés</b><p>Tes tours restent affichés après la séance, et même après un redémarrage de SimHub.</p></div>
+      <div class="box"><b>Depuis ta tablette</b><p>La page s'ouvre aussi sur une tablette ou un téléphone du même Wi-Fi : tu la regardes entre deux relais.</p></div>
+    </div>
+  </div>
+</section>
+
+<!-- ================= BON À SAVOIR ================= -->
+<section class="tone-steel">
+  <div class="wrap">
+    <div class="kicker">Bon à savoir</div>
+    <h2>Avant <span>de rouler</span></h2>
+    <div class="tbl">
+      <table class="ref">
+        <thead><tr><th>Point</th><th>Ce qu'il faut savoir</th></tr></thead>
+        <tbody>
+          <tr><td>Jeu</td><td>Le Mans Ultimate uniquement : Training lit la position et les commandes de toutes les voitures en direct.</td></tr>
+          <tr><td>Niveau de l'IA</td><td>100 % conseillé. Au-delà, la référence devient très difficile à approcher.</td></tr>
+          <tr><td>Circuits</td><td>Tous les circuits de LMU. Les virages sont nommés sur Spa-Francorchamps et Interlagos, numérotés ailleurs (tu peux les renommer).</td></tr>
+          <tr><td>Radio</td><td>Les conseils après chaque tour passent par le module Spotter : active-le aussi.</td></tr>
+          <tr><td>Refaire une référence</td><td>Le bouton « Refaire » archive l'ancienne : la prochaine séance avec l'IA en crée une nouvelle.</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</section>
+
+<!-- ================= SUITE ================= -->
+<section class="tone-navy">
+  <div class="wrap">
+    <div class="next">
+      <div>
+        <div class="t">Ensuite : <span>la télémétrie</span></div>
+        <p>Pour comprendre en détail ce qui se passe dans un virage, ouvre ta séance dans Télémétrie.</p>
+      </div>
+      <div class="links">
+        <a class="btn" data-page="/pure-engineer">03 · Télémétrie →</a>
+        <a class="btn red" data-prfx="download" target="_top" href="#">Télécharger Pit Box</a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<script src="site.js"></script>
+</body>
+</html>
