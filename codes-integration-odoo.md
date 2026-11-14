@@ -96,7 +96,7 @@ La page envoie sa hauteur à Odoo : le cadre s'ajuste tout seul, sans double bar
 Dans Odoo : un bloc « Embed Code » pleine largeur, seul sur la page (section sans marge, fond #070E2A), avec ce code. Le script ajuste la hauteur du cadre et fait défiler la page Odoo vers les ancres (« Découvrir les modules »).
 
 ```html
-<iframe id="prfx-accueil" src="https://oz911.github.io/PureRacingFFBLabWeb/site/" title="Pure Racing FX — Pit Box" style="display:block;width:100%;height:4600px;border:0;background:#070e2a"></iframe>
+<iframe id="prfx-accueil" src="https://oz911.github.io/PureRacingFFBLabWeb/site/" title="Pure Racing FX — Pit Box" style="display:block;width:100vw;max-width:100vw;margin-left:calc(50% - 50vw);height:4600px;border:0;background:#070e2a"></iframe>
 <script>
 window.addEventListener('message',function(e){
   if(e.origin!=='https://oz911.github.io'||!e.data)return;
@@ -110,7 +110,7 @@ window.addEventListener('message',function(e){
 
 ## 11 — Nouveau site : pages des modules
 
-Même principe que l'accueil : une page Odoo par module, un seul bloc « Embed Code » pleine largeur
+Même principe que l'accueil : une page Odoo par module (section en Hauteur « Automatique » ; le cadre sort de la colonne Odoo grâce à width:100vw), un seul bloc « Embed Code » pleine largeur
 (section sans marge, fond #070E2A). Seule l'adresse change (`training.html`, puis `spotter.html`…).
 
 | Page Odoo | Fichier |
@@ -118,7 +118,7 @@ Même principe que l'accueil : une page Odoo par module, un seul bloc « Embed C
 | /pure-training | site/training.html |
 
 ```html
-<iframe id="prfx-page" src="https://oz911.github.io/PureRacingFFBLabWeb/site/training.html" title="Pure Racing FX — Training" style="display:block;width:100%;height:3600px;border:0;background:#070e2a"></iframe>
+<iframe id="prfx-page" src="https://oz911.github.io/PureRacingFFBLabWeb/site/training.html" title="Pure Racing FX — Training" style="display:block;width:100vw;max-width:100vw;margin-left:calc(50% - 50vw);height:3600px;border:0;background:#070e2a"></iframe>
 <script>
 window.addEventListener('message',function(e){
   if(e.origin!=='https://oz911.github.io'||!e.data)return;
