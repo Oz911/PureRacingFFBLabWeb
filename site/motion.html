@@ -1,0 +1,85 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Motion · Pit Box · Pure Racing FX</title>
+<meta name="description" content="Motion, module de Pit Box : les mouvements de ta voiture sur ton moniteur ou ta plateforme, 6 axes envoyés à OpenTrack.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Barlow:wght@400;500;600;700&family=Barlow+Condensed:ital,wght@0,600;0,700;1,700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="site.css">
+</head>
+<body>
+<!-- ================= EN-TÊTE DU MODULE ================= -->
+<header class="mhero">
+  <div class="bg" style="background-image:url(img/motion.jpg)"></div>
+  <div class="veil"></div>
+  <div class="wrap">
+    <div class="crumbs"><a data-page="/">Pit Box</a> › <b>Module 06</b> · Motion</div>
+    <h1>Pure Racing <span>Motion</span></h1>
+    <div class="sub">Vue <span>dynamique</span></div>
+    <p class="lead">Motion transforme la télémétrie en mouvements sur 6 axes, envoyés à OpenTrack : la vue s'incline dans les virages, plonge au freinage, suit le relief. Sur un châssis dynamique, la plateforme bouge avec la voiture.</p>
+    <div class="chips"><span class="red">6 axes</span><span class="">OpenTrack</span><span class="">Châssis fixe ou dynamique</span><span class="">Réglage sur tablette</span></div>
+  </div>
+</header>
+<section class="tone-steel">
+  <div class="wrap feat">
+    <div class="txt">
+      <div class="kicker">Châssis fixe</div>
+      <h2>Ta vue <span>prend vie</span></h2>
+      <p>Sur un cockpit fixe, Motion anime la caméra du jeu : tu sens les appuis, les freinages et le relief à l'écran, comme un mouvement de tête naturel.</p><ul><li><span><b>Six axes</b> : Sway, Heave, Surge, Yaw, Pitch, Roll, chacun avec son interrupteur.</span></li><li><span><b>Réglés par couples</b> : Sway + Roll dans les virages, Surge + Pitch au freinage.</span></li><li><span><b>Gain, amplitude, deadzone, smoothing</b> : chaque axe se règle finement.</span></li><li><span><b>Limites de sécurité</b> sur chaque axe.</span></li></ul>
+    </div>
+    <div><div class="cap"><img src="captures/motion.jpg" alt="Motion en châssis fixe : couples Sway + Roll et Surge + Pitch" loading="lazy"></div></div>
+  </div>
+</section>
+<section class="tone-navy">
+  <div class="wrap feat rev">
+    <div class="txt">
+      <div class="kicker">Châssis dynamique</div>
+      <h2>Ta plateforme <span>suit la voiture</span></h2>
+      <p>Sur une plateforme à vérins, les tuiles de coordination tiennent l'inclinaison qui dure : le banking de Daytona, un dévers, une montée.</p><ul><li><span><b>Roll → X</b> et <b>Pitch → Z</b>, avec gains d'entrée et de sortie.</span></li><li><span><b>Inverser</b> sur chaque axe : le sens se règle dans Pit Box.</span></li><li><span><b>Préréglages par jeu et par châssis</b> : la liste ne montre que ceux de ton matériel, rappelés automatiquement.</span></li></ul>
+    </div>
+    <div><div class="cap"><img src="captures/motion-dynamique.jpg" alt="Motion en châssis dynamique : tuiles de coordination Roll vers X et Pitch vers Z" loading="lazy"></div></div>
+  </div>
+</section>
+<section class="tone-black">
+  <div class="wrap">
+    <div class="kicker">Au quotidien</div>
+    <h2>Sans <span>prise de tête</span></h2>
+    
+    <div class="grid3"><div class="box"><b>OpenTrack lancé tout seul</b><p>Pit Box démarre OpenTrack ; sa détection des jeux lance le suivi avec le jeu.</p></div><div class="box"><b>Préréglages en couleur</b><p>Le préréglage chargé est en vert ; le bouton Enregistrer passe au rouge dès qu'un réglage change.</p></div><div class="box"><b>Réglage en roulant</b><p>Tous les axes se règlent depuis une tablette, avec une visualisation en direct de ce qui part vers OpenTrack.</p></div></div>
+  </div>
+</section>
+<!-- ================= BON À SAVOIR ================= -->
+<section class="tone-steel">
+  <div class="wrap">
+    <div class="kicker">Bon à savoir</div>
+    <h2>Avant <span>de commencer</span></h2>
+    <div class="tbl">
+      <table class="ref">
+        <thead><tr><th>Point</th><th>Ce qu'il faut savoir</th></tr></thead>
+        <tbody><tr><td>Logiciel</td><td>OpenTrack (gratuit), configuré une fois : entrée UDP sur le port 4242, sortie freetrack. La prise en main du module guide pas à pas.</td></tr><tr><td>Jeux</td><td>Ceux qui acceptent un suivi de tête (TrackIR / freetrack) : Le Mans Ultimate, et d'autres. Pas Assetto Corsa, qui a son propre mouvement avec CSP.</td></tr><tr><td>Sens des axes</td><td>Seul Z s'inverse dans OpenTrack ; les autres avec « Inverser » dans Pit Box.</td></tr></tbody>
+      </table>
+    </div>
+  </div>
+</section>
+<!-- ================= SUITE ================= -->
+<section class="tone-navy">
+  <div class="wrap">
+    <div class="next">
+      <div>
+        <div class="t">Ensuite : <span>FFB Analyzer</span></div>
+        <p>Ton force feedback mesuré : écrêtage, marge et couple.</p>
+      </div>
+      <div class="links">
+        <a class="btn" data-page="/pure-ffb-analyzer">07 · FFB Analyzer →</a>
+        <a class="btn red" data-prfx="download" target="_top" href="#">Télécharger Pit Box</a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<script src="site.js"></script>
+</body>
+</html>

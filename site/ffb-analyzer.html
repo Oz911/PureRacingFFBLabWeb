@@ -1,0 +1,75 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>FFB Analyzer · Pit Box · Pure Racing FX</title>
+<meta name="description" content="FFB Analyzer, module de Pit Box : ton force feedback mesuré tour par tour, écrêtage, marge et couple de la voiture.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Barlow:wght@400;500;600;700&family=Barlow+Condensed:ital,wght@0,600;0,700;1,700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="site.css">
+</head>
+<body>
+<!-- ================= EN-TÊTE DU MODULE ================= -->
+<header class="mhero">
+  <div class="bg" style="background-image:url(img/ffb.jpg)"></div>
+  <div class="veil"></div>
+  <div class="wrap">
+    <div class="crumbs"><a data-page="/">Pit Box</a> › <b>Module 07</b> · FFB Analyzer</div>
+    <h1>Pure Racing <span>FFB Analyzer</span></h1>
+    <div class="sub">Force feedback <span>mesuré</span></div>
+    <p class="lead">FFB Analyzer mesure le signal de force feedback pendant que tu roules : la part du tour passée en écrêtage, la marge qui te reste, le couple de la voiture. Tu sais si ton réglage sature, et de combien.</p>
+    <div class="chips"><span class="red">Le Mans Ultimate</span><span class="">rFactor 2</span><span class="">Assetto Corsa</span><span class="">Verdict à chaque tour</span></div>
+  </div>
+</header>
+<section class="tone-steel">
+  <div class="wrap feat">
+    <div class="txt">
+      <div class="kicker">En direct</div>
+      <h2>Ton FFB, <span>tour par tour</span></h2>
+      <p>Le signal des 10 dernières secondes, et pour chaque tour un verdict clair.</p><ul><li><span><b>Écrêtage du tour</b> : la part du temps passée au-dessus du seuil, en roulant.</span></li><li><span><b>Niveau de référence</b> : les appuis forts réels, sans les pointes isolées des vibreurs.</span></li><li><span><b>Couple voiture</b> (LMU, rFactor 2) : le couple de colonne, ramené à une valeur comparable d'une voiture à l'autre.</span></li><li><span><b>Verdict</b> : correct, à surveiller, écrêtage excessif ou marge excessive.</span></li></ul>
+    </div>
+    <div><div class="cap"><img src="captures/ffb.jpg" alt="FFB Analyzer : signal en direct, écrêtage, niveau de référence et tours de la session" loading="lazy"></div></div>
+  </div>
+</section>
+<section class="tone-navy">
+  <div class="wrap">
+    <div class="kicker">Le verdict</div>
+    <h2>Trois seuils, <span>pas de jargon</span></h2>
+    
+    <div class="grid3"><div class="box"><b>Moins de 0,5 %</b><p>Correct : ton FFB garde ses détails.</p></div><div class="box"><b>De 0,5 à 2 %</b><p>À surveiller : le signal sature par moments.</p></div><div class="box"><b>Plus de 2 %</b><p>Écrêtage excessif : baisse la force dans le jeu.</p></div></div>
+  </div>
+</section>
+<!-- ================= BON À SAVOIR ================= -->
+<section class="tone-steel">
+  <div class="wrap">
+    <div class="kicker">Bon à savoir</div>
+    <h2>Avant <span>de commencer</span></h2>
+    <div class="tbl">
+      <table class="ref">
+        <thead><tr><th>Point</th><th>Ce qu'il faut savoir</th></tr></thead>
+        <tbody><tr><td>Ce qui est mesuré</td><td>Le signal FFB que le jeu publie, pas le couple produit par ta base : l'écrêtage de son pilote n'est pas vu.</td></tr><tr><td>Jeux</td><td>Le Mans Ultimate, rFactor 2, Assetto Corsa (et les jeux qui publient leur FFB dans SimHub).</td></tr><tr><td>Sessions</td><td>Chaque séance est enregistrée : tu compares tes réglages d'un jour à l'autre.</td></tr><tr><td>Tablette</td><td>Une page de suivi en direct s'ouvre sur une tablette ou un téléphone du même Wi-Fi.</td></tr></tbody>
+      </table>
+    </div>
+  </div>
+</section>
+<!-- ================= SUITE ================= -->
+<section class="tone-navy">
+  <div class="wrap">
+    <div class="next">
+      <div>
+        <div class="t">Ensuite : <span>Dash</span></div>
+        <p>Des tableaux de bord SimHub pour tous les styles de pilotage.</p>
+      </div>
+      <div class="links">
+        <a class="btn" data-page="/pure-dash">08 · Dash →</a>
+        <a class="btn red" data-prfx="download" target="_top" href="#">Télécharger Pit Box</a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<script src="site.js"></script>
+</body>
+</html>

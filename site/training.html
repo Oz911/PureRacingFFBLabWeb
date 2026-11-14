@@ -9,65 +9,7 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Barlow:wght@400;500;600;700&family=Barlow+Condensed:ital,wght@0,600;0,700;1,700&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="site.css">
-<style>
-/* ---------- Page d'un module (modèle commun) ---------- */
-.mhero{position:relative;overflow:hidden;background:#000;min-height:clamp(440px,34vw,640px);display:flex;flex-direction:column;justify-content:flex-end}
-.mhero .bg{position:absolute;inset:0;background:center/cover no-repeat}
-.mhero .veil{position:absolute;inset:0;background:linear-gradient(90deg,rgba(3,5,18,.95) 0%,rgba(3,5,18,.8) 40%,rgba(3,5,18,.2) 80%),linear-gradient(0deg,rgba(3,5,18,.95) 0%,rgba(3,5,18,0) 50%)}
-.mhero .wrap{position:relative;padding-block:56px 48px;width:100%}
-.mhero .crumbs{font:700 13px var(--title);letter-spacing:.2em;text-transform:uppercase;color:var(--dim)}
-.mhero .crumbs a{color:var(--dim);text-decoration:none}.mhero .crumbs a:hover{color:var(--text)}
-.mhero .crumbs b{color:var(--accent);font-weight:700}
-.mhero h1{font-size:clamp(48px,6.4vw,104px);font-style:italic;margin-top:14px;line-height:.9}
-.mhero .sub{margin-top:14px;font:700 italic clamp(22px,2.2vw,34px)/1.1 var(--title);text-transform:uppercase}
-.mhero .sub span{color:var(--accent)}
-.mhero .lead{max-width:56ch}
-.chips{display:flex;flex-wrap:wrap;gap:8px;margin-top:22px}
-.chips span{font:600 13px var(--body);border:1px solid rgba(255,255,255,.25);background:rgba(255,255,255,.06);border-radius:20px;padding:5px 12px;backdrop-filter:blur(4px)}
-.chips span.red{border-color:var(--accent);color:#fff;background:rgba(253,20,36,.18)}
 
-.feat{display:grid;grid-template-columns:minmax(0,.85fr) minmax(0,1.15fr);gap:48px;align-items:center}
-.feat.rev{grid-template-columns:minmax(0,1.15fr) minmax(0,.85fr)}
-.feat.rev .txt{order:2}
-.feat p{color:var(--muted);margin:14px 0 0;max-width:60ch}
-.feat ul{margin:16px 0 0;padding:0;list-style:none;display:grid;gap:9px;color:var(--muted)}
-.feat li{display:flex;gap:10px}
-.feat li::before{content:"";flex:none;width:8px;height:8px;margin-top:9px;background:var(--accent);transform:skewX(-14deg)}
-.feat li b{color:var(--text)}
-.cap{border:1px solid var(--line2);border-radius:14px;overflow:hidden;background:#000;box-shadow:0 24px 60px rgba(0,0,0,.45)}
-.cap img{width:100%;height:auto}
-.cap.crop img{aspect-ratio:16/8.6;object-fit:cover;object-position:var(--pos,center)}
-.capnote{color:var(--dim);font-size:13px;margin-top:10px}
-
-.radio{display:grid;gap:12px;margin-top:20px}
-.bubble{display:flex;gap:14px;align-items:flex-start;background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:14px 16px}
-.bubble svg{flex:none;width:26px;height:26px;stroke:var(--accent);fill:none;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round;margin-top:2px}
-.bubble p{margin:0;font:600 italic 17px/1.45 var(--body);color:var(--text)}
-.bubble small{display:block;color:var(--dim);font:500 13px var(--body);margin-top:4px;font-style:normal}
-
-.grid3{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:16px;margin-top:28px}
-.box{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:20px}
-.box b{display:block;font:700 19px/1.15 var(--title);text-transform:uppercase;letter-spacing:.03em}
-.box p{color:var(--muted);font-size:14.5px;line-height:1.5;margin:8px 0 0}
-.box .k{font:700 12px var(--title);letter-spacing:.2em;color:var(--accent)}
-
-table.ref{width:100%;border-collapse:collapse;margin-top:22px;font-size:15px}
-table.ref th{text-align:left;color:var(--dim);font:700 12px var(--title);letter-spacing:.14em;text-transform:uppercase;padding:10px 14px;border-bottom:1px solid var(--line2)}
-table.ref td{padding:12px 14px;border-bottom:1px solid var(--line);color:var(--muted);vertical-align:top}
-table.ref td:first-child{color:var(--text);font-weight:600;white-space:nowrap}
-.tbl{overflow-x:auto}
-
-.next{display:flex;flex-wrap:wrap;gap:12px;justify-content:space-between;align-items:center;background:var(--panel);border:1px solid var(--line2);border-radius:16px;padding:26px 28px}
-.next .t{font:700 italic 30px/1 var(--title);text-transform:uppercase}
-.next .t span{color:var(--accent)}
-.next p{color:var(--muted);margin:8px 0 0}
-
-@media (max-width:980px){
-  .feat,.feat.rev{grid-template-columns:minmax(0,1fr)}
-  .feat.rev .txt{order:0}
-  .grid3{grid-template-columns:minmax(0,1fr)}
-}
-</style>
 </head>
 <body>
 

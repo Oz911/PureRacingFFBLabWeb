@@ -113,9 +113,16 @@ window.addEventListener('message',function(e){
 Même principe que l'accueil : une page Odoo par module (section en Hauteur « Automatique » ; le cadre sort de la colonne Odoo grâce à width:100vw), un seul bloc « Embed Code » pleine largeur
 (section sans marge, fond #070E2A). Seule l'adresse change (`training.html`, puis `spotter.html`…).
 
-| Page Odoo | Fichier |
+| Page Odoo | Fichier (à mettre dans src=) |
 | --- | --- |
+| /pure-spotter | site/spotter.html |
 | /pure-training | site/training.html |
+| /pure-engineer (Télémétrie) | site/telemetrie.html |
+| /pure-ingenieur | site/ingenieur.html |
+| /pure-engine | site/engine.html |
+| /pure-motion | site/motion.html |
+| /pure-ffb-analyzer | site/ffb-analyzer.html |
+| /pure-dash | site/dash.html |
 
 ```html
 <iframe id="prfx-page" src="https://oz911.github.io/PureRacingFFBLabWeb/site/training.html" title="Pure Racing FX — Training" style="display:block;width:100vw;max-width:100vw;margin-left:calc(50% - 50vw);height:3600px;border:0;background:#070e2a"></iframe>
