@@ -231,3 +231,14 @@ table.ref td:first-child{color:var(--text);font-weight:600;white-space:nowrap}
   .grid3{grid-template-columns:minmax(0,1fr)}
 }
 .dl-support .btn{margin-top:4px}
+
+/* ---------- Galerie des dashboards (page Dash) ---------- */
+.dgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(min(100%,380px),1fr));gap:20px;margin-top:28px}
+.dcard{background:var(--panel);border:1px solid var(--line);border-radius:14px;overflow:hidden;display:flex;flex-direction:column;min-width:0}
+.dimg{background:#000;aspect-ratio:16/9;max-width:100%}
+.dimg img{width:100%;height:100%;object-fit:cover}
+.dbody{padding:18px 20px 20px;display:flex;flex-direction:column;gap:8px;flex:1}
+.dk{font:700 12px/1 var(--title);letter-spacing:.18em;text-transform:uppercase;color:var(--accent)}
+.dbody h3{font:700 italic 28px/1 var(--title);text-transform:uppercase}
+.dbody p{margin:0;color:var(--muted);font-size:15px;flex:1}
+.dbody .btn{align-self:flex-start;margin-top:8px}

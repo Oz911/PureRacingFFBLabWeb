@@ -2,7 +2,7 @@
 import html, sys
 OUT = sys.argv[1]
 # À augmenter quand site.css ou site.js changent : les navigateurs gardent l'ancien fichier 10 min.
-VERSION = '11'
+VERSION = '12'
 
 HEAD = '''<!doctype html>
 <html lang="fr">
@@ -93,6 +93,31 @@ def table(rows, tone):
 </section>
 '''
 
+def gallery(g, tone):
+    cards = ''
+    for d in g['items']:
+        cards += f'''<article class="dcard" id="{d['slug']}">
+      <div class="dimg"><img src="img/dash/{d['img']}" alt="Dashboard {html.escape(d['name'])}" width="480" height="270" loading="lazy"></div>
+      <div class="dbody">
+        <div class="dk">{d['kicker']}</div>
+        <h3>{d['name']}</h3>
+        <p>{d['desc']}</p>
+        <a class="btn red" href="{d['url']}" target="_top" rel="noopener">Télécharger</a>
+      </div>
+    </article>
+'''
+    return f'''<!-- ================= GALERIE ================= -->
+<section class="{tone}" id="galerie">
+  <div class="wrap">
+    <div class="kicker">{g['kicker']}</div>
+    <h2>{g['h2']}</h2>
+    {'<p class="lead">' + g['lead'] + '</p>' if g.get('lead') else ''}
+    <div class="dgrid">
+    {cards}</div>
+  </div>
+</section>
+'''
+
 def nxt(n):
     return f'''<!-- ================= SUITE ================= -->
 <section class="tone-navy">
@@ -116,6 +141,8 @@ def page(p):
     for i, f in enumerate(p['features']):
         s += feature(f, i)
     n = len(p['features'])
+    if p.get('gallery'):
+        s += gallery(p['gallery'], TONES[n % len(TONES)]); n += 1
     if p.get('boxes'):
         s += boxes(p['boxes'], TONES[n % len(TONES)]); n += 1
     s += table(p['table'], 'tone-steel' if TONES[(n - 1) % len(TONES)] != 'tone-steel' else 'tone-black')
@@ -303,12 +330,28 @@ dict(file='dash.html', num='08', name='Dash', title='Dash', img='dash.jpg',
   chips=['SimHub', 'Modernes et classiques', 'Drapeaux et rivaux', 'Téléchargement direct'],
   features=[
     dict(kicker='La galerie', h2='Choisis <span>ton style</span>', cap='dash.jpg', alt='Galerie Dash : PRD01, ST800, PRD Rallye et autres modèles',
-      paras=["Les modèles sont rangés par style : tous, modernes ou classiques. Chaque carte mène à sa page de téléchargement."],
+      paras=["Dans Pit Box, les modèles sont rangés par style : tous, modernes ou classiques. Chaque carte mène au téléchargement, plus bas sur cette page."],
       bullets=["<b>PRD01, PRD02</b> : complets, inspirés des écrans de course.",
                "<b>ST800, Analog Dash</b> : instruments classiques à aiguilles.",
                "<b>PRD Rallye, PRD RS01</b> : l'essentiel, lisible d'un coup d'œil.",
                "<b>Drapeaux et rivaux</b> : selon le modèle, les drapeaux et les écarts avec les voitures autour de toi."]),
   ],
+  gallery=dict(kicker='Les dashboards', h2='Télécharge <span>ton modèle</span>',
+    lead="Six modèles, gratuits. Télécharge le fichier .simhubdash, puis double-clique dessus : SimHub l'installe.",
+    items=[
+      dict(slug='prd01', name='PRD01', kicker='Modern · GT', img='prd01.png', url='https://pureracing-fx.odoo.com/web/content/1723?unique=76448d17c0d5100cb995ca558174c2e2afaffe02&download=true',
+           desc="Inspiré du tableau de bord SPC d'iRacing, enrichi de nombreuses fonctions : G-mètre, données de télémétrie, classement et bien d'autres."),
+      dict(slug='st800', name='ST800', kicker='Classic · Open Wheel', img='st800.png', url='https://pureracing-fx.odoo.com/web/content/1724?unique=b0700aaa3c8d2d7c6a71441eabea7dd0e2633340&download=true',
+           desc="Un dashboard à aiguille inspiré des célèbres instruments STACK, présents à bord de nombreuses monoplaces."),
+      dict(slug='prd-rallye', name='PRD Rallye', kicker='Modern · Rallye', img='prd-rallye.png', url='https://pureracing-fx.odoo.com/web/content/1762?unique=b4d7cca768661a3a81eb3205634bf27a9e2b7b36&download=true',
+           desc="Un design simple avec les informations essentielles pour affronter les spéciales de rallye."),
+      dict(slug='prd02', name='PRD02', kicker='Modern · GT', img='prd02.png', url='https://pureracing-fx.odoo.com/web/content/1727?unique=a87b8ee58e9f9fdbef29fd1a7c8cb44e4c961eb5&download=true',
+           desc="Un dashboard numérique sur un seul écran, avec toutes les informations essentielles."),
+      dict(slug='analog-dash', name='Analog Dash', kicker='Classic · GT', img='analog-dash.png', url='https://pureracing-fx.odoo.com/web/content/1788?unique=5df26209cfd6faa81cbde75966e9f55eb908a9b6&download=true',
+           desc="Un dashboard analogique avec toute une panoplie d'instruments à aiguilles."),
+      dict(slug='prd-rs01', name='PRD RS01', kicker='Modern · GT', img='prd-rs01.png', url='https://pureracing-fx.odoo.com/web/content/1726?unique=c94affe3b9be0ad82ece835b69dd6513fbe464bb&download=true',
+           desc="L'esprit de l'instrumentation d'origine de la Renault Sport RS01, avec un affichage numérique lisible d'un coup d'œil."),
+    ]),
   table=[("Installation", "Télécharge le modèle, puis double-clique dessus : SimHub l'ajoute à tes tableaux de bord."),
          ("Écrans", "Un écran de PC, un écran secondaire, une tablette ou un écran de volant reconnu par SimHub."),
          ("Assetto Corsa", "Les autres voitures ne sont connues que si les applications Python sont activées dans le jeu.")],
