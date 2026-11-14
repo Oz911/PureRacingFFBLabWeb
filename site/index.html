@@ -35,13 +35,23 @@ h2 span,h1 span{color:var(--accent)}
 .btn.red:hover{background:linear-gradient(180deg,#FF4C57,#D2101D)}
 .btn small{font:600 12px var(--body);letter-spacing:0;text-transform:none;opacity:.85}
 
+
+/* Tons des sections (Pat : plus de contraste entre les blocs) : bleu nuit, acier gris
+   à fines rayures carbone, et bleu profond pour la vidéo et l'installation. */
+.tone-steel{background:#141821 repeating-linear-gradient(135deg,rgba(255,255,255,.018) 0 2px,transparent 2px 9px);
+  --panel:#1D2230;--panel2:#191D29;--line:#2B3242;--line2:#3B4356;--muted:#C2C8D6;--dim:#9AA2B4;border-block:1px solid #262c3a}
+.tone-navy{background:var(--bg)}
+.tone-deep{background:var(--bg2);border-block:1px solid var(--line)}
+.tone-black{background:radial-gradient(ellipse at 50% 0%,#1a1f2c 0%,#08090d 70%);border-block:1px solid #20242e;--line:#262a35;--muted:#C2C8D6}
+
 /* ---------- Héros ---------- */
-.hero{position:relative;overflow:hidden;background:var(--bg2);border-bottom:1px solid var(--line)}
-.hero .photo{position:absolute;inset:0 0 0 auto;width:min(58%,1100px);background:url(img/garage-hero.jpg) center 30%/cover}
-.hero .photo::after{content:"";position:absolute;inset:0;background:linear-gradient(90deg,var(--bg2) 0%,rgba(5,8,38,.82) 28%,rgba(5,8,38,.15) 70%,rgba(5,8,38,.35) 100%)}
-.hero .wrap{position:relative;padding-block:72px 64px}
+.hero{position:relative;overflow:hidden;background:radial-gradient(ellipse at 75% 40%,#16204a 0%,var(--bg2) 60%);border-bottom:1px solid var(--line)}
+.hero .wrap{position:relative;padding-block:56px;display:grid;grid-template-columns:minmax(0,1fr) minmax(0,.95fr);gap:48px;align-items:center}
+.hero .shot{position:relative;border-radius:16px;overflow:hidden;border:1px solid #2C3A66;box-shadow:0 30px 70px rgba(0,0,0,.55),0 0 0 6px rgba(255,255,255,.02)}
+.hero .shot img{width:100%;aspect-ratio:1000/1180;object-fit:cover}
+.hero .shot::after{content:"";position:absolute;inset:auto 0 0 0;height:4px;background:linear-gradient(90deg,var(--accent),transparent)}
 .hero .logo{width:300px;opacity:.95}
-.hero h1{font-size:clamp(48px,7.5vw,92px);font-style:italic;margin-top:28px;max-width:11ch}
+.hero h1{font-size:clamp(48px,6.5vw,96px);font-style:italic;margin-top:28px;max-width:11ch}
 .hero .lead{max-width:46ch}
 .hero .cta{display:flex;flex-wrap:wrap;gap:12px;margin-top:30px}
 .hero .facts{display:flex;flex-wrap:wrap;gap:10px 28px;margin-top:36px;color:var(--dim);font-size:14px}
@@ -124,7 +134,8 @@ h2 span,h1 span{color:var(--accent)}
   .cards,.perks{grid-template-columns:repeat(2,minmax(0,1fr))}
   .about,.install{grid-template-columns:minmax(0,1fr)}
   .dl{position:static}
-  .hero .photo{width:100%;opacity:.4}
+  .hero .wrap{grid-template-columns:minmax(0,1fr)}
+  .hero .shot{max-width:520px}
 }
 @media (max-width:640px){
   section{padding-block:44px}
@@ -140,8 +151,8 @@ h2 span,h1 span{color:var(--accent)}
 
 <!-- ================= HÉROS ================= -->
 <header class="hero">
-  <div class="photo" role="img" aria-label="Simulateur Pure Racing dans un garage de course"></div>
   <div class="wrap">
+   <div>
     <img class="logo" src="img/logo.png" alt="Pure Racing FX">
     <h1>Ton écurie <span>de course</span></h1>
     <p class="lead">Pit Box réunit tous les outils Pure Racing dans un seul plugin SimHub : une radio d'équipe, un coach virage par virage, la télémétrie, un ingénieur pour ton setup, et ce qu'il faut pour faire vibrer, bouger et ressentir ta voiture.</p>
@@ -155,11 +166,13 @@ h2 span,h1 span{color:var(--accent)}
       <div><b>Tablette</b>réglages en roulant</div>
       <div><b>En français</b>radio et notices</div>
     </div>
+   </div>
+    <div class="shot"><img src="img/garage-hero.jpg" alt="Simulateur Pure Racing dans un garage de course, conçu pour les passionnés"></div>
   </div>
 </header>
 
 <!-- ================= PRÉSENTATION ================= -->
-<section>
+<section class="tone-steel">
   <div class="wrap about">
     <div>
       <div class="kicker">Pure Racing FX</div>
@@ -175,7 +188,7 @@ h2 span,h1 span{color:var(--accent)}
 </section>
 
 <!-- ================= VIDÉO ================= -->
-<section id="video" style="background:var(--bg2);border-block:1px solid var(--line)">
+<section id="video" class="tone-black">
   <div class="wrap tour">
     <div class="head">
       <div>
@@ -196,7 +209,7 @@ h2 span,h1 span{color:var(--accent)}
 </section>
 
 <!-- ================= MODULES ================= -->
-<section id="modules" style="background:var(--bg2);border-block:1px solid var(--line)">
+<section id="modules" class="tone-navy">
   <div class="wrap">
     <div class="kicker">Les modules</div>
     <h2>Une séance <span>de A à Z</span></h2>
@@ -272,7 +285,7 @@ h2 span,h1 span{color:var(--accent)}
 </section>
 
 <!-- ================= ATOUTS ================= -->
-<section>
+<section class="tone-steel">
   <div class="wrap">
     <div class="kicker">Pit Box au quotidien</div>
     <h2>Pensé pour <span>le baquet</span></h2>
@@ -302,7 +315,7 @@ h2 span,h1 span{color:var(--accent)}
 </section>
 
 <!-- ================= JEUX ================= -->
-<section style="padding-top:0">
+<section class="tone-steel" style="padding-top:0;border-top:0">
   <div class="wrap">
     <div class="kicker">Compatibilité</div>
     <h2>Tes <span>simulations</span></h2>
@@ -315,7 +328,7 @@ h2 span,h1 span{color:var(--accent)}
 </section>
 
 <!-- ================= INSTALLATION ================= -->
-<section id="installation" style="background:var(--bg2);border-block:1px solid var(--line)">
+<section id="installation" class="tone-deep">
   <div class="wrap">
     <div class="kicker">Installation</div>
     <h2>En piste en <span>cinq minutes</span></h2>
@@ -340,7 +353,7 @@ h2 span,h1 span{color:var(--accent)}
 </section>
 
 <!-- ================= SOUTIEN ================= -->
-<section>
+<section class="tone-steel">
   <div class="wrap">
     <div class="support">
       <div>
