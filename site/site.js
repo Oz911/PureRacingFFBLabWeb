@@ -3,8 +3,9 @@
 window.PRFX = {
   version: '0.14.64',
   status: 'Version bêta',
-  // Fichier joint sur Odoo (change quand l'installateur est remplacé).
-  download: 'https://pureracing-fx.odoo.com/web/content/2142?unique=79b82d7ecd007142174c31782c018e940ed7b212&download=true',
+  // Adresse fixe (redirection Odoo /telecharger → fichier joint de la dernière version).
+  // À chaque version : changer seulement la cible de la redirection dans Odoo.
+  download: 'https://pureracing-fx.odoo.com/telecharger',
   support: 'https://pureracing-fx.odoo.com/r/abg',
   odoo: 'https://pureracing-fx.odoo.com',
 };
