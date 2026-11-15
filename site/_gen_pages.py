@@ -2,7 +2,7 @@
 import html, sys
 OUT = sys.argv[1]
 # À augmenter quand site.css ou site.js changent : les navigateurs gardent l'ancien fichier 10 min.
-VERSION = '13'
+VERSION = '14'
 
 HEAD = '''<!doctype html>
 <html lang="fr">
@@ -246,10 +246,10 @@ dict(file='ingenieur.html', num='04', name='Ingénieur', title='Ingénieur', img
          ("Jeu", "Pensé pour Le Mans Ultimate : le setup est lu dans les fichiers de la séance."),
          ("Conseils", "Des pistes de réglage à essayer en piste, pas une vérité absolue : ton ressenti a toujours le dernier mot."),
          ("Radio", "Avec le Spotter, ton ingénieur te parle aussi en piste : encouragements et conseils.")],
-  next=dict(t='Ensuite : <span>Engine</span>', p="Côté matériel : des profils moteur pour tes bass shakers.", page='engine', label='05 · Engine')),
+  next=dict(t='Ensuite : <span>Motion</span>', p="Côté matériel : les mouvements de ta voiture sur ton moniteur, ou sur ta plateforme.", page='motion', label='06 · Motion')),
 
 # ------------------------------------------------------------------ ENGINE
-dict(file='engine.html', num='05', name='Engine', title='Engine', img='engine.jpg',
+dict(file='engine.html', num='07', name='Engine', title='Engine', img='engine.jpg',
   desc="Engine, module de Pit Box : profils moteur pour les bass shakers SimHub (ShakeIt), adaptés à chaque voiture.",
   sub='Profils <span>haptiques</span>',
   lead="Engine crée des profils moteur pour les bass shakers de SimHub, adaptés à chaque voiture : l'architecture du moteur, ses régimes, ses couches de vibrations. Il reconnaît la voiture et charge son profil tout seul.",
@@ -268,7 +268,7 @@ dict(file='engine.html', num='05', name='Engine', title='Engine', img='engine.jp
   table=[("Matériel", "Un ou plusieurs bass shakers (transducteurs) branchés sur une carte son, gérés par SimHub ShakeIt."),
          ("Jeux", "Le Mans Ultimate en priorité (templates) ; les jeux reconnus par SimHub."),
          ("Sortie audio", "Le spectre peut écouter la sortie réelle de tes shakers pour vérifier le rendu.")],
-  next=dict(t='Ensuite : <span>Motion</span>', p="Les mouvements de ta voiture sur ton moniteur, ou sur ta plateforme.", page='motion', label='06 · Motion')),
+  next=dict(t='Ensuite : <span>FFB Analyzer</span>', p="Ton force feedback mesuré : écrêtage, marge et couple.", page='ffb-analyzer', label='08 · FFB Analyzer')),
 
 # ------------------------------------------------------------------ MOTION
 dict(file='motion.html', num='06', name='Motion', title='Motion', img='motion.jpg',
@@ -296,10 +296,10 @@ dict(file='motion.html', num='06', name='Motion', title='Motion', img='motion.jp
   table=[("Logiciel", "OpenTrack (gratuit), configuré une fois : entrée UDP sur le port 4242, sortie freetrack. La prise en main du module guide pas à pas."),
          ("Jeux", "Ceux qui acceptent un suivi de tête (TrackIR / freetrack) : Le Mans Ultimate, et d'autres. Pas Assetto Corsa, qui a son propre mouvement avec CSP."),
          ("Sens des axes", "Seul Z s'inverse dans OpenTrack ; les autres avec « Inverser » dans Pit Box.")],
-  next=dict(t='Ensuite : <span>FFB Analyzer</span>', p="Ton force feedback mesuré : écrêtage, marge et couple.", page='ffb-analyzer', label='07 · FFB Analyzer')),
+  next=dict(t='Ensuite : <span>Engine</span>', p="Des profils moteur pour tes bass shakers.", page='engine', label='07 · Engine')),
 
 # ------------------------------------------------------------------ FFB ANALYZER
-dict(file='ffb-analyzer.html', num='07', name='FFB Analyzer', title='FFB Analyzer', img='ffb.jpg',
+dict(file='ffb-analyzer.html', num='08', name='FFB Analyzer', title='FFB Analyzer', img='ffb.jpg',
   desc="FFB Analyzer, module de Pit Box : ton force feedback mesuré tour par tour, écrêtage, marge et couple de la voiture.",
   sub='Force feedback <span>mesuré</span>',
   lead="FFB Analyzer mesure le signal de force feedback pendant que tu roules : la part du tour passée en écrêtage, la marge qui te reste, le couple de la voiture. Tu sais si ton réglage sature, et de combien.",
@@ -320,10 +320,10 @@ dict(file='ffb-analyzer.html', num='07', name='FFB Analyzer', title='FFB Analyze
          ("Jeux", "Le Mans Ultimate, rFactor 2, Assetto Corsa (et les jeux qui publient leur FFB dans SimHub)."),
          ("Sessions", "Chaque séance est enregistrée : tu compares tes réglages d'un jour à l'autre."),
          ("Tablette", "Une page de suivi en direct s'ouvre sur une tablette ou un téléphone du même Wi-Fi.")],
-  next=dict(t='Ensuite : <span>Dash</span>', p="Des tableaux de bord SimHub pour tous les styles de pilotage.", page='dash', label='08 · Dash')),
+  next=dict(t='Ensuite : <span>Dash</span>', p="Des tableaux de bord SimHub pour tous les styles de pilotage.", page='dash', label='09 · Dash')),
 
 # ------------------------------------------------------------------ DASH
-dict(file='dash.html', num='08', name='Dash', title='Dash', img='dash.jpg',
+dict(file='dash.html', num='09', name='Dash', title='Dash', img='dash.jpg',
   desc="Dash, module de Pit Box : une collection de tableaux de bord SimHub, modernes ou classiques.",
   sub='Tableaux <span>de bord</span>',
   lead="Une collection de tableaux de bord pour SimHub, du plus épuré au plus complet, avec des designs modernes ou classiques. Un clic sur un modèle, et tu le télécharges.",
@@ -355,7 +355,7 @@ dict(file='dash.html', num='08', name='Dash', title='Dash', img='dash.jpg',
   table=[("Installation", "Télécharge le modèle, puis double-clique dessus : SimHub l'ajoute à tes tableaux de bord."),
          ("Écrans", "Un écran de PC, un écran secondaire, une tablette ou un écran de volant reconnu par SimHub."),
          ("Assetto Corsa", "Les autres voitures ne sont connues que si les applications Python sont activées dans le jeu.")],
-  next=dict(t='Retour <span>à Pit Box</span>', p="Les huit modules, la vidéo et l'installation.", page='accueil', label='Accueil')),
+  next=dict(t='Retour <span>à Pit Box</span>', p="Les neuf modules, la vidéo et l'installation.", page='accueil', label='Accueil')),
 ]
 
 for p in PAGES:
