@@ -99,6 +99,11 @@ h2 span,h1 span{color:var(--accent)}
 .card .t{font:700 12.5px var(--title);letter-spacing:.14em;text-transform:uppercase;color:var(--accent);margin-top:6px}
 .card p{color:var(--muted);font-size:14.5px;line-height:1.5;margin:10px 0 0;flex:1}
 .card .go{margin-top:14px;font:700 14px var(--title);letter-spacing:.1em;text-transform:uppercase;color:var(--info)}
+.tag.dev{color:var(--guide);border-color:var(--guide);background:rgba(255,138,31,.12)}
+.devband{background:repeating-linear-gradient(-45deg,rgba(255,138,31,.16) 0 14px,rgba(255,138,31,.07) 14px 28px);border-block:1px solid var(--guide)}
+.devband .wrap{display:flex;flex-wrap:wrap;align-items:center;gap:8px 18px;padding-block:14px}
+.devband b{font:700 16px var(--title);letter-spacing:.14em;text-transform:uppercase;color:var(--guide)}
+.devband span{color:var(--muted);min-width:0}
 .tag{display:inline-block;font:600 11px var(--body);color:var(--dim);border:1px solid var(--line2);border-radius:20px;padding:2px 8px;margin-left:6px;vertical-align:2px;text-transform:none;letter-spacing:0;font-style:normal}
 
 /* ---------- Atouts ---------- */

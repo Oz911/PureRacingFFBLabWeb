@@ -2,7 +2,7 @@
 import html, sys
 OUT = sys.argv[1]
 # À augmenter quand site.css ou site.js changent : les navigateurs gardent l'ancien fichier 10 min.
-VERSION = '12'
+VERSION = '13'
 
 HEAD = '''<!doctype html>
 <html lang="fr">
@@ -176,7 +176,7 @@ dict(file='spotter.html', num='01', name='Spotter', title='Spotter', img='spotte
       paras=["Le Spotter est la pièce centrale de Pit Box : il relie ta voix à tous les modules."],
       bullets=["<b>« Active Motion »</b>, <b>« coupe Engine »</b> : les modules s'allument et s'éteignent à la voix.",
                "<b>Repères</b> : dis « survirage » ou « blocage » en roulant, le repère se pose sur la carte du circuit pour l'Ingénieur.",
-               "<b>Conseils de Training</b> : après chaque tour, le virage où tu perds le plus de temps.",
+               "<b>Coach Training</b> : le coach te guide virage par virage à la radio.",
                "<b>Bascule jeu ↔ Pit Box</b> sur un bouton du volant."],
       note="L'accueil de Pit Box : chaque module s'active d'un clic, ou à la voix."),
   ],
@@ -185,7 +185,7 @@ dict(file='spotter.html', num='01', name='Spotter', title='Spotter', img='spotte
          ("Bouton du volant", "Un appui pour parler. Le même bouton peut aussi servir à la bascule jeu / Pit Box."),
          ("Voix", "Une voix enregistrée pour les annonces courantes, et une voix de synthèse pour le reste."),
          ("Langue", "Français, pour les annonces comme pour les questions.")],
-  next=dict(t='Ensuite : <span>Training</span>', p="Tes tours comparés à une référence, virage par virage, avec un conseil à la radio.", page='training', label='02 · Training')),
+  next=dict(t='Ensuite : <span>Coach Training</span>', p="Tes tours comparés à une référence, virage par virage, avec un coach à la radio.", page='training', label='02 · Coach Training')),
 
 # ------------------------------------------------------------------ TÉLÉMÉTRIE
 dict(file='telemetrie.html', num='03', name='Télémétrie', title='Télémétrie', img='engineer.jpg',
