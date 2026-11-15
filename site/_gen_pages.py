@@ -189,10 +189,10 @@ dict(file='spotter.html', num='01', name='Spotter', title='Spotter', img='spotte
 
 # ------------------------------------------------------------------ TÉLÉMÉTRIE
 dict(file='telemetrie.html', num='03', name='Télémétrie', title='Télémétrie', img='engineer.jpg',
-  desc="Télémétrie, module de Pit Box : tes séances MoTeC analysées et comparées, pilotage, freinage, pneus, suspensions, châssis et trajectoires.",
+  desc="Télémétrie, module de Pit Box : tes séances Le Mans Ultimate et MoTeC analysées et comparées, pilotage, freinage, pneus, suspensions, châssis et trajectoires.",
   sub='Comprendre <span>ton chrono</span>',
-  lead="Télémétrie lit tes enregistrements MoTeC, trouve le meilleur tour de chaque séance et compare deux tours point par point. Sept pages d'analyse, une carte du circuit, et tout ce qu'il faut pour savoir où et pourquoi tu perds du temps.",
-  chips=['MoTeC (.ld)', 'Le Mans Ultimate', '7 pages d\'analyse', 'Sur ta tablette'],
+  lead="Télémétrie lit directement la télémétrie de Le Mans Ultimate (fichiers .duckdb, rien à installer) et les enregistrements MoTeC des autres jeux, trouve le meilleur tour de chaque séance et compare deux tours point par point. Sept pages d'analyse, une carte du circuit, et tout ce qu'il faut pour savoir où et pourquoi tu perds du temps.",
+  chips=['Le Mans Ultimate (.duckdb)', 'MoTeC (.ld)', '7 pages d\'analyse', 'Sur ta tablette'],
   features=[
     dict(kicker='Deux tours face à face', h2='Session A, <span>session B</span>', cap='telemetrie.jpg', alt="Télémétrie : les modules d'analyse",
       paras=["Choisis une séance A, et une séance B pour comparer : ton meilleur tour d'aujourd'hui contre celui d'hier, ou contre celui d'un équipier."],
@@ -213,7 +213,7 @@ dict(file='telemetrie.html', num='03', name='Télémétrie', title='Télémétri
     dict(kicker='La carte', h2='Ta ligne <span>sur le circuit</span>', cap='tele-carte.jpg', alt='Carte du circuit avec vitesses mini et repères',
       paras=["La carte montre ta trajectoire en couleur (freinage, entre-deux, plein gaz), les vitesses mini de chaque virage et les repères que tu as posés à la voix avec le Spotter."]),
   ],
-  table=[("Fichiers", "Les enregistrements MoTeC (.ld, avec leur .ldx) de ton jeu. Active l'export de télémétrie dans le jeu, puis ajoute son dossier dans Sessions."),
+  table=[("Fichiers", "Le Mans Ultimate : ses propres fichiers .duckdb (dossier UserData\\Telemetry), lus directement, sans MoTeC. Autres jeux : les enregistrements MoTeC (.ld, avec leur .ldx). Active la télémétrie dans le jeu, puis ajoute son dossier dans Sessions."),
          ("Jeux", "Le Mans Ultimate en priorité ; les autres jeux qui exportent au format MoTeC."),
          ("Place sur le disque", "Une croix à côté de chaque séance supprime les vieux enregistrements, qui pèsent lourd."),
          ("Tablette", "Toutes les pages s'ouvrent aussi sur une tablette ou un téléphone du même Wi-Fi.")],

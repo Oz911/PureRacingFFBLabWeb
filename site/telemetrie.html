@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Télémétrie · Pit Box · Pure Racing FX</title>
-<meta name="description" content="Télémétrie, module de Pit Box : tes séances MoTeC analysées et comparées, pilotage, freinage, pneus, suspensions, châssis et trajectoires.">
+<meta name="description" content="Télémétrie, module de Pit Box : tes séances Le Mans Ultimate et MoTeC analysées et comparées, pilotage, freinage, pneus, suspensions, châssis et trajectoires.">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Barlow:wght@400;500;600;700&family=Barlow+Condensed:ital,wght@0,600;0,700;1,700&display=swap" rel="stylesheet">
@@ -19,8 +19,8 @@
     <div class="crumbs"><a data-page="accueil">Pit Box</a> › <b>Module 03</b> · Télémétrie</div>
     <h1>Pure Racing <span>Télémétrie</span></h1>
     <div class="sub">Comprendre <span>ton chrono</span></div>
-    <p class="lead">Télémétrie lit tes enregistrements MoTeC, trouve le meilleur tour de chaque séance et compare deux tours point par point. Sept pages d'analyse, une carte du circuit, et tout ce qu'il faut pour savoir où et pourquoi tu perds du temps.</p>
-    <div class="chips"><span class="red">MoTeC (.ld)</span><span class="">Le Mans Ultimate</span><span class="">7 pages d'analyse</span><span class="">Sur ta tablette</span></div>
+    <p class="lead">Télémétrie lit directement la télémétrie de Le Mans Ultimate (fichiers .duckdb, rien à installer) et les enregistrements MoTeC des autres jeux, trouve le meilleur tour de chaque séance et compare deux tours point par point. Sept pages d'analyse, une carte du circuit, et tout ce qu'il faut pour savoir où et pourquoi tu perds du temps.</p>
+    <div class="chips"><span class="red">Le Mans Ultimate (.duckdb)</span><span class="">MoTeC (.ld)</span><span class="">7 pages d'analyse</span><span class="">Sur ta tablette</span></div>
   </div>
 </header>
 <section class="tone-steel">
@@ -71,7 +71,7 @@
     <div class="tbl">
       <table class="ref">
         <thead><tr><th>Point</th><th>Ce qu'il faut savoir</th></tr></thead>
-        <tbody><tr><td>Fichiers</td><td>Les enregistrements MoTeC (.ld, avec leur .ldx) de ton jeu. Active l'export de télémétrie dans le jeu, puis ajoute son dossier dans Sessions.</td></tr><tr><td>Jeux</td><td>Le Mans Ultimate en priorité ; les autres jeux qui exportent au format MoTeC.</td></tr><tr><td>Place sur le disque</td><td>Une croix à côté de chaque séance supprime les vieux enregistrements, qui pèsent lourd.</td></tr><tr><td>Tablette</td><td>Toutes les pages s'ouvrent aussi sur une tablette ou un téléphone du même Wi-Fi.</td></tr></tbody>
+        <tbody><tr><td>Fichiers</td><td>Le Mans Ultimate : ses propres fichiers .duckdb (dossier UserData\Telemetry), lus directement, sans MoTeC. Autres jeux : les enregistrements MoTeC (.ld, avec leur .ldx). Active la télémétrie dans le jeu, puis ajoute son dossier dans Sessions.</td></tr><tr><td>Jeux</td><td>Le Mans Ultimate en priorité ; les autres jeux qui exportent au format MoTeC.</td></tr><tr><td>Place sur le disque</td><td>Une croix à côté de chaque séance supprime les vieux enregistrements, qui pèsent lourd.</td></tr><tr><td>Tablette</td><td>Toutes les pages s'ouvrent aussi sur une tablette ou un téléphone du même Wi-Fi.</td></tr></tbody>
       </table>
     </div>
   </div>
@@ -92,6 +92,6 @@
   </div>
 </section>
 
-<script src="site.js?v=12"></script>
+<script src="site.js?v=13"></script>
 </body>
 </html>

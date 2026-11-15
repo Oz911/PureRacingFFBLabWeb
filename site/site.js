@@ -2,7 +2,7 @@
    Le numéro de version est lu sur la dernière release GitHub à l'ouverture de la page :
    rien à changer à chaque publication. La valeur ci-dessous ne sert que si GitHub ne répond pas. */
 window.PRFX = {
-  version: '0.14.69',
+  version: '0.14.70',
   releases: 'https://api.github.com/repos/Oz911/PureRacingFFBLabWeb/releases/latest',
   status: 'Version bêta',
   // Adresse fixe : redirection Odoo /telecharger → dernière release GitHub (rien à changer à chaque version).
