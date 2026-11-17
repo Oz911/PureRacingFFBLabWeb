@@ -1,0 +1,369 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Guide haptique · Pure Racing FX</title>
+<meta name="description" content="Guide complet du sim racing haptique : concevoir un profil, placer ses bass shakers, choisir le matériel, l'amplification et le câblage.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Barlow:wght@400;500;600;700&family=Barlow+Condensed:ital,wght@0,600;0,700;1,700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="site.css?v=15">
+</head>
+<body>
+<!-- Images : hébergées sur le site Odoo (pièces jointes de l'ancienne page). -->
+<!-- ================= EN-TÊTE ================= -->
+<header class="mhero">
+  <div class="bg" style="background-image:url(img/engine.jpg)"></div>
+  <div class="veil"></div>
+  <div class="wrap">
+    <div class="crumbs"><a data-page="accueil">Pure Racing FX</a> › <b>Guide</b> · Haptique</div>
+    <h1>Guide <span>haptique</span></h1>
+    <div class="sub">La bonne information, <span>au bon endroit</span></div>
+    <p class="lead">Pour beaucoup de simracers, les bass shakers servent à faire vibrer le cockpit. Bien pensée, une installation haptique devient une vraie interface entre la physique de la voiture et le pilote : moteur, rapports, suspensions, limites d'adhérence.</p>
+    <div class="chips"><span class="red">Guide complet</span><span>Profil SimHub</span><span>Placement</span><span>Matériel</span><span>Amplification et câblage</span></div>
+  </div>
+</header>
+
+<!-- ================= INTRODUCTION ================= -->
+<section class="tone-steel">
+  <div class="wrap split">
+    <div>
+      <div class="kicker">Introduction</div>
+      <h2>Vibrer <span>ou ressentir ?</span></h2>
+      <div class="prose">
+        <p>Les premières expériences déçoivent souvent : vibrations confuses, sensations artificielles, effets difficiles à distinguer. De quoi remettre en question l'intérêt même de ces équipements.</p>
+        <p>Pourquoi certaines installations convainquent-elles, quand d'autres se contentent de faire vibrer tout le châssis ? La puissance et le nombre de transducteurs ne suffisent pas : leur <b>technologie</b>, leur <b>emplacement</b>, leur <b>fixation</b> et la façon dont les vibrations <b>se transmettent au corps</b> comptent tout autant.</p>
+      </div>
+      <p class="punch">Ressentir non pas plus de vibrations, mais <span>les bonnes informations</span>, au bon endroit, au bon moment.</p>
+    </div>
+    <div>
+      <div class="grid2" style="margin-top:0">
+        <div class="box big"><div class="k">Philosophie 1</div><b>Puissance sur le châssis</b><p>Des transducteurs puissants répartis aux quatre coins du cockpit.</p></div>
+        <div class="box big"><div class="k">Philosophie 2</div><b>Près du pilote</b><p>Des unités compactes installées au plus près du corps.</p></div>
+      </div>
+      <div class="note"><svg viewBox="0 0 24 24"><path d="M9 12l2 2 4-4"/><circle cx="12" cy="12" r="9"/></svg><div><b>Compatibles</b><p>Les deux approches ne s'opposent pas : elles peuvent se compléter dans la même installation.</p></div></div>
+    </div>
+  </div>
+</section>
+
+<!-- ================= I. CONCEPTION D'UN PROFIL ================= -->
+<section class="tone-navy" id="profil">
+  <div class="wrap">
+    <div class="kicker">Partie I</div>
+    <h2>Concevoir <span>un profil haptique</span></h2>
+    <p class="lead">De la télémétrie du jeu à la vibration dans ton dos : cinq étapes, du logiciel au matériel.</p>
+    <nav class="chain">
+      <a href="#e1"><i>01</i><b>Données</b><span>Ce que le jeu expose</span></a>
+      <a href="#e2"><i>02</i><b>Couches</b><span>Des effets sur mesure</span></a>
+      <a href="#e3"><i>03</i><b>Mixage</b><span>Chaque effet à sa place</span></a>
+      <a href="#e4"><i>04</i><b>Amplification</b><span>Sans écrêtage</span></a>
+      <a href="#e5"><i>05</i><b>Restitution</b><span>Placement et propagation</span></a>
+    </nav>
+
+    <div style="margin-top:20px">
+      <div class="step" id="e1">
+        <div><div class="num">01</div><h3>L'exploitation <span>des données</span></h3></div>
+        <div class="prose">
+          <p>Tout part de la télémétrie transmise par le jeu : régime moteur, vitesse, forces G, glissement des pneus, état de la piste, collisions… SimHub expose un grand nombre de ces propriétés, mais leur disponibilité et leur précision varient selon le moteur physique et l'API de chaque simulateur : le glissement précis d'un pneu ou les vibrations de suspension peuvent manquer, être incomplets ou exprimés autrement d'un titre à l'autre.</p>
+          <p>L'enjeu est d'identifier les propriétés pertinentes, de comprendre leur fonctionnement et de savoir comment les exploiter. Une donnée brute ne suffit pas toujours : elle doit souvent être <b>filtrée, normalisée ou combinée</b> à d'autres pour donner un signal cohérent. Restituer une perte d'adhérence, par exemple, demande de croiser la vitesse, le taux de glissement des pneus et l'intensité des accélérations latérales.</p>
+          <p>Le but n'est pas de transformer une valeur en vibration, mais de construire une réponse <b>progressive, crédible et fidèle</b> au phénomène physique.</p>
+        </div>
+      </div>
+
+      <div class="step" id="e2">
+        <div><div class="num">02</div><h3>Layers <span>ou couches</span></h3></div>
+        <div class="prose">
+          <p>SimHub propose une bibliothèque d'effets prédéfinis, simples et génériques. Certains, comme le passage de rapport, donnent de bons résultats sans réglage ; d'autres montrent vite leurs limites, car ils reposent sur une fréquence unique ou une bande étroite.</p>
+          <p>SimHub permet heureusement de concevoir ses propres <b>effets personnalisés (Custom Effects)</b>. En combinant plusieurs couches aux comportements distincts, on reproduit des phénomènes plus complexes : perte d'adhérence, glissement des pneus, blocage des roues, variations de comportement des suspensions.</p>
+          <p>Résultat : des effets plus riches, plus progressifs et plus réalistes. C'est le principe des profils multicouches du module <a data-page="engine"><b>Engine</b></a> de Pit Box.</p>
+        </div>
+      </div>
+
+      <div class="step" id="e3">
+        <div><div class="num">03</div><h3>Le <span>mixage</span></h3></div>
+        <div>
+          <div class="prose">
+            <p>Chaque effet a sa fréquence, son amplitude, sa durée et ses conditions de déclenchement. Joués ensemble, leurs signaux peuvent se superposer, se masquer ou saturer. Deux effets intenses sur les mêmes fréquences se confondent, ou l'un écrase tous les autres.</p>
+            <p>Il faut aussi <b>hiérarchiser</b> : un passage de rapport ou un blocage de roue doivent rester nets, même sur un fond continu de moteur, de route ou de pneus.</p>
+          </div>
+          <div class="grid5">
+            <div class="box"><b>Fréquences</b><p>Une plage adaptée par effet, sans chevauchement inutile.</p></div>
+            <div class="box"><b>Gains</b><p>Équilibrer les amplitudes pour qu'aucun effet ne domine.</p></div>
+            <div class="box"><b>Priorités</b><p>Garder lisibles les événements importants face aux vibrations permanentes.</p></div>
+            <div class="box"><b>Dynamique</b><p>Travailler montées, transitions et durées : rien de brutal ni d'artificiel.</p></div>
+            <div class="box"><b>Spatialisation</b><p>Utiliser les différents shakers pour situer l'origine de chaque sensation.</p></div>
+          </div>
+          <div class="prose"><p>Teste toujours en conduite réelle : un effet convaincant seul peut devenir imperceptible, ou envahissant, une fois dans l'ensemble du profil.</p></div>
+          <div class="note"><svg viewBox="0 0 24 24"><path d="M12 3a6 6 0 0 0-3.5 10.9V16h7v-2.1A6 6 0 0 0 12 3z"/><path d="M9.5 19h5M10.5 21.5h3"/></svg><div><b>Astuce SimHub</b><p>Active toujours <b>« Sortie séparée »</b> sur chaque layer et donne-lui un nom explicite. Dans l'onglet <b>« Sortie son »</b>, choisis <b>« Allocation personnalisée »</b> : tu pourras envoyer chaque effet vers les canaux de ton choix (avant, arrière, gauche, droite ou tous).</p></div></div>
+        </div>
+      </div>
+
+      <div class="step" id="e4">
+        <div><div class="num">04</div><h3>L'<span>amplification</span></h3></div>
+        <div class="prose">
+          <p>C'est l'étage de puissance. Les signaux traités sont de faible niveau : il faut les amplifier pour entraîner physiquement les transducteurs.</p>
+          <p>Un gain trop élevé provoque de l'<b>écrêtage (clipping)</b> : le signal se déforme et les nuances disparaissent. Trop faible, et certains effets deviennent imperceptibles. L'objectif est de préserver la dynamique du signal tout en gardant un retour puissant et détaillé, adapté à ton matériel (shakers, excitateurs, amplis). Le module <a data-page="ffb-analyzer"><b>FFB Analyzer</b></a> applique la même logique à ton volant.</p>
+        </div>
+      </div>
+
+      <div class="step" id="e5">
+        <div><div class="num">05</div><h3>La restitution <span>physique</span></h3></div>
+        <div>
+          <div class="prose"><p>Dernier maillon : les signaux amplifiés partent vers les transducteurs. Le ressenti dépend de leur puissance, mais aussi de leur <b>position</b> et de la façon dont les vibrations <b>se propagent</b> dans le cockpit.</p></div>
+          <div class="grid2">
+            <div class="box"><b>Moteur et rapports</b><p>Au plus près du corps, notamment sous le siège.</p></div>
+            <div class="box"><b>Suspensions</b><p>Idéalement quatre transducteurs indépendants, un par coin, pour distinguer chaque roue.</p></div>
+            <div class="box"><b>Effets de route</b><p>Sur le support du pédalier ou des éléments ciblés du châssis.</p></div>
+            <div class="box"><b>Pneumatiques</b><p>Répartis entre l'avant et l'arrière pour distinguer pertes d'adhérence et glissements.</p></div>
+          </div>
+          <div class="note warn"><svg viewBox="0 0 24 24"><path d="M12 3l9.5 17h-19z"/><path d="M12 10v4.5M12 17.5v.01"/></svg><div><b>Attention à la propagation</b><p>Sur un cockpit en profilés aluminium rigides, les vibrations se diffusent dans toute la structure et brouillent la spatialisation. <b>Découple mécaniquement le siège et le pédalier</b> du châssis (silentblocs, supports antivibratoires) : l'énergie reste là où tu la veux, et les effets gagnent en lisibilité.</p></div></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ================= II. PHILOSOPHIES DE MONTAGE ================= -->
+<section class="tone-black" id="montage">
+  <div class="wrap">
+    <div class="kicker">Partie II</div>
+    <h2>Les philosophies <span>de montage</span></h2>
+    <div class="split" style="margin-top:8px">
+      <div class="prose">
+        <p>Certains choisissent des unités puissantes, de <b>100 à 300 W</b>, pour distinguer clairement les quatre coins du châssis. D'autres multiplient des transducteurs plus modestes, souvent <b>moins de 50 W</b>, placés au plus près du pilote. Chaque approche a ses forces, et on peut les combiner.</p>
+        <p>Plus le transducteur est proche du corps, plus la sensation est précise : fixé directement au siège, il transmet l'information avec moins de pertes et de vibrations parasites. Changement de rapport, perte d'adhérence, moteur, réactions du châssis : le pilote les distingue sans que tout se mélange.</p>
+      </div>
+      <div>
+        <div class="kicker" style="margin-top:6px">Les quatre blocs d'effets</div>
+        <div class="grid2" style="margin-top:16px">
+          <div class="box"><div class="k">01</div><b>Surface</b><p>Vibreurs, compressions, irrégularités de la piste.</p></div>
+          <div class="box"><div class="k">02</div><b>Adhérence</b><p>Sous-virage, survirage, blocage, perte de motricité.</p></div>
+          <div class="box"><div class="k">03</div><b>Moteur</b><p>Plages de couple et seuils de vibration mécanique.</p></div>
+          <div class="box"><div class="k">04</div><b>Transmission</b><p>Les passages de rapports.</p></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ================= CARTOGRAPHIE ================= -->
+<section class="tone-steel" id="placement">
+  <div class="wrap">
+    <div class="kicker">Cartographie sensorielle</div>
+    <h2>Où placer <span>tes transducteurs ?</span></h2>
+    <div class="grid4">
+      <div class="box"><div class="k">Zone critique</div><b>Sous l'assise</b><span class="hz">20 – 60 Hz</span><p>Une unité robuste et puissante (gros bass shaker ou ButtKicker) pour l'inertie du moteur et les fortes variations de charge verticale.</p></div>
+      <div class="box"><div class="k">Impacts secs</div><b>Dossier</b><span class="hz">Fréquences hautes</span><p>Passages de rapports et accélérations longitudinales. Assez de puissance pour traverser le rembourrage.</p></div>
+      <div class="box"><div class="k">Forces latérales</div><b>Gauche / droite</b><span class="hz">Unités compactes</span><p>Proches du bassin : une lecture fine des appuis sans besoin de beaucoup de puissance.</p></div>
+      <div class="box"><div class="k">ABS et blocage</div><b>Pédalier</b><span class="hz">Excitateurs</span><p>Pour simuler l'ABS ou le blocage des roues sous le pied.</p></div>
+    </div>
+    <div class="note warn"><svg viewBox="0 0 24 24"><path d="M12 3l9.5 17h-19z"/><path d="M12 10v4.5M12 17.5v.01"/></svg><div><b>Pédalier : isole-le</b><p>Monté sur le pédalier, un transducteur disperse facilement ses vibrations dans tout le cockpit. Isole impérativement cette zone avec des silentblocs ou des élastomères.</p></div></div>
+  </div>
+</section>
+
+<!-- ================= CONFIGURATIONS ================= -->
+<section class="tone-navy" id="configurations">
+  <div class="wrap">
+    <div class="kicker">Près du corps</div>
+    <h2>Trois configurations <span>pour démarrer</span></h2>
+    <p class="lead">Une installation efficace et évolutive : commence petit, ajoute des zones ensuite.</p>
+    <div class="setups">
+      <article class="setup">
+        <div class="pic"><img src="https://pureracing-fx.odoo.com/web/image/1454" alt="Cockpit en configuration de base : une unité sous l'assise, une au dos du dossier" loading="lazy"></div>
+        <div class="body">
+          <div class="k">Base</div><h3>2 unités</h3>
+          <div class="units"><i></i><i></i><i class="off"></i><i class="off"></i><i class="off"></i><i class="off"></i><i class="off"></i><i class="off"></i></div>
+          <dl><dt>Emplacements</dt><dd>1 unité de 50 W minimum sous l'assise, 1 unité de 50 W au dos du dossier.</dd>
+          <dt>Bénéfices</dt><dd>Lecture verticale et longitudinale : moteur, rapports, impacts de la route.</dd></dl>
+        </div>
+      </article>
+      <article class="setup">
+        <div class="pic"><img src="https://pureracing-fx.odoo.com/web/image/1452" alt="Cockpit en configuration intermédiaire : assise, dossier et deux unités latérales" loading="lazy"></div>
+        <div class="body">
+          <div class="k">Intermédiaire</div><h3>4 unités</h3>
+          <div class="units"><i></i><i></i><i></i><i></i><i class="off"></i><i class="off"></i><i class="off"></i><i class="off"></i></div>
+          <dl><dt>Emplacements</dt><dd>1 sous l'assise, 1 au dos du dossier, 2 latéraux au niveau des cuisses.</dd>
+          <dt>Matériel</dt><dd>Carte son externe multicanal dédiée et amplificateurs séparés indispensables.</dd>
+          <dt>Bénéfices</dt><dd>Transferts de masse latéraux et lecture des limites de glisse.</dd></dl>
+        </div>
+      </article>
+      <article class="setup">
+        <div class="pic"><img src="https://pureracing-fx.odoo.com/web/image/1453" alt="Cockpit en configuration avancée : huit unités sur l'assise, le dossier et les côtés" loading="lazy"></div>
+        <div class="body">
+          <div class="k">Avancée</div><h3>8 unités</h3>
+          <div class="units"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div>
+          <dl><dt>Emplacements</dt><dd>1 sous l'assise, 5 au dos du dossier, 2 latéraux au niveau des cuisses.</dd>
+          <dt>Matériel</dt><dd>Plusieurs cartes son multicanal dédiées et amplificateurs séparés indispensables.</dd>
+          <dt>Bénéfices</dt><dd>Un canal par effet : presque plus d'écrêtage logiciel, une réserve dynamique (headroom) maximale, chaque effet reste distinct même lors d'impacts simultanés.</dd></dl>
+        </div>
+      </article>
+    </div>
+  </div>
+</section>
+
+<!-- ================= MATÉRIEL ================= -->
+<section class="tone-black" id="materiel">
+  <div class="wrap">
+    <div class="kicker">Le matériel</div>
+    <h2>Choisir <span>ses transducteurs</span></h2>
+    <p class="lead">Les combinaisons sont nombreuses, selon le matériel et le châssis. Il faut parfois essayer plusieurs emplacements avant de trouver la bonne.</p>
+    <div class="grid3">
+      <div class="box"><b>Bass shaker</b><p>Polyvalent, utilisable partout, excellent rapport puissance/prix.</p></div>
+      <div class="box"><b>ButtKicker</b><p>Haut de gamme à forte énergie : impacts basse fréquence massifs. Idéal sous l'assise.</p></div>
+      <div class="box"><b>Excitateur de surface</b><p>Plus faible puissance, généralement fixé sur les pédales de frein et d'accélérateur.</p></div>
+    </div>
+    <div class="tbl">
+      <table class="ref">
+        <thead><tr><th>Catégorie</th><th>Exemples</th><th>Rôle</th><th>Fréquences typiques</th><th>Puissance typique</th></tr></thead>
+        <tbody>
+          <tr><td>Bass shaker</td><td>Dayton BST, Xcite XBS</td><td>Vibration du siège ou du rig</td><td>10 – 80 Hz</td><td>30 à 300 W RMS</td></tr>
+          <tr><td>ButtKicker</td><td>Mini LFE</td><td>Basses très marquées sous le siège</td><td>5 – 200 Hz (ou 10 – 200/350 Hz selon le vendeur)</td><td>50 W min / 250 W max</td></tr>
+          <tr><td>Inserts haptiques</td><td>Sensit Haptics</td><td>Mini transducteurs pour siège baquet</td><td>20 – 80 Hz</td><td>15 W RMS par unité</td></tr>
+          <tr><td>Transducteur premium</td><td>Clark Synthesis TST329 / TST429</td><td>Restitution plus large, monte plus haut en fréquence</td><td>TST329 : 10 – 800 Hz<br>TST429 : 5 Hz – 17 kHz</td><td>TST329 : 135 W RMS / 400 W max<br>TST429 : 135 W</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <div class="budgets">
+      <div class="budget">
+        <h4>Budget serré</h4><div class="lvl">€ · POUR DÉBUTER</div>
+        <ul>
+          <li><b>Dayton Audio BST-1</b>Souvent cité comme le meilleur point d'entrée : 50 W RMS, environ 10 – 80 Hz.</li>
+          <li><b>Aurasound AST-2B-4</b>Même logique que le BST-1, pour une installation simple sous le siège.</li>
+          <li><b>Reckhorn BS-200 et équivalents</b>Bon rapport qualité-prix, surtout en DIY ou modulaire.</li>
+        </ul>
+      </div>
+      <div class="budget b2">
+        <h4>Intermédiaire</h4><div class="lvl">€€ · LE BON COMPROMIS</div>
+        <ul>
+          <li><b>ButtKicker Mini LFE</b>Sensations plus franches, produit plus « plug and play » ; 50 W min, 250 W max.</li>
+          <li><b>ButtKicker Gamer Plus</b>Pensé pour un siège unique, choisi pour sa simplicité plus que pour son rendement.</li>
+          <li><b>Xcite XBS50-4</b>Alternative compacte au BST-1, avec plus de réserve et une spirale interne moins fragile.</li>
+        </ul>
+      </div>
+      <div class="budget b3">
+        <h4>Supérieur</h4><div class="lvl">€€€ · RENDU FIN ET LARGE</div>
+        <ul>
+          <li><b>Sensit Haptics MTC-P</b>À glisser dans un siège baquet : les effets restitués près du corps, sans bricolage.</li>
+          <li><b>Clark Synthesis TST329</b>Rendu plus fin et plus large qu'un shaker classique : 10 – 800 Hz, 135 W RMS.</li>
+          <li><b>Clark Synthesis TST429 Platinum</b>Plus haut de gamme : jusqu'à 17 kHz selon la fiche, environ 135 W en continu.</li>
+          <li><b>ButtKicker LFE et modèles puissants</b>Pour un gros impact, avec une amplification adaptée.</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ================= AMPLIFICATION ================= -->
+<section class="tone-steel" id="amplification">
+  <div class="wrap">
+    <div class="kicker">L'amplification</div>
+    <h2>Le moteur <span>de ton système</span></h2>
+    <p class="lead">L'amplificateur doit avoir assez de réserve de puissance pour éviter l'écrêtage. Voici le matériel le plus courant, sans prétendre être exhaustif.</p>
+    <div class="setups">
+      <article class="setup">
+        <div class="pic"><img src="https://pureracing-fx.odoo.com/web/image/1461" alt="Amplificateur Nobsound 2 × 50 W avec carte son intégrée" loading="lazy"></div>
+        <div class="body">
+          <div class="k">Base</div><h3>Nobsound 2 × 50 W</h3>
+          <dl><dd>Ampli avec carte son intégrée, 2 × 50 W sous 4 Ω. Parfait pour débuter, à réserver aux installations légères. Vérifie que l'alimentation est assez puissante.</dd></dl>
+        </div>
+      </article>
+      <article class="setup">
+        <div class="pic"><img src="https://pureracing-fx.odoo.com/web/image/1462" alt="Amplificateur Behringer EPQ304, 4 × 75 W" loading="lazy"></div>
+        <div class="body">
+          <div class="k">Intermédiaire</div><h3>4 × 75 W</h3>
+          <dl><dd>Un ampli de puissance 4 × 75 W sous 4 Ω : Behringer EPQ304, Fosi Audio, Aiyima…</dd>
+          <dt>À prévoir</dt><dd>Une carte son externe multicanal (exemple : StarTech USB 7.1).</dd></dl>
+        </div>
+      </article>
+      <article class="setup">
+        <div class="pic"><img src="https://pureracing-fx.odoo.com/web/image/1463" alt="Amplificateur t.amp E-400, 2 × 310 W" loading="lazy"></div>
+        <div class="body">
+          <div class="k">Avancé</div><h3>t.amp E-400</h3>
+          <dl><dd>2 × 310 W sous 4 Ω. Pour les installations haut de gamme ou gourmandes : meilleure stabilité thermique et réserve dynamique (headroom) indispensable pour éviter l'écrêtage lors d'impacts simultanés.</dd></dl>
+        </div>
+      </article>
+    </div>
+  </div>
+</section>
+
+<!-- ================= IMPÉDANCE ET CÂBLAGE ================= -->
+<section class="tone-navy" id="cablage">
+  <div class="wrap">
+    <div class="kicker">Impédance et câblage</div>
+    <h2>Protège <span>ton ampli</span></h2>
+    <p class="lead">Une impédance mal gérée peut faire surchauffer l'ampli ou détruire les transducteurs.</p>
+    <div class="note"><svg viewBox="0 0 24 24"><path d="M13 2L4 14h7l-1 8 9-12h-7z"/></svg><div><b>Règle d'or</b><p>L'impédance finale ne doit jamais descendre sous l'impédance minimale de ton ampli, indiquée sur sa fiche technique (souvent 4 Ω).</p></div></div>
+    <div class="grid2">
+      <div class="box"><div class="k">Série</div><b>Les impédances s'additionnent</b><p>4 Ω + 4 Ω = 8 Ω. Il faut un ampli qui fournit la puissance nécessaire sous 8 Ω.</p></div>
+      <div class="box"><div class="k">Parallèle</div><b>L'impédance est divisée</b><p>Deux unités identiques de 8 Ω donnent 4 Ω. Il faut un ampli qui fournit la puissance nécessaire sous 4 Ω.</p></div>
+    </div>
+    <div class="grid2 wires">
+      <div class="wire" style="grid-column:1/-1"><div class="cap2">Cas 1 · Série<span>2 × 4 Ω → 8 Ω</span></div><pre>Ampli (+) ── [Shaker 1  4Ω] ── [Shaker 2  4Ω] ── Ampli (−)</pre></div>
+      <div class="wire"><div class="cap2">Cas 2 · Parallèle<span>2 × 8 Ω → 4 Ω</span></div><pre>          ┌── [Shaker 1  8Ω] ──┐
+Ampli (+) ┤                    ├── Ampli (−)
+          └── [Shaker 2  8Ω] ──┘</pre></div>
+      <div class="wire"><div class="cap2">Cas 3 · Mixte<span>4 × 4 Ω → 4 Ω</span></div><pre>          ┌── [Unité 1  4Ω] ── [Unité 2  4Ω] ──┐   Branche A : 8Ω
+Ampli (+) ┤                                    ├── Ampli (−)
+          └── [Unité 3  4Ω] ── [Unité 4  4Ω] ──┘   Branche B : 8Ω</pre></div>
+    </div>
+    <div class="prose"><p>Un câblage de qualité évite les échauffements et préserve le signal : privilégie des sections de <b>2 × 1,5 mm² à 2 × 2,5 mm²</b> selon la puissance des unités et la longueur des câbles.</p></div>
+  </div>
+</section>
+
+<!-- ================= MONTAGE ET MISE EN SERVICE ================= -->
+<section class="tone-black" id="installation">
+  <div class="wrap split">
+    <div>
+      <div class="kicker">Montage et fixation</div>
+      <h2>Rigide ici, <span>souple là</span></h2>
+      <div class="grid2" style="grid-template-columns:minmax(0,1fr)">
+        <div class="box"><div class="k">Transducteur → zone excitée</div><b>Le plus rigide possible</b><p>Entre le shaker et l'assise, le dossier ou la pédale. Une interface souple non maîtrisée agit comme un filtre et absorbe une partie du signal.</p></div>
+        <div class="box"><div class="k">Zone excitée → châssis</div><b>Au contraire, souple</b><p>Silentblocs, élastomères : les vibrations restent localisées.</p></div>
+      </div>
+      <div class="note"><svg viewBox="0 0 24 24"><path d="M12 3a6 6 0 0 0-3.5 10.9V16h7v-2.1A6 6 0 0 0 12 3z"/><path d="M9.5 19h5M10.5 21.5h3"/></svg><div><b>Mon astuce</b><p>Pour ne pas percer mon siège baquet, j'utilise du <b>3M Dual Lock (VHB)</b>. Idéal pendant les essais : on déplace les unités autant de fois qu'il faut avant de figer l'installation. Pour les unités lourdes, passe ensuite à une fixation mécanique définitive.</p></div></div>
+    </div>
+    <div>
+      <div class="kicker">Mise en service</div>
+      <h2>La chaîne <span>de gain</span></h2>
+      <p class="lead" style="font-size:16px">Le calibrage suit un ordre précis pour tirer le meilleur rapport signal/bruit.</p>
+      <ol class="seq">
+        <li><span><b>Windows</b> : volume de la carte son dédiée à 100 %. L'ampli reçoit un signal pleine échelle, ce qui tire le meilleur du convertisseur (DAC).</span></li>
+        <li><span><b>Ampli</b> : commence avec le gain (potentiomètre) au minimum.</span></li>
+        <li><span><b>SimHub</b> : répartis les effets avec sobriété et garde de la marge sur le master.</span></li>
+        <li><span><b>Ampli</b> : monte progressivement le gain jusqu'à des vibrations franches, sans allumer les voyants « Clip ».</span></li>
+      </ol>
+    </div>
+  </div>
+</section>
+
+<!-- ================= CONCLUSION ================= -->
+<section class="tone-steel">
+  <div class="wrap">
+    <div class="kicker">Conclusion</div>
+    <h2>Commence simple, <span>fais évoluer</span></h2>
+    <div class="grid3">
+      <div class="box"><div class="k">01</div><b>Commence simple</b><p>Une installation propre avec peu d'effets vaut mieux qu'un système surchargé.</p></div>
+      <div class="box"><div class="k">02</div><b>Priorité au ressenti</b><p>Favorise la transmission directe au corps.</p></div>
+      <div class="box"><div class="k">03</div><b>Pense évolutif</b><p>Anticipe le câblage et l'amplification pour ajouter facilement zones et effets.</p></div>
+    </div>
+    <div class="quote" style="margin-top:22px;max-width:820px">
+      <p>Envie de passer au niveau supérieur ? Pose-toi deux questions : quels effets supplémentaires veux-tu ressentir, et à quel endroit du corps ? Les réponses guideront le choix et le placement de ton futur matériel.</p>
+      <footer><b>Øz</b> Pure Racing FX · octobre 2026</footer>
+    </div>
+    <div class="next" style="margin-top:34px">
+      <div>
+        <div class="t">Passe à la pratique : <span>Engine</span></div>
+        <p>Des profils moteur multicouches pour tes bass shakers, adaptés à chaque voiture.</p>
+      </div>
+      <div class="links">
+        <a class="btn" data-page="engine">Module Engine →</a>
+        <a class="btn red" data-prfx="download" target="_top" href="#">Télécharger Pit Box</a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<script src="site.js?v=15"></script>
+</body>
+</html>
