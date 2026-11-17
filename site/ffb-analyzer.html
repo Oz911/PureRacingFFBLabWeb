@@ -8,7 +8,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Barlow:wght@400;500;600;700&family=Barlow+Condensed:ital,wght@0,600;0,700;1,700&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="site.css?v=15">
+<link rel="stylesheet" href="site.css?v=16">
 </head>
 <body>
 <!-- ================= EN-TÊTE DU MODULE ================= -->
@@ -41,6 +41,23 @@
     <div class="grid3"><div class="box"><b>Moins de 0,5 %</b><p>Correct : ton FFB garde ses détails.</p></div><div class="box"><b>De 0,5 à 2 %</b><p>À surveiller : le signal sature par moments.</p></div><div class="box"><b>Plus de 2 %</b><p>Écrêtage excessif : baisse la force dans le jeu.</p></div></div>
   </div>
 </section>
+<section class="tone-black" id="demo">
+  <div class="wrap">
+    <div class="kicker">Démo interactive</div>
+    <h2>Essaie-le <span>sans rouler</span></h2>
+    <p class="lead">La page du module telle qu'elle s'affiche sur ta tablette, avec trois tours de Spa simulés : un tête-à-queue (tour exclu), une force trop haute (écrêtage excessif et conseil de réglage), puis la force corrigée. Clique sur les onglets Sessions et Informations.</p>
+    <div class="demo-frame"><iframe id="ffb-demo" src="../analyzer/?v=20261117" title="Démonstration de FFB Analyzer" loading="lazy"></iframe></div>
+    <p class="capnote">Valeurs simulées dans ton navigateur, avec les mêmes règles de calcul que le module. Aucune donnée n'est mesurée.</p>
+  </div>
+</section>
+<section class="tone-steel">
+  <div class="wrap">
+    <div class="kicker">Au quotidien</div>
+    <h2>Rien <span>à configurer</span></h2>
+    <div class="grid3"><div class="box"><b>Sources automatiques</b><p>Lance le jeu et sors en piste : le jeu est détecté, le signal FFB et le couple voiture sont trouvés tout seuls, l'enregistrement démarre dès que la voiture roule.</p></div><div class="box"><b>Sur ta tablette</b><p>La page du module s'ouvre sur une tablette ou un téléphone du même Wi-Fi : signal, tours et carte du circuit en roulant.</p></div><div class="box"><b>Au bouton du volant</b><p>Démarrer ou arrêter l'enregistrement, nouvelle session, repère. L'événement « écrêtage » peut déclencher un effet ShakeIt ou un voyant.</p></div></div>
+    <div class="grid3"><div class="box"><b>Tours exclus</b><p>Choc, sortie de piste, tête-à-queue ou tour plus lent que 107 % du meilleur : le tour reste affiché, mais ne compte ni pour le verdict, ni pour le conseil.</p></div><div class="box"><b>Couple voiture</b><p>En LMU et rFactor 2 : le couple de colonne du tour, ramené à un couple voiture équivalent avec tes réglages du jeu (STC, force, multiplicateur).</p></div><div class="box"><b>Sessions enregistrées</b><p>Une session par jeu, voiture et circuit : un fichier de mesures ouvrable dans Excel et le bilan de chaque tour.</p></div></div>
+  </div>
+</section>
 <!-- ================= BON À SAVOIR ================= -->
 <section class="tone-steel">
   <div class="wrap">
@@ -70,6 +87,13 @@
   </div>
 </section>
 
-<script src="site.js?v=15"></script>
+<script src="site.js?v=16"></script>
+<script>
+// Hauteur de la démo : envoyée par la page de démonstration (même site), le cadre s'ajuste.
+window.addEventListener('message',function(e){
+  if(!e.data||!e.data.prfxDemoHeight)return;
+  var f=document.getElementById('ffb-demo'); if(f) f.style.height=e.data.prfxDemoHeight+'px';
+});
+</script>
 </body>
 </html>
