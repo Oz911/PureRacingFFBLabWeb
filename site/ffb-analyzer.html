@@ -8,13 +8,11 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Barlow:wght@400;500;600;700&family=Barlow+Condensed:ital,wght@0,600;0,700;1,700&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="site.css?v=16">
+<link rel="stylesheet" href="site.css?v=17">
 </head>
 <body>
 <!-- ================= EN-TÊTE DU MODULE ================= -->
-<header class="mhero">
-  <div class="bg" style="background-image:url(img/ffb.jpg)"></div>
-  <div class="veil"></div>
+<header class="mhero plain">
   <div class="wrap">
     <div class="crumbs"><a data-page="accueil">Pit Box</a> › <b>Module 08</b> · FFB Analyzer</div>
     <h1>Pure Racing <span>FFB Analyzer</span></h1>
@@ -23,14 +21,13 @@
     <div class="chips"><span class="red">Le Mans Ultimate</span><span class="">rFactor 2</span><span class="">Assetto Corsa</span><span class="">Verdict à chaque tour</span></div>
   </div>
 </header>
-<section class="tone-steel">
-  <div class="wrap feat">
-    <div class="txt">
-      <div class="kicker">En direct</div>
-      <h2>Ton FFB, <span>tour par tour</span></h2>
-      <p>Le signal des 10 dernières secondes, et pour chaque tour un verdict clair.</p><ul><li><span><b>Écrêtage du tour</b> : la part du temps passée au-dessus du seuil, en roulant.</span></li><li><span><b>Niveau de référence</b> : les appuis forts réels, sans les pointes isolées des vibreurs.</span></li><li><span><b>Couple voiture</b> (LMU, rFactor 2) : le couple de colonne, ramené à une valeur comparable d'une voiture à l'autre.</span></li><li><span><b>Verdict</b> : correct, à surveiller, écrêtage excessif ou marge excessive.</span></li></ul>
-    </div>
-    <div><div class="cap"><img src="captures/ffb.jpg" alt="FFB Analyzer : signal en direct, écrêtage, niveau de référence et tours de la session" loading="lazy"></div></div>
+<section class="tone-steel" id="demo">
+  <div class="wrap">
+    <div class="kicker">En direct</div>
+    <h2>Ton FFB, <span>tour par tour</span></h2>
+    <div class="live-intro"><p class="lead">Le signal des 10 dernières secondes, et pour chaque tour un verdict clair.</p><ul><li><span><b>Écrêtage du tour</b> : la part du temps passée au-dessus du seuil, en roulant.</span></li><li><span><b>Niveau de référence</b> : les appuis forts réels, sans les pointes isolées des vibreurs.</span></li><li><span><b>Couple voiture</b> (LMU, rFactor 2) : le couple de colonne, ramené à une valeur comparable d'une voiture à l'autre.</span></li><li><span><b>Verdict</b> : correct, à surveiller, écrêtage excessif ou marge excessive.</span></li></ul></div>
+    <div class="demo-frame"><iframe id="ffb-demo" src="../analyzer/?v=20261117" title="Démonstration de FFB Analyzer"></iframe></div>
+    <p class="capnote">Démonstration : valeurs simulées dans ton navigateur, avec les mêmes règles de calcul que le module. Aucune donnée n'est mesurée.</p>
   </div>
 </section>
 <section class="tone-navy">
@@ -39,15 +36,6 @@
     <h2>Trois seuils, <span>pas de jargon</span></h2>
     
     <div class="grid3"><div class="box"><b>Moins de 0,5 %</b><p>Correct : ton FFB garde ses détails.</p></div><div class="box"><b>De 0,5 à 2 %</b><p>À surveiller : le signal sature par moments.</p></div><div class="box"><b>Plus de 2 %</b><p>Écrêtage excessif : baisse la force dans le jeu.</p></div></div>
-  </div>
-</section>
-<section class="tone-black" id="demo">
-  <div class="wrap">
-    <div class="kicker">Démo interactive</div>
-    <h2>Essaie-le <span>sans rouler</span></h2>
-    <p class="lead">La page du module telle qu'elle s'affiche sur ta tablette, avec trois tours de Spa simulés : un tête-à-queue (tour exclu), une force trop haute (écrêtage excessif et conseil de réglage), puis la force corrigée. Clique sur les onglets Sessions et Informations.</p>
-    <div class="demo-frame"><iframe id="ffb-demo" src="../analyzer/?v=20261117" title="Démonstration de FFB Analyzer"></iframe></div>
-    <p class="capnote">Valeurs simulées dans ton navigateur, avec les mêmes règles de calcul que le module. Aucune donnée n'est mesurée.</p>
   </div>
 </section>
 <section class="tone-steel">
@@ -59,7 +47,7 @@
   </div>
 </section>
 <!-- ================= BON À SAVOIR ================= -->
-<section class="tone-steel">
+<section class="tone-navy">
   <div class="wrap">
     <div class="kicker">Bon à savoir</div>
     <h2>Avant <span>de commencer</span></h2>
@@ -72,7 +60,7 @@
   </div>
 </section>
 <!-- ================= SUITE ================= -->
-<section class="tone-navy">
+<section class="tone-steel">
   <div class="wrap">
     <div class="next">
       <div>
