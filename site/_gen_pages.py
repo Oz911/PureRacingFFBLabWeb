@@ -195,7 +195,7 @@ dict(file='telemetrie.html', num='03', name='Télémétrie', title='Télémétri
   chips=['Le Mans Ultimate (.duckdb)', 'MoTeC (.ld)', '7 pages d\'analyse', 'Sur ta tablette'],
   features=[
     dict(kicker='Deux tours face à face', h2='Session A, <span>session B</span>', cap='telemetrie.jpg', alt="Télémétrie : les modules d'analyse",
-      paras=["Choisis une séance A, et une séance B pour comparer : ton meilleur tour d'aujourd'hui contre celui d'hier, ou contre celui d'un équipier."],
+      paras=["Choisis une séance A, et une séance B pour comparer : ton meilleur tour d'aujourd'hui contre celui d'hier, contre celui d'un équipier, ou contre le tour de référence de l'IA fourni avec Pit Box."],
       bullets=["<b>Pilotage / moteur</b> : vitesse, régime, rapports, accélérateur, frein, direction.",
                "<b>Chronos / comparaison</b> : le temps gagné ou perdu tout au long du tour.",
                "<b>Freinage / adhérence</b>, <b>pneumatiques</b>, <b>suspensions</b>, <b>châssis / dynamique</b>.",
