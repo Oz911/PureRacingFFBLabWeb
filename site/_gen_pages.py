@@ -47,7 +47,7 @@ def feature(f, i):
         right = '<div class="radio">' + ''.join(f'<div class="bubble">{MIC}<p>« {q} »<small>{s}</small></p></div>' for q, s in f['radio']) + '</div>'
     else:
         note = f'<p class="capnote">{f["note"]}</p>' if f.get('note') else ''
-        right = f'<div><div class="cap"><img src="captures/{f["cap"]}" alt="{html.escape(f["alt"])}" loading="lazy"></div>{note}</div>'
+        right = f'<div><div class="cap"><img src="captures/{f["cap"]}?v=20261120" alt="{html.escape(f["alt"])}" loading="lazy"></div>{note}</div>'
     idattr = f' id="{f["id"]}"' if f.get('id') else ''
     return f'''<section class="{tone}"{idattr}>
   <div class="wrap feat{rev}">
@@ -255,7 +255,7 @@ dict(file='engine.html', num='07', name='Engine', title='Engine', img='engine.jp
   lead="Engine crée des profils moteur pour les bass shakers de SimHub, adaptés à chaque voiture : l'architecture du moteur, ses régimes, ses couches de vibrations. Il reconnaît la voiture et charge son profil tout seul.",
   chips=['Bass shakers', 'SimHub ShakeIt', 'Détection de la voiture', 'Réglage sur tablette'],
   features=[
-    dict(kicker='Le profil moteur', h2='Chaque voiture <span>a sa voix</span>', cap='engine-spectre.jpg', alt='Engine : voiture détectée, spectre de fréquences et couches du moteur',
+    dict(kicker='Le profil moteur', h2='Chaque voiture <span>a sa voix</span>', cap='engine-spectre.jpg', alt='Engine : spectre de fréquences et couches du moteur',
       paras=["Engine part de la voiture détectée (catégorie, cylindres, architecture, régime mini et maxi) et construit les couches de vibrations du moteur."],
       bullets=["<b>Couches</b> : vilebrequin, ralenti, battement, couple, bas, moyens et hauts régimes, régime maxi, limiteur.",
                "<b>Spectre de fréquences</b> : les couches superposées, pour voir comment elles se répartissent.",
