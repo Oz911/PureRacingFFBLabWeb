@@ -79,3 +79,54 @@ window.PRFX = {
     window.addEventListener('load', post);
   });
 })();
+
+// Zoom des captures : clic sur une image = agrandie par-dessus la page ; clic, Échap ou ✕ pour fermer.
+// Dans Odoo, la page est un cadre aussi haut qu'elle : la zone visible à l'écran est retrouvée
+// avec IntersectionObserver (qui mesure par rapport à la fenêtre du navigateur, même dans un cadre),
+// et l'image est replacée dedans quand on fait défiler.
+(function () {
+  var ov = null, img = null, io = null, last = null;
+  function place(r) {
+    if (!img || !r || r.height < 40) return;
+    var pad = Math.min(40, r.width * .04), maxW = r.width - 2 * pad, maxH = r.height - 2 * pad;
+    var nw = img.naturalWidth || 1456, nh = img.naturalHeight || 819;
+    var k = Math.min(maxW / nw, maxH / nh, 1.6), w = nw * k, h = nh * k;
+    img.style.width = w + 'px'; img.style.height = h + 'px';
+    img.style.left = (r.left + (r.width - w) / 2 + window.scrollX) + 'px';
+    img.style.top = (r.top + (r.height - h) / 2 + window.scrollY) + 'px';
+    var x = ov.querySelector('.lb-x'); x.style.top = (r.top + window.scrollY + 12) + 'px'; x.style.left = (r.right + window.scrollX - 56) + 'px';
+  }
+  function close() { if (!ov) return; if (io) io.disconnect(); ov.remove(); ov = img = io = null; document.removeEventListener('keydown', key); }
+  function key(e) { if (e.key === 'Escape') close(); }
+  function open(src, alt, y) {
+    close();
+    ov = document.createElement('div'); ov.className = 'lb';
+    ov.style.height = Math.max(document.documentElement.scrollHeight, document.body.scrollHeight) + 'px';
+    ov.innerHTML = '<button class="lb-x" type="button" aria-label="Fermer">✕</button>';
+    img = new Image(); img.className = 'lb-img'; img.alt = alt || ''; img.src = src; ov.appendChild(img);
+    ov.addEventListener('click', close); document.addEventListener('keydown', key);
+    document.body.appendChild(ov);
+    // Première position autour du clic, le temps que la zone visible soit mesurée.
+    var vh = Math.min(window.innerHeight, (screen.availHeight || 900) * .9);
+    last = { left: 0, top: Math.max(0, y - window.scrollY - vh / 2), width: document.documentElement.clientWidth, height: vh };
+    last.right = last.left + last.width;
+    var go = function () { place(last); };
+    if (img.complete) go(); else img.onload = go;
+    if ('IntersectionObserver' in window) {
+      var th = []; for (var i = 0; i <= 100; i++) th.push(i / 100);
+      io = new IntersectionObserver(function (en) { var r = en[0].intersectionRect; if (r.height > 40) { last = r; place(r); } }, { threshold: th });
+      io.observe(ov);
+      // Si on fait défiler et que l'image sort de l'écran, on referme (la zone visible ne
+      // change pas de taille au défilement, IntersectionObserver ne le signale qu'ainsi).
+      var seen = false, io2 = new IntersectionObserver(function (en) {
+        var k = en[0].intersectionRatio; if (k > .9) seen = true; else if (seen && k < .75) close();
+      }, { threshold: th });
+      var obs = io; io = { disconnect: function () { obs.disconnect(); io2.disconnect(); } };
+      setTimeout(function () { if (img) io2.observe(img); }, 350);
+    }
+  }
+  document.addEventListener('click', function (e) {
+    var t = e.target; if (!t || t.tagName !== 'IMG' || !t.closest('.cap')) return;
+    e.preventDefault(); open(t.currentSrc || t.src, t.alt, e.pageY);
+  });
+})();
