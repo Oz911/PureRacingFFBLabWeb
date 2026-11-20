@@ -272,9 +272,9 @@ dict(file='engine.html', num='07', name='Engine', title='Engine', img='engine.jp
 
 # ------------------------------------------------------------------ MOTION
 dict(file='motion.html', num='06', name='Motion', title='Motion', img='motion.jpg',
-  desc="Motion, module de Pit Box : les mouvements de ta voiture sur ton moniteur ou ta plateforme, 6 axes envoyés à OpenTrack.",
-  sub='Vue <span>dynamique</span>',
-  lead="Motion transforme la télémétrie en mouvements sur 6 axes, envoyés à OpenTrack : la vue s'incline dans les virages, plonge au freinage, suit le relief. Sur un châssis dynamique, la plateforme bouge avec la voiture.",
+  desc="Motion, module de Pit Box : compensation de vue sur 6 axes par OpenTrack, sur châssis fixe ou dynamique, pour synchroniser ce que tu vois avec les mouvements de ta voiture.",
+  sub='Compensation <span>de vue</span>',
+  lead="Motion synchronise ce que tu vois avec les mouvements de ta voiture. Il fait de la compensation de vue sur 6 axes, envoyés à OpenTrack, sur châssis fixe comme sur châssis dynamique. Sur châssis fixe, la vue s'incline dans les virages, plonge au freinage et suit le relief : tes yeux perçoivent ce que ton siège ne peut pas faire. Sur châssis dynamique, la vue compense les mouvements de la plateforme : l'image reste en accord avec ce que ton corps ressent.",
   chips=['6 axes', 'OpenTrack', 'Châssis fixe ou dynamique', 'Réglage sur tablette'],
   features=[
     dict(kicker='Châssis fixe', h2='Ta vue <span>prend vie</span>', cap='motion.jpg', alt='Motion en châssis fixe : couples Sway + Roll et Surge + Pitch',
