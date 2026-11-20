@@ -183,7 +183,7 @@ dict(file='spotter.html', num='01', name='Spotter', title='Spotter', img='spotte
   table=[("Jeu", "Le Mans Ultimate : le Spotter lit la position de toutes les voitures, les drapeaux et la météo en direct."),
          ("Micro", "N'importe quel micro ou casque reconnu par Windows. La jauge du module montre s'il t'entend bien."),
          ("Bouton du volant", "Un appui pour parler. Un autre bouton du volant peut être assigné à la bascule entre Pit Box et le jeu."),
-         ("Voix", "Plus de 900 phrases enregistrées en français pour les annonces du spotter et du coach."),
+         ("Voix", "Près de 900 phrases enregistrées en français pour les annonces du spotter et du coach."),
          ("Langue", "Français, pour les annonces comme pour les questions.")],
   next=dict(t='Ensuite : <span>Coach Training</span>', p="Tes tours comparés à une référence, virage par virage, avec un coach à la radio.", page='training', label='02 · Coach Training')),
 
