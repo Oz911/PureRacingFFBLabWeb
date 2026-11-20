@@ -2,12 +2,13 @@
    Le numéro de version est lu sur la dernière release GitHub à l'ouverture de la page :
    rien à changer à chaque publication. La valeur ci-dessous ne sert que si GitHub ne répond pas. */
 window.PRFX = {
-  version: '0.14.70',
+  version: '0.15.0',
   releases: 'https://api.github.com/repos/Oz911/PureRacingFFBLabWeb/releases/latest',
   status: 'Version bêta',
   // Adresse fixe : redirection Odoo /telecharger → dernière release GitHub (rien à changer à chaque version).
   download: 'https://pureracing-fx.odoo.com/telecharger',
-  support: 'https://pureracing-fx.odoo.com/r/abg',
+  // Page de dons (l'ancienne annonce …/e/600476 est retirée).
+  support: 'https://buymeacoffee.com/speedcaradh',
   odoo: 'https://pureracing-fx.odoo.com',
   // Adresse de chaque page du site Odoo (ce qui suit pureracing-fx.odoo.com).
   // Si une page Odoo change d'adresse, il suffit de corriger la ligne ici.
