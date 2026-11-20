@@ -406,3 +406,6 @@ table.ref td:first-child{color:var(--text);font-weight:600;white-space:nowrap}
 .pledge span{font:700 13px var(--title);letter-spacing:.12em;text-transform:uppercase;color:var(--text);border:1px solid var(--line2);border-radius:20px;padding:6px 14px;background:#13161E}
 .pledge span::before{content:"✔";color:var(--accent);margin-right:8px}
 @media (max-width:700px){.offer table{font-size:14px}.offer th,.offer td{padding:12px}.offer th{font-size:18px}}
+.donor-perk{margin:16px 0 18px;padding:12px 14px;border:1px solid rgba(255,138,31,.45);border-radius:10px;background:rgba(255,138,31,.08);color:var(--muted);font-size:14.5px;line-height:1.5}
+.donor-perk b{display:block;color:#FF8A1F;font:700 14px var(--title);letter-spacing:.14em;text-transform:uppercase;margin-bottom:4px}
+.offer-text a{color:#FF8A1F}
