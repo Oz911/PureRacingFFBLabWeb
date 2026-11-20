@@ -409,3 +409,12 @@ table.ref td:first-child{color:var(--text);font-weight:600;white-space:nowrap}
 .donor-perk{margin:16px 0 18px;padding:12px 14px;border:1px solid rgba(255,138,31,.45);border-radius:10px;background:rgba(255,138,31,.08);color:var(--muted);font-size:14.5px;line-height:1.5}
 .donor-perk b{display:block;color:#FF8A1F;font:700 14px var(--title);letter-spacing:.14em;text-transform:uppercase;margin-bottom:4px}
 .offer-text a{color:#FF8A1F}
+
+/* Installation : tuile de version à la hauteur des étapes, soutien en pleine largeur dessous */
+.install{align-items:stretch}
+.install .dl{position:static;display:flex}
+.install .dl-get{display:flex;flex-direction:column;justify-content:center;width:100%}
+.dl-support.wide{margin-top:24px;border:1px solid rgba(255,138,31,.45);border-radius:14px;padding:28px 32px;grid-template-columns:minmax(0,1.1fr) minmax(0,1fr);gap:20px 48px;align-items:center}
+.dl-support.wide .sup-l,.dl-support.wide .sup-r{display:grid;gap:12px}
+.dl-support.wide .donor-perk{margin:0}
+@media (max-width:980px){.dl-support.wide{grid-template-columns:minmax(0,1fr);padding:24px}}
