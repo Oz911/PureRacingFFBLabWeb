@@ -306,7 +306,9 @@ table.ref td:first-child{color:var(--text);font-weight:600;white-space:nowrap}
 .setups{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:18px;margin-top:30px}
 .setup{display:flex;flex-direction:column;background:var(--panel);border:1px solid var(--line);border-radius:14px;overflow:hidden}
 .setup .pic{background:radial-gradient(ellipse at 50% 40%,#F4F5F8 0%,#D9DCE3 100%);aspect-ratio:4/3;display:flex;align-items:center;justify-content:center;padding:14px;border-bottom:1px solid var(--line)}
-.setup .pic img{max-height:100%;width:auto;object-fit:contain}
+.setup .pic{overflow:hidden}
+.setup .pic img{width:100%;height:100%;min-height:0;object-fit:contain}
+.setup .pic img.fill{object-fit:cover}
 .setup .body{padding:18px 20px 20px;display:flex;flex-direction:column;flex:1}
 .setup .k{font:700 12px var(--title);letter-spacing:.2em;text-transform:uppercase;color:var(--accent)}
 .setup h3{font-size:28px;font-style:italic;margin-top:6px}
