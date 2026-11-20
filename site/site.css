@@ -399,7 +399,7 @@ table.ref td:first-child{color:var(--text);font-weight:600;white-space:nowrap}
 .offer .yes{color:#22C55E;font-weight:700;margin-right:6px}
 .offer .no{color:var(--dim)}
 .offer tbody tr:last-child td{font-weight:600;color:var(--text)}
-.offer-text{max-width:80ch;margin-top:22px}
+.offer-text{max-width:none;margin-top:22px}
 .offer-text p{color:var(--muted);margin:10px 0 0}
 .offer-text p b{color:var(--text)}
 .pledge{display:flex;flex-wrap:wrap;gap:10px;margin-top:18px!important}
